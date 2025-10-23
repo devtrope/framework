@@ -7,5 +7,10 @@
             "email": "dev.trope@gmail.com"
         }
     ],
+    "autoload": {
+        "psr-4": {
+            "Ludens\\": "src/"
+        }
+    },
     "require": {}
 }
