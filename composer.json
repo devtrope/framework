@@ -1,0 +1,11 @@
+{
+    "name": "ludens/ludens",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Quentin SCHIFFERLE",
+            "email": "dev.trope@gmail.com"
+        }
+    ],
+    "require": {}
+}
