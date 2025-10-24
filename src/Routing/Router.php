@@ -128,11 +128,7 @@ class Router
     private function verifyHandler(): void
     {
         if (! $this->controller || ! $this->method) {
-            http_response_code(404);
-            $response = Response::render('errors/404');
-            $response->send();
-
-            exit;
+            throw new \Ludens\Exceptions\NotFoundException("The page you are looking for could not be found.");
         }
 
         if (! class_exists($this->controller)) {
@@ -144,6 +140,5 @@ class Router
         if (! method_exists($this->controllerInstance, $this->method)) {
             throw new Exception("Method $this->method does not exist in controller $this->controller");
         }
-
     }
 }

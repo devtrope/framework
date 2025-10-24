@@ -29,6 +29,15 @@ class Application
             \Ludens\Routing\Route::load($routes);
         }
 
-        \Ludens\Routing\Router::dispatch($request);
+         try {
+            \Ludens\Routing\Router::dispatch($request);
+        } catch (\Ludens\Exceptions\NotFoundException $e) {
+            http_response_code($e->getCode());
+
+            $response = \Ludens\Http\Response::render('errors/404', [
+                'message' => $e->getMessage()
+            ]);
+            $response->send();
+        }
     }
 }
