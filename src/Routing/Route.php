@@ -6,16 +6,35 @@ class Route
 {
     protected static array $routes = [];
 
+    /**
+     * Registers the routes for the get requests.
+     * @param string $path
+     * @param array $handler
+     * @return void
+     */
     public static function get(string $path , array $handler): void
     {
         self::assignRoute('GET', $path, $handler);
     }
 
+    /**
+     * Registers the routes for the post requests.
+     * @param string $path
+     * @param array $handler
+     * @return void
+     */
     public static function post(string $path , array $handler): void
     {
         self::assignRoute('POST', $path, $handler);
     }
 
+    /**
+     * Registers the route for a given request method.
+     * @param string $method
+     * @param string $path
+     * @param array $handler
+     * @return void
+     */
     private static function assignRoute(string $method, string $path, array $handler): void
     {
         self::$routes[$method][$path] = $handler;
@@ -43,6 +62,11 @@ class Route
         self::$routes = $routes;
     }
 
+    /**
+     * Returns the list of routes for a given request method.
+     * @param string $requestMethod
+     * @return array
+     */
     public static function list(string $requestMethod): array
     {
         if (! isset(self::$routes[$requestMethod])) {
