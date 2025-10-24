@@ -7,6 +7,7 @@ class Response
     private string $body = '';
     private array $headers = [];
     private bool $sent = false;
+    private int $code = 200;
 
     public static function render(string $viewName, array $data = []): self
     {
@@ -26,8 +27,10 @@ class Response
         }
 
         $response = new self();
-        $response->setBody($content);
-        $response->setHeader('Content-Type', 'text/html; charset=UTF-8');
+        
+        $response
+            ->setBody($content)
+            ->setHeader('Content-Type', 'text/html; charset=UTF-8');
         
         return $response;
     }
@@ -39,10 +42,12 @@ class Response
         }
 
         $response = new self();
-        $response->setHeader('Location', $url);
-        $response->setHeader('Content-Type', 'text/html; charset=UTF-8');
-        $response->setBody('');
-        http_response_code(302);
+
+        $response
+            ->setHeader('Location', $url)
+            ->setHeader('Content-Type', 'text/html; charset=UTF-8')
+            ->setBody('')
+            ->setCode(302);
 
         return $response;
     }
@@ -85,9 +90,11 @@ class Response
         $this->sent = true;
     }
 
-    public function setBody(string $content): void
+    public function setBody(string $content): self
     {
         $this->body = $content;
+
+        return $this;
     }
 
     public function body(): string
@@ -95,9 +102,11 @@ class Response
         return $this->body;
     }
 
-    public function setHeader(string $name, string $value): void
+    public function setHeader(string $name, string $value): self
     {
         $this->headers[$name] = $value;
+
+        return $this;
     }
 
     public function header(?string $key): string|array|null
@@ -107,6 +116,19 @@ class Response
         }
 
         return $this->headers[$key] ?? null;
+    }
+
+    public function setCode(int $code): self
+    {
+        $this->code = $code;
+        http_response_code($code);
+
+        return $this;
+    }
+
+    public function code(): int
+    {
+        return $this->code;
     }
 
     public static function json(array $data): self
@@ -119,8 +141,9 @@ class Response
             throw new \Exception('Failed to encode data to JSON');
         }
 
-        $response->setBody($jsonData);
-        $response->setHeader('Content-Type', 'application/json; charset=UTF-8');
+        $response
+            ->setBody($jsonData)
+            ->setHeader('Content-Type', 'application/json; charset=UTF-8');
 
         return $response;
     }

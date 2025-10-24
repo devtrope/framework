@@ -19,12 +19,14 @@ class Application
          try {
             \Ludens\Routing\Router::dispatch($request);
         } catch (\Ludens\Exceptions\NotFoundException $e) {
-            http_response_code($e->getCode());
-
-            $response = \Ludens\Http\Response::render('errors/404', [
+            $response = new \Ludens\Http\Response();
+            
+            $response::render('errors/404', [
                 'message' => $e->getMessage()
-            ]);
-            $response->send();
+            ])
+            ->setHeader('Content-Type', 'text/html; charset=UTF-8')
+            ->setCode($e->getCode())
+            ->send();
         }
     }
 
