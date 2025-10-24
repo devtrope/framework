@@ -4,6 +4,12 @@ namespace Ludens\Core;
 
 class Application
 {
+    /**
+     * Initialize the application by loading routes and dispatching the request.
+     * @param \Ludens\Http\Request $request
+     * @throws \Exception
+     * @return void
+     */
     public static function init(\Ludens\Http\Request $request)
     {
         if ($_ENV['APP_ENVIRONMENT'] === 'production') {

@@ -8,63 +8,55 @@ use Ludens\Http\Response;
 
 class Router
 {
-    private static array $parameters = [];
+    private array $parameters = [];
+    private ?string $controller;
+    private ?string $method;
+    private object $controllerInstance;
+
+    public function __construct(Request $request)
+    {
+        $this->findHandlerFor($request);
+    }
 
     public static function dispatch(Request $request): void
     {
-        $handler = self::match($request->uri(), Route::list($request->method()));
-        $controller = $handler[0] ?? null;
-        $method = $handler[1] ?? null;
+        $router = new self($request);
+        $router->verifyHandler();
 
-        if ($controller && $method) {
-            if (! class_exists($controller)) {
-                throw new Exception("Controller class $controller does not exist");
-            }
+        $reflection = new \ReflectionMethod($router->controllerInstance, $router->method);
+        $arguments = [];
 
-            $instance = new $controller();
-
-            if (! method_exists($instance, $method)) {
-                throw new Exception("Method $method does not exist in controller $controller");
-            }
-
-            $reflection = new \ReflectionMethod($instance, $method);
-            $arguments = [];
-
-            foreach ($reflection->getParameters() as $parameter) {
-                if ($parameter->getType()) {
-                    /** @var \ReflectionNamedType */
-                    $parameterType = $parameter->getType();
-                    if ($parameterType->getName() === Request::class) {
-                        $arguments[] = $request;
-                        continue;
-                    }
+        foreach ($reflection->getParameters() as $parameter) {
+            if ($parameter->getType()) {
+                /** @var \ReflectionNamedType */
+                $parameterType = $parameter->getType();
+                if ($parameterType->getName() === Request::class) {
+                    $arguments[] = $request;
+                    continue;
                 }
-
-                $arguments[] = self::$parameters[$parameter->getName()] ?? null;
             }
 
-            /** @var callable $callable */
-            $callable = [$instance, $method];
+            $arguments[] = $router->parameters[$parameter->getName()] ?? null;
+        }
 
-            $response = call_user_func_array($callable, $arguments);
+        /** @var callable $callable */
+        $callable = [$router->controllerInstance, $router->method];
 
-            if ($response instanceof Response) {
-                $response->send();
-                return;
-            }
+        $response = call_user_func_array($callable, $arguments);
 
-            /** @var string $response */
-            echo $response;
+        if ($response instanceof Response) {
+            $response->send();
+
             return;
         }
 
-        http_response_code(404);
-        $response = Response::render('errors/404');
-        $response->send();
+        /** @var string $response */
+        echo $response;
+
         return;
     }
 
-    private static function match(string $uri, array $routes): array
+    private function match(string $uri, array $routes): array
     {
         // Search for an exact match before continuing to more complex matching
         if (isset($routes[$uri])) {
@@ -80,8 +72,8 @@ class Router
                 continue;
             }
 
-            if (self::segmentsMatch($explodedRoute, $explodedUri)) {
-                self::extractParameters($explodedRoute, $explodedUri);
+            if ($this->segmentsMatch($explodedRoute, $explodedUri)) {
+                $this->extractParameters($explodedRoute, $explodedUri);
                 return $handler;
             }
         }
@@ -89,7 +81,7 @@ class Router
         return [];
     }
 
-    private static function segmentsMatch(array $routeSegments, array $uriSegments): bool
+    private function segmentsMatch(array $routeSegments, array $uriSegments): bool
     {
         foreach ($routeSegments as $index => $segment) {
             // We don't care if it's a perfect match for dynamic segments like {slug} or {id} 
@@ -105,13 +97,53 @@ class Router
         return true;
     }
 
-    private static function extractParameters(array $routeSegments, array $uriSegments): void
+    private function extractParameters(array $routeSegments, array $uriSegments): void
     {
         foreach ($routeSegments as $index => $segment) {
             if (preg_match('/^{(\w+)}$/', $segment, $matches)) {
                 $paramName = $matches[1];
-                self::$parameters[$paramName] = $uriSegments[$index];
+                $this->parameters[$paramName] = $uriSegments[$index];
             }
         }
+    }
+
+    private function findHandlerFor(Request $request): void
+    {
+        $handler = $this->match(
+            $request->uri(),
+            Route::list($request->method())
+        );
+
+        if (empty($handler)) {
+            $this->controller = null;
+            $this->method = null;
+
+            return;
+        }
+
+        $this->controller = $handler[0];
+        $this->method = $handler[1];
+    }
+
+    private function verifyHandler(): void
+    {
+        if (! $this->controller || ! $this->method) {
+            http_response_code(404);
+            $response = Response::render('errors/404');
+            $response->send();
+
+            exit;
+        }
+
+        if (! class_exists($this->controller)) {
+            throw new Exception("Controller class $this->controller does not exist");
+        }
+
+        $this->controllerInstance = new $this->controller();
+
+        if (! method_exists($this->controllerInstance, $this->method)) {
+            throw new Exception("Method $this->method does not exist in controller $this->controller");
+        }
+
     }
 }
