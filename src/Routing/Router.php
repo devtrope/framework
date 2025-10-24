@@ -74,6 +74,7 @@ class Router
 
             if ($this->segmentsMatch($explodedRoute, $explodedUri)) {
                 $this->extractParameters($explodedRoute, $explodedUri);
+                
                 return $handler;
             }
         }
