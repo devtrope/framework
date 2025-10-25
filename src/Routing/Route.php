@@ -7,39 +7,51 @@ use Ludens\Core\Application;
 class Route
 {
     protected static array $routes = [];
+    private array $handler;
+    private string $path;
+    private const GET = 'GET';
+    private const POST = 'POST';
 
-    /**
-     * Registers the routes for the get requests.
-     * @param string $path
-     * @param array $handler
-     * @return void
-     */
-    public static function get(string $path , array $handler): void
+    public function __construct(array $handler)
     {
-        self::assignRoute('GET', $path, $handler);
+        $this->handler = $handler;
     }
 
-    /**
-     * Registers the routes for the post requests.
-     * @param string $path
-     * @param array $handler
-     * @return void
-     */
-    public static function post(string $path , array $handler): void
+    public static function call(array $handler): self
     {
-        self::assignRoute('POST', $path, $handler);
+        return new self($handler);
+    }
+
+    public function when(string $path): self
+    {
+        $this->path = $path;
+        return $this;
+    }
+
+    public function onGet(): self
+    {
+        $this->register(self::GET);
+        return $this;
+    }
+
+    public function onPost(): self
+    {
+        $this->register(self::POST);
+        return $this;
     }
 
     /**
      * Registers the route for a given request method.
      * @param string $method
-     * @param string $path
-     * @param array $handler
      * @return void
      */
-    private static function assignRoute(string $method, string $path, array $handler): void
+    private function register(string $method): void
     {
-        self::$routes[$method][$path] = $handler;
+        if (isset(self::$routes[$method][$this->path])) {
+            throw new \Exception("Route {$method} {$this->path} is already registered");
+        }
+        
+        self::$routes[$method][$this->path] = $this->handler;
     }
 
     /**
