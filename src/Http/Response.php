@@ -2,6 +2,8 @@
 
 namespace Ludens\Http;
 
+use Ludens\Core\Application;
+
 class Response
 {
     private string $body = '';
@@ -11,7 +13,7 @@ class Response
 
     public static function render(string $viewName, array $data = []): self
     {
-        $filePath = rtrim(TEMPLATES_PATH, '/') . '/' . $viewName . '.php';
+        $filePath = rtrim(Application::templates(), '/') . '/' . $viewName . '.php';
 
         if (! file_exists($filePath)) {
             throw new \Exception("View file $viewName does not exist");

@@ -4,13 +4,17 @@ namespace Ludens\Core;
 
 class Application
 {
+    private static ?string $templatesPath = null;
+    private static ?string $routesPath = null;
+    private static ?string $cachePath = null;
+
     /**
      * Initialize the application by loading routes and dispatching the request.
      * @param \Ludens\Http\Request $request
      * @throws \Exception
      * @return void
      */
-    public static function init(\Ludens\Http\Request $request)
+    public function init(\Ludens\Http\Request $request): void
     {
         if ($_ENV['APP_ENVIRONMENT'] === 'production') {
             self::loadRoutesFromCache();
@@ -31,20 +35,49 @@ class Application
     }
 
     /**
+     * Define the application global paths.
+     * @param array $paths
+     * @return Application
+     */
+    public function withPaths(string $templates, string $routes, string $cache): self
+    {
+        self::$templatesPath = $templates;
+        self::$routesPath = $routes;
+        self::$cachePath = $cache;
+
+        return $this;
+    }
+
+    public static function templates(): string
+    {
+        return self::$templatesPath;
+    }
+
+    public static function routes(): string
+    {
+        return self::$routesPath;
+    }
+
+    public static function cache(): string
+    {
+        return self::$cachePath;
+    }
+
+    /**
      * Loads the routes definitions from the cache file.
      * @throws \Exception
      * @return void
      */
     private static function loadRoutesFromCache(): void
     {
-        $cacheFile = CACHE_PATH . '/routes.php';
+        $cacheFile = self::cache() . '/routes.php';
 
         if (! file_exists($cacheFile)) {
-            if (! file_exists(ROUTES_PATH)) {
-                throw new \Exception('Routes file not found at ' . ROUTES_PATH);
+            if (! file_exists(self::routes())) {
+                throw new \Exception('Routes file not found at ' . self::routes());
             }
             
-            require ROUTES_PATH;
+            require self::routes();
 
             \Ludens\Routing\Route::cache();
         }

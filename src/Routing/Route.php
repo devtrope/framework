@@ -2,6 +2,8 @@
 
 namespace Ludens\Routing;
 
+use Ludens\Core\Application;
+
 class Route
 {
     protected static array $routes = [];
@@ -47,7 +49,7 @@ class Route
     public static function cache(): void
     {
         $export = var_export(self::$routes, true);
-        $cacheFile = CACHE_PATH . '/routes.php';
+        $cacheFile = Application::cache() . '/routes.php';
         $content = "<?php\n\nreturn " . $export . ";\n";
         file_put_contents($cacheFile, $content);
     }
