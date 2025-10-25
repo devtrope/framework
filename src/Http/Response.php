@@ -13,6 +13,12 @@ class Response
 
     public static function render(string $viewName, array $data = []): self
     {
+        $templatesPath = rtrim(Application::templates());
+
+        if (! is_dir($templatesPath)) {
+            throw new \Exception("$templatesPath does not exist");
+        }
+
         $filePath = rtrim(Application::templates(), '/') . '/' . $viewName . '.php';
 
         if (! file_exists($filePath)) {
