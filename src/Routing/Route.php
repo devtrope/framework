@@ -21,15 +21,15 @@ use RuntimeException;
 class Route
 {
     protected static array $routes = [];
-    private array $handler;
+    private Handler $handler;
     private string $path;
 
     /**
      * Create a new Route instance.
      *
-     * @param array $handler The route handler as [ControllerClass::class, 'methodName']
+     * @param Handler $handler The route handler as [ControllerClass::class, 'methodName']
      */
-    public function __construct(array $handler)
+    public function __construct(Handler $handler)
     {
         $this->handler = $handler;
     }
@@ -39,11 +39,15 @@ class Route
      *
      * Static factory method to start the fluent route definition chain.
      *
-     * @param array $handler The route handler as [ControllerClass::class, 'methodName']
+     * @param array|Handler $handler The route handler as [ControllerClass::class, 'methodName']
      * @return Route
      */
-    public static function call(array $handler): self
+    public static function call(array|Handler $handler): self
     {
+        if (is_array($handler)) {
+            $handler = Handler::fromArray($handler);
+        }
+
         return new self($handler);
     }
 
@@ -145,7 +149,16 @@ class Route
      */
     public static function cache(): void
     {
-        $export = var_export(self::$routes, true);
+        // Convert handlers as array for export
+        $routesForExport = [];
+
+        foreach (self::$routes as $method => $routes) {
+            foreach ($routes as $path => $handler) {
+                $routesForExport[$method][$path] = $handler->toArray();
+            }
+        }
+
+        $export = var_export($routesForExport, true);
         $cacheFile = Application::cache() . '/routes.php';
         $content = "<?php\n\nreturn " . $export . ";\n";
 
@@ -165,7 +178,12 @@ class Route
      */
     public static function load(array $routes): void
     {
-        self::$routes = $routes;
+        // Convert array to handlers
+        foreach ($routes as $method => $methodRoutes) {
+            foreach ($methodRoutes as $path => $handler) {
+                self::$routes[$method][$path] = Handler::fromArray($handler);
+            }
+        }
     }
 
     /**
