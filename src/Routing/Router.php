@@ -3,6 +3,7 @@
 namespace Ludens\Routing;
 
 use Ludens\Http\Request;
+use Ludens\Routing\Dispatching\Dispatcher;
 
 /**
  * Main router class - facade for route dispatching.

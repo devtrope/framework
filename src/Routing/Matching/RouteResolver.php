@@ -1,8 +1,10 @@
 <?php
 
-namespace Ludens\Routing;
+namespace Ludens\Routing\Matching;
 
 use Ludens\Http\Request;
+use Ludens\Routing\Support\Handler;
+use Ludens\Routing\RouteCollection;
 use Ludens\Exceptions\NotFoundException;
 
 /**
@@ -19,7 +21,7 @@ class RouteResolver
     /**
      * Resolve a request to a matched route.
      *
-     * @param \Ludens\Http\Request $request
+     * @param Request $request
      * @return ResolvedRoute
      * @throws NotFoundException If no matching route is found
      */
@@ -36,8 +38,8 @@ class RouteResolver
      *
      * @param string $uri The request URI
      * @param array $routes Available routes for the HTTP method
-     * @return \Ludens\Routing\Handler
-     * @throws \Ludens\Exceptions\NotFoundException If no matching route is found
+     * @return Handler
+     * @throws NotFoundException If no matching route is found
      */
     private function match(string $uri, array $routes): Handler
     {

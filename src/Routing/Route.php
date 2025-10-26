@@ -3,8 +3,9 @@
 namespace Ludens\Routing;
 
 use Exception;
-use Ludens\Http\HttpMethod;
 use RuntimeException;
+use Ludens\Http\HttpMethod;
+use Ludens\Routing\Support\Handler;
 
 /**
  * Route registration and management class.

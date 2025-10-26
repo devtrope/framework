@@ -5,6 +5,7 @@ namespace Ludens\Routing;
 use Exception;
 use RuntimeException;
 use Ludens\Core\Application;
+use Ludens\Routing\Support\Handler;
 
 /**
  * Collection of all registered routes in the application.

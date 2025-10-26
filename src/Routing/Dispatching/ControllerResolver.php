@@ -1,10 +1,11 @@
 <?php
 
-namespace Ludens\Routing;
+namespace Ludens\Routing\Dispatching;
 
 use ReflectionMethod;
 use Ludens\Http\Request;
 use Ludens\Exceptions\NotFoundException;
+use Ludens\Routing\Matching\ResolvedRoute;
 
 /**
  * Resolves and prepares controller method call with their arguments.

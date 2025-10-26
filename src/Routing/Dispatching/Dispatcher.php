@@ -1,9 +1,10 @@
 <?php
 
-namespace Ludens\Routing;
+namespace Ludens\Routing\Dispatching;
 
 use Ludens\Http\Request;
 use Ludens\Http\Response;
+use Ludens\Routing\Matching\RouteResolver;
 
 /**
  * Dispatches HTTP requests to their appropriate controllers.

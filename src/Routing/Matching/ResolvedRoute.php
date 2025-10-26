@@ -1,6 +1,8 @@
 <?php
 
-namespace Ludens\Routing;
+namespace Ludens\Routing\Matching;
+
+use Ludens\Routing\Support\Handler;
 
 /**
  * Represents a resolved route with its handler and parameters.
@@ -11,6 +13,10 @@ namespace Ludens\Routing;
  */
 class ResolvedRoute
 {
+    /**
+     * @param Handler $handler
+     * @param array $parameters
+     */
     public function __construct(
         private Handler $handler,
         private array $parameters = []

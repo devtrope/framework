@@ -1,6 +1,6 @@
 <?php
 
-namespace Ludens\Routing;
+namespace Ludens\Routing\Support;
 
 use InvalidArgumentException;
 
