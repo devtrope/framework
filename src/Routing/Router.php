@@ -5,13 +5,13 @@ namespace Ludens\Routing;
 use Exception;
 use Ludens\Http\Request;
 use Ludens\Http\Response;
+use Ludens\Exceptions\NotFoundException;
 
 class Router
 {
     private array $parameters = [];
     private ?string $controller;
     private ?string $method;
-    private object $controllerInstance;
 
     public function __construct(Request $request)
     {
@@ -21,9 +21,16 @@ class Router
     public static function dispatch(Request $request): void
     {
         $router = new self($request);
-        $router->verifyHandler();
 
-        $reflection = new \ReflectionMethod($router->controllerInstance, $router->method);
+        try {
+            $controllerInstance = new $router->controller();
+        } catch (\Error $e) {
+            throw new NotFoundException(
+                "The page you are looking for could not be found."
+            );
+        }
+
+        $reflection = new \ReflectionMethod($controllerInstance, $router->method);
         $arguments = [];
 
         foreach ($reflection->getParameters() as $parameter) {
@@ -40,23 +47,21 @@ class Router
         }
 
         /** @var callable $callable */
-        $callable = [$router->controllerInstance, $router->method];
+        $callable = [$controllerInstance, $router->method];
 
         $response = call_user_func_array($callable, $arguments);
 
         if ($response instanceof Response) {
             $response->send();
-
             return;
         }
 
         /** @var string $response */
         echo $response;
-
         return;
     }
 
-    private function match(string $uri, array $routes): array
+    private function match(string $uri, array $routes): Handler
     {
         // Search for an exact match before continuing to more complex matching
         if (isset($routes[$uri])) {
@@ -74,12 +79,13 @@ class Router
 
             if ($this->segmentsMatch($explodedRoute, $explodedUri)) {
                 $this->extractParameters($explodedRoute, $explodedUri);
-                
                 return $handler;
             }
         }
 
-        return [];
+        throw new NotFoundException(
+            "The page you are looking for could not be found."
+        );
     }
 
     private function segmentsMatch(array $routeSegments, array $uriSegments): bool
@@ -115,31 +121,7 @@ class Router
             Route::list($request->method())
         );
 
-        if (empty($handler)) {
-            $this->controller = null;
-            $this->method = null;
-
-            return;
-        }
-
-        $this->controller = $handler[0];
-        $this->method = $handler[1];
-    }
-
-    private function verifyHandler(): void
-    {
-        if (! $this->controller || ! $this->method) {
-            throw new \Ludens\Exceptions\NotFoundException("The page you are looking for could not be found.");
-        }
-
-        if (! class_exists($this->controller)) {
-            throw new Exception("Controller class $this->controller does not exist");
-        }
-
-        $this->controllerInstance = new $this->controller();
-
-        if (! method_exists($this->controllerInstance, $this->method)) {
-            throw new Exception("Method $this->method does not exist in controller $this->controller");
-        }
+        $this->controller = $handler->controller();
+        $this->method = $handler->method();
     }
 }
