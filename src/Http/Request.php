@@ -2,6 +2,8 @@
 
 namespace Ludens\Http;
 
+use Ludens\Http\Validation\Validator;
+
 class Request
 {
     private string $uri;
@@ -43,7 +45,7 @@ class Request
         return $this->method;
     }
 
-    public function parameter(?string $key): array|string
+    public function parameter(?string $key = null): array|string
     {
         if ($key === null) {
             return $this->parameters;
@@ -78,59 +80,42 @@ class Request
         $this->body = $body;
     }
 
-    public function validate(array $validationRules): void
+    /**
+     * Validate the request data against given rules.
+     *
+     * @param array $rules The validation rules
+     * @return void
+     */
+    public function validate(array $rules): void
     {
-        $errors = [];
+        $validator = new Validator();
 
-        $parameters = $this->parameters;
+        $dataToValidate = $this->isJson ? $this->json() : $this->parameter();
 
+        if (! $validator->validate($dataToValidate, $rules)) {
+            $this->handleValidationFailure($validator->errors());
+        }
+    }
+
+    /**
+     * Handle validation failure by sending appropriate response.
+     *
+     * @param array $errors The validation errors
+     * @return void
+     */
+    private function handleValidationFailure(array $errors): void
+    {
         if ($this->isJson) {
-            /** @var array $parameters */
-            $parameters = $this->json();
-        }
-        
-        foreach ($parameters as $key => $value) {
-            if (isset($validationRules[$key])) {
-                $rules = explode('|', $validationRules[$key]);
-
-                foreach ($rules as $rule) {
-                    if ($rule === 'required' && (is_null($value) || $value === '')) {
-                        $errors[$key] = 'This field is required.';
-                        continue 2;
-                    }
-
-                    if (str_starts_with($rule, 'min:')) {
-                        $minLength = (int) substr($rule, 4);
-                        if (strlen($value) < $minLength) {
-                            $errors[$key] = "This field must be at least $minLength characters long.";
-                            continue 2;
-                        }
-                    }
-
-                    if (str_starts_with($rule, 'max:')) {
-                        $maxLength = (int) substr($rule, 4);
-                        if (strlen($value) > $maxLength) {
-                            $errors[$key] = "This field must be lower than $maxLength characters long.";
-                            continue 2;
-                        }
-                    }
-                }
-            }
-        }
-        
-        if (! empty($errors)) {
-            if ($this->isJson) {
-                Response::json(['errors' => $errors])->send();
-                exit;
-            }
-
-            Response::redirect($this->referer)
-                ->withErrors($errors)
-                ->withOldData($this->parameters)
-                ->send();
+            Response::json([
+                'errors' => $errors
+            ])->setCode(422)->send();
             exit;
         }
 
-        return;
+        Response::redirect($this->referer ?? '/')
+            ->withErrors($errors)
+            ->withOldData($this->parameters)
+            ->send();
+        exit;
     }
 }
