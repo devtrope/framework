@@ -12,7 +12,6 @@ use InvalidArgumentException;
  * @package Ludens\Routing
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0
- * 
  */
 class Handler
 {

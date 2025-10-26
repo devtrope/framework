@@ -2,7 +2,6 @@
 
 namespace Ludens\Routing;
 
-use Exception;
 use Ludens\Http\Request;
 use Ludens\Http\Response;
 use Ludens\Exceptions\NotFoundException;
@@ -118,7 +117,7 @@ class Router
     {
         $handler = $this->match(
             $request->uri(),
-            Route::list($request->method())
+            RouteCollection::getRoutesForMethod($request->method())
         );
 
         $this->controller = $handler->controller();

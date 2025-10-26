@@ -3,7 +3,6 @@
 namespace Ludens\Routing;
 
 use Exception;
-use Ludens\Core\Application;
 use Ludens\Http\HttpMethod;
 use RuntimeException;
 
@@ -16,7 +15,6 @@ use RuntimeException;
  * @package Ludens\Routing
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0
- * 
  */
 class Route
 {
@@ -129,77 +127,28 @@ class Route
      */
     private function register(HttpMethod $method): void
     {
-        $methodValue = $method->value;
-
-        if (isset(self::$routes[$methodValue][$this->path])) {
-            throw new Exception("Route {$methodValue} {$this->path} is already registered");
-        }
-
-        self::$routes[$methodValue][$this->path] = $this->handler;
+        RouteCollection::add($method->value, $this->path, $this->handler);
     }
 
     /**
-     * Save all registered routes to a cache file.
-     *
-     * Exports the routes array to a PHP file for faster loading in production.
-     * Should only be called in production environments after all routes are registered.
+     * Cache all registered routes.
      *
      * @return void
      * @throws RuntimeException If the cache file cannot be written
      */
     public static function cache(): void
     {
-        // Convert handlers as array for export
-        $routesForExport = [];
-
-        foreach (self::$routes as $method => $routes) {
-            foreach ($routes as $path => $handler) {
-                $routesForExport[$method][$path] = $handler->toArray();
-            }
-        }
-
-        $export = var_export($routesForExport, true);
-        $cacheFile = Application::cache() . '/routes.php';
-        $content = "<?php\n\nreturn " . $export . ";\n";
-
-        if (! file_put_contents($cacheFile, $content)) {
-            throw new RuntimeException("Cannot write routes cache file");
-        }
+        RouteCollection::cache();
     }
 
     /**
      * Load the routes from a cached routes array.
-     *
-     * Replaces the current routes with pre-cached routes for improved performance.
-     * Typically used in production to avoid re-registering routes on every request.
      *
      * @param array $routes The cached routes array
      * @return void
      */
     public static function load(array $routes): void
     {
-        // Convert array to handlers
-        foreach ($routes as $method => $methodRoutes) {
-            foreach ($methodRoutes as $path => $handler) {
-                self::$routes[$method][$path] = Handler::fromArray($handler);
-            }
-        }
-    }
-
-    /**
-     * Get all routes registered for a specific HTTP method.
-     *
-     * Returns an associative array where keys are paths and values are handlers.
-     *
-     * @param string $requestMethod The HTTP method (GET, POST, PUT, PATCH, DELETE)
-     * @return array Array of routes [path => handler] or empty array if none found
-     */
-    public static function list(string $requestMethod): array
-    {
-        if (! isset(self::$routes[$requestMethod])) {
-            return [];
-        }
-
-        return self::$routes[$requestMethod];
+        RouteCollection::load($routes);
     }
 }
