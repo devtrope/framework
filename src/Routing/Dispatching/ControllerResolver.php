@@ -5,6 +5,7 @@ namespace Ludens\Routing\Dispatching;
 use ReflectionMethod;
 use Ludens\Http\Request;
 use Ludens\Exceptions\NotFoundException;
+use Ludens\Http\Validation\Validator;
 use Ludens\Routing\Matching\ResolvedRoute;
 
 /**
@@ -72,6 +73,11 @@ class ControllerResolver
                 $parameterType = $parameter->getType();
                 if ($parameterType->getName() === Request::class) {
                     $arguments[] = $request;
+                    continue;
+                }
+
+                if ($parameterType->getName() === Validator::class) {
+                    $arguments[] = new Validator();
                     continue;
                 }
             }

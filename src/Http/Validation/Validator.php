@@ -2,6 +2,9 @@
 
 namespace Ludens\Http\Validation;
 
+use Ludens\Http\Request;
+use Ludens\Http\Response;
+
 /**
  * Validator class to validate data against defined rules.
  * 
@@ -11,101 +14,65 @@ namespace Ludens\Http\Validation;
  */
 class Validator
 {
-    private array $errors = [];
-
     /**
-     * Validate the data against the given rules.
+     * Start building validation rules.
      *
-     * @param array $data
-     * @param array $rules
-     * @return bool
+     * @return RuleBuilder
      */
-    public function validate(array $data, array $rules): bool
+    public function rule(): RuleBuilder
     {
-        $this->errors = [];
-
-        foreach ($rules as $field => $ruleString) {
-            $value = $data[$field] ?? null;
-            $fieldRules = $this->parseRules($ruleString);
-
-            foreach ($fieldRules as $rule) {
-                if (! $rule->passes($field, $value)) {
-                    $this->errors[$field] = $rule->message($field);
-                    break;
-                };
-            }
-        }
-
-        return empty($this->errors);
+        return new RuleBuilder();
     }
 
     /**
-     * Parse the rule string into ValidationRule instances.
+     * Validate specific fields from the request.
      *
-     * @param string $ruleString
-     * @return ValidationRule[]
-     */
-    private function parseRules(string $ruleString): array
-    {
-        $rules = [];
-        $ruleParts = explode('|', $ruleString);
-
-        foreach ($ruleParts as $part) {
-            $rule = $this->createRuleInstance($part);
-
-            if ($rule) {
-                $rules[] = $rule;
-            }
-        }
-
-        return $rules;
-    }
-
-    /**
-     * Create a ValidationRule instance from a rule string.
-     *
-     * @param string $ruleString
-     * @return ValidationRule|null
-     */
-    private function createRuleInstance(string $ruleString): ?ValidationRule
-    {
-        if (str_contains($ruleString, ':')) {
-            [$ruleName, $parameter] = explode(':', $ruleString, 2);
-
-            return match ($ruleName) {
-                'min' => new \Ludens\Http\Validation\Rules\MinRule((int) $parameter),
-                'max' => new \Ludens\Http\Validation\Rules\MaxRule((int) $parameter),
-                default => null,
-            };
-
-        }
-
-        $ruleClass = "\\Ludens\\Http\\Validation\\Rules\\" . ucfirst($ruleString) . "Rule";
-
-        if (class_exists($ruleClass)) {
-            return new $ruleClass();
-        }
-
-        return null;
-    }
-
-    /**
-     * Get the validation errors.
-     *
+     * @param Request $request
+     * @param array $fields
      * @return array
      */
-    public function errors(): array
+    public function fields(Request $request, array $fields): array
     {
-        return $this->errors;
+        $data = $request->isJson() ? $request->json() : $request->all();
+        $errors = [];
+
+        foreach ($fields as $fieldName => $ruleBuilder) {
+            $value = $data[$fieldName] ?? null;
+            $rules = $ruleBuilder->getRules();
+
+            foreach ($rules as $rule) {
+                if (! $rule->passes($fieldName, $value)) {
+                    $errors[$fieldName] = $rule->message($fieldName);
+                    break;
+                }
+            }
+        }
+
+        if (! empty($errors)) {
+            self::handleFailure($request, $errors);
+        }
+
+        return $data;
     }
 
     /**
-     * Check if validation has failed.
+     * Handle validation failure by sending appropriate response.
      *
-     * @return bool
+     * @param Request $request
+     * @param array $errors
+     * @return void
      */
-    public function failed(): bool
+    private static function handleFailure(Request $request, array $errors): void
     {
-        return ! empty($this->errors);
+        if ($request->wantsJson() || $request->isJson()) {
+            Response::json(['errors' => $errors])->setCode(422)->send();
+            exit;
+        }
+
+        Response::redirect($request->referer() ?? '/')
+            ->withErrors($errors)
+            ->withOldData($request->all())
+            ->send();
+        exit;
     }
 }

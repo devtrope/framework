@@ -3,7 +3,6 @@
 namespace Ludens\Http;
 
 use Ludens\Http\Support\RequestData;
-use Ludens\Http\Validation\Validator;
 use Ludens\Http\Support\RequestHeaders;
 
 /**
@@ -194,44 +193,5 @@ class Request
     public function referer(): ?string
     {
         return $this->referer;
-    }
-
-    /**
-     * Validate the request data against given rules.
-     *
-     * @param array $rules The validation rules
-     * @return void
-     */
-    public function validate(array $rules): void
-    {
-        $validator = new Validator();
-
-        $dataToValidate = $this->isJson() ? $this->json() : $this->all();
-
-        if (! $validator->validate($dataToValidate, $rules)) {
-            $this->handleValidationFailure($validator->errors());
-        }
-    }
-
-    /**
-     * Handle validation failure by sending appropriate response.
-     *
-     * @param array $errors The validation errors
-     * @return void
-     */
-    private function handleValidationFailure(array $errors): void
-    {
-        if ($this->wantsJson() || $this->isJson()) {
-            Response::json([
-                'errors' => $errors
-            ])->setCode(422)->send();
-            exit;
-        }
-
-        Response::redirect($this->referer ?? '/')
-            ->withErrors($errors)
-            ->withOldData($this->all())
-            ->send();
-        exit;
     }
 }
