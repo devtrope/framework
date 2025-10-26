@@ -2,82 +2,190 @@
 
 namespace Ludens\Http;
 
+use Ludens\Http\Support\RequestData;
 use Ludens\Http\Validation\Validator;
+use Ludens\Http\Support\RequestHeaders;
 
 class Request
 {
     private string $uri;
     private string $method;
-    private array $parameters = [];
     private ?string $referer = null;
-    private string $body;
-    private array $headers = [];
-    private bool $isJson = false;
+    private RequestHeaders $headers;
+    private RequestData $data;
 
-    public function __construct()
-    {
-        $this->uri = strval($_SERVER['REQUEST_URI']);
-        $this->method = strval($_SERVER['REQUEST_METHOD']);
-        $this->parameters = $_REQUEST;
-
-        if (isset($_SERVER['HTTP_REFERER'])) {
-            $this->referer = strval($_SERVER['HTTP_REFERER']);
-        }
-
-        $this->body = file_get_contents('php://input') ?: '';
-
-        if (function_exists('getallheaders')) {
-            $this->headers = getallheaders() ?: [];
-            
-            if (isset($this->headers['Content-Type']) && $this->headers['Content-Type'] === 'application/json') {
-                $this->isJson = true;
-            }
-        }
+    /**
+     * @param string $uri
+     * @param string $method
+     * @param RequestHeaders $headers
+     * @param RequestData $data
+     * @param string|null $referer
+     */
+    public function __construct(
+        string $uri,
+        string $method,
+        RequestHeaders $headers,
+        RequestData $data,
+        ?string $referer = null
+    ){
+        $this->uri = $uri;
+        $this->method = $method;
+        $this->headers = $headers;
+        $this->data = $data;
+        $this->referer = $referer;
     }
 
+    /**
+     * Create a Request from the current HTTP request.
+     *
+     * @return self
+     */
+    public static function capture(): self
+    {
+        $uri = $_SERVER['REQUEST_URI'] ?? '/';
+        $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+        $referer = $_SERVER['HTTP_REFERER'] ?? null;
+
+        $headers = RequestHeaders::capture();
+        $data = RequestData::capture($headers);
+
+        return new self($uri, $method, $headers, $data, $referer);
+    }
+
+    /**
+     * Get the request URI.
+     *
+     * @return string
+     */
     public function uri(): string
     {
         return $this->uri;
     }
 
+    /**
+     * Get the request method.
+     *
+     * @return string
+     */
     public function method(): string
     {
         return $this->method;
     }
-
-    public function parameter(?string $key = null): array|string
+    
+    /**
+     * Get request headers handler.
+     *
+     * @return RequestHeaders
+     */
+    public function headers(): RequestHeaders
     {
-        if ($key === null) {
-            return $this->parameters;
-        }
-
-        if (! isset($this->parameters[$key])) {
-            throw new \InvalidArgumentException("Parameter $key does not exist in the request.");
-        }
-
-        return $this->parameters[$key];
+        return $this->headers;
     }
 
-    public function json(?string $key = null): array|string
+    /**
+     * Get a specific header.
+     *
+     * @param string $name
+     * @param mixed $default
+     * @return string|null
+     */
+    public function header(string $name, ?string $default = null): string|null
     {
-        $jsonData = json_decode($this->body, true);
-
-        if ($key === null) {
-            /** @var array $jsonData */
-            return $jsonData;
-        }
-
-        if (! isset($jsonData[$key])) {
-            throw new \InvalidArgumentException("JSON key $key does not exist in the request body.");
-        }
-
-        /** @var array $jsonData */
-        return $jsonData[$key];
+        return $this->headers->get($name, $default);
     }
 
-    public function setBody(string $body): void
+    /**
+     * Get a parameter value.
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return string|null
+     */
+    public function get(string $key, ?string $default = null): string|null
     {
-        $this->body = $body;
+        return $this->data->get($key, $default);
+    }
+
+    /**
+     * Get all parameters.
+     *
+     * @return array
+     */
+    public function all(): array
+    {
+        return $this->data->all();
+    }
+
+    /**
+     * Check if a parameter exists.
+     *
+     * @param string $key
+     * @return bool
+     */
+    public function has(string $key): bool
+    {
+        return $this->data->has($key);
+    }
+
+    /**
+     * Get JSON decoded data from the request body.
+     *
+     * @param string|null $key
+     * @return mixed
+     */
+    public function json(?string $key = null): mixed
+    {
+        return $this->data->json($key);
+    }
+
+    /**
+     * Get the raw request body.
+     *
+     * @return string
+     */
+    public function body(): string
+    {
+        return $this->data->body();
+    }
+
+    /**
+     * Check if the request content type is JSON.
+     *
+     * @return bool
+     */
+    public function isJson(): bool
+    {
+        return $this->headers()->isJson();
+    }
+
+    /**
+     * Check if the request content type is form-urlencoded.
+     *
+     * @return bool
+     */
+    public function isFormUrlEncoded(): bool
+    {
+        return $this->headers()->isFormUrlEncoded();
+    }
+
+    /**
+     * Check if the client expects a JSON response.
+     *
+     * @return bool
+     */
+    public function wantsJson(): bool
+    {
+        return $this->headers()->wantsJson();
+    }
+
+    /**
+     * Get the referer URL.
+     *
+     * @return string|null
+     */
+    public function referer(): ?string
+    {
+        return $this->referer;
     }
 
     /**
@@ -90,7 +198,7 @@ class Request
     {
         $validator = new Validator();
 
-        $dataToValidate = $this->isJson ? $this->json() : $this->parameter();
+        $dataToValidate = $this->isJson() ? $this->json() : $this->all();
 
         if (! $validator->validate($dataToValidate, $rules)) {
             $this->handleValidationFailure($validator->errors());
@@ -105,7 +213,7 @@ class Request
      */
     private function handleValidationFailure(array $errors): void
     {
-        if ($this->isJson) {
+        if ($this->wantsJson() || $this->isJson()) {
             Response::json([
                 'errors' => $errors
             ])->setCode(422)->send();
@@ -114,7 +222,7 @@ class Request
 
         Response::redirect($this->referer ?? '/')
             ->withErrors($errors)
-            ->withOldData($this->parameters)
+            ->withOldData($this->all())
             ->send();
         exit;
     }

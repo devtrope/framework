@@ -2,6 +2,13 @@
 
 namespace Ludens\Http\Validation;
 
+/**
+ * Validator class to validate data against defined rules.
+ * 
+ * @package Ludens\Http\Validation
+ * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
+ * @version 1.0.0
+ */
 class Validator
 {
     private array $errors = [];

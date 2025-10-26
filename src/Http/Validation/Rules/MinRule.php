@@ -4,6 +4,9 @@ namespace Ludens\Http\Validation\Rules;
 
 use Ludens\Http\Validation\ValidationRule;
 
+/**
+ * Rule to ensure a field has a minimum length.
+ */
 class MinRule implements ValidationRule
 {
     public function __construct(
