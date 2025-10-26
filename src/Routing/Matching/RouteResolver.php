@@ -10,7 +10,7 @@ use Ludens\Exceptions\NotFoundException;
 /**
  * Resolves HTTP requests to their corresponding route handlers.
  *
- * @package Ludens\Routing
+ * @package Ludens\Routing\Matching
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0
  */

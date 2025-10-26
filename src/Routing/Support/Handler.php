@@ -9,7 +9,7 @@ use InvalidArgumentException;
  * 
  * Encapsulates and validates controller/method combinations for route handling.
  * 
- * @package Ludens\Routing
+ * @package Ludens\Routing\Support
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0
  */

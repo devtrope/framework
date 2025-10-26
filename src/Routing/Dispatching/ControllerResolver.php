@@ -10,7 +10,7 @@ use Ludens\Routing\Matching\ResolvedRoute;
 /**
  * Resolves and prepares controller method call with their arguments.
  * 
- * @package Ludens\Routing
+ * @package Ludens\Routing\Dispatching
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0
  */

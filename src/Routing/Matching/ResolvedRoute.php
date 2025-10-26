@@ -7,7 +7,7 @@ use Ludens\Routing\Support\Handler;
 /**
  * Represents a resolved route with its handler and parameters.
  * 
- * @package Ludens\Routing
+ * @package Ludens\Routing\Matching
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0
  */
