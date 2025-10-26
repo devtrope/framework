@@ -44,9 +44,9 @@ class RequestData
      *
      * @param string $key
      * @param string|null $default
-     * @return string|null
+     * @return string|array|null
      */
-    public function get(string $key, ?string $default = null): string|null
+    public function get(string $key, ?string $default = null): string|array|null
     {
         return $this->data[$key] ?? $default;
     }

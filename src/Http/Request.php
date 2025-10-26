@@ -50,7 +50,7 @@ class Request
     public static function capture(): self
     {
         $uri = $_SERVER['REQUEST_URI'] ?? '/';
-        $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+        $method = strtoupper($_SERVER['REQUEST_METHOD']) ?? 'GET';
         $referer = $_SERVER['HTTP_REFERER'] ?? null;
 
         $headers = RequestHeaders::capture();
@@ -106,9 +106,9 @@ class Request
      *
      * @param string $key
      * @param mixed $default
-     * @return string|null
+     * @return string|array|null
      */
-    public function get(string $key, ?string $default = null): string|null
+    public function get(string $key, ?string $default = null): string|array|null
     {
         return $this->data->get($key, $default);
     }
