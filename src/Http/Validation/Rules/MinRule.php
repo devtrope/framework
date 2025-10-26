@@ -15,8 +15,8 @@ class MinRule implements ValidationRule
         return strlen((string)$value) >= $this->minLength;
     }
 
-    public function message(): string
+    public function message(string $field): string
     {
-        return 'The {$field} field must be at least {$this->minLength} characters.';
+        return "The {$field} field must be at least {$this->minLength} characters.";
     }
 }

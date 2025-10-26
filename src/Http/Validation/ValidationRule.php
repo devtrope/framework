@@ -16,7 +16,8 @@ interface ValidationRule
     /**
      * Get the validation error message.
      *
+     * @param string $field
      * @return string
      */
-    public function message(): string;
+    public function message(string $field): string;
 }

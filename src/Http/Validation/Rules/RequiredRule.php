@@ -11,8 +11,8 @@ class RequiredRule implements ValidationRule
         return $value !== null && $value !== '';
     }
 
-    public function message(): string
+    public function message(string $field): string
     {
-        return 'The {$field} field is required.';
+        return "The {$field} field is required.";
     }
 }

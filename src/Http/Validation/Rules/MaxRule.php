@@ -15,8 +15,8 @@ class MaxRule implements ValidationRule
         return strlen((string)$value) <= $this->maxLength;
     }
 
-    public function message(): string
+    public function message(string $field): string
     {
-        return 'The {$field} field must not exceed {$this->maxLength} characters.';
+        return "The {$field} field must not exceed {$this->maxLength} characters.";
     }
 }
