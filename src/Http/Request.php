@@ -6,6 +6,14 @@ use Ludens\Http\Support\RequestData;
 use Ludens\Http\Validation\Validator;
 use Ludens\Http\Support\RequestHeaders;
 
+/**
+ * Represents an HTTP request and provides methods to access request data,
+ * headers, and perform validation.
+ * 
+ * @package Ludens\Http
+ * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
+ * @version 1.0.0
+ */
 class Request
 {
     private string $uri;

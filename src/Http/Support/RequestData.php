@@ -2,6 +2,13 @@
 
 namespace Ludens\Http\Support;
 
+/**
+ * Handles request data from various sources (query, body, JSON).Handles request data from various sources (query, body, JSON).
+ * 
+ * @package Ludens\Http\Support
+ * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
+ * @version 1.0.0
+ */
 class RequestData
 {
     private array $data = [];

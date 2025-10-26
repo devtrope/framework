@@ -2,6 +2,14 @@
 
 namespace Ludens\Core;
 
+/**
+ * Main application class responsible for initializing the application,
+ * loading routes, and managing global paths.
+ * 
+ * @package Ludens\Core
+ * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
+ * @version 1.0.0
+ */
 class Application
 {
     private static ?string $templatesPath = null;
