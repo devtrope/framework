@@ -3,6 +3,7 @@
 namespace Ludens\Http;
 
 use Ludens\Core\Application;
+use Ludens\Http\Responses\RedirectResponse;
 use Ludens\Http\Support\ResponseHeaders;
 
 class Response
@@ -52,21 +53,9 @@ class Response
         return $response;
     }
 
-    public static function redirect(?string $url): self
+    public static function redirect(?string $url, int $statusCode = 302): self
     {
-        if ($url === null) {
-            throw new \Exception('URL for redirection cannot be null');
-        }
-
-        $response = new self();
-
-        $response
-            ->setHeader('Location', $url)
-            ->setHeader('Content-Type', 'text/html; charset=UTF-8')
-            ->setBody('')
-            ->setCode(302);
-
-        return $response;
+        return new RedirectResponse($url, $statusCode);
     }
 
     public function withFlash(string $type, string $message): self
