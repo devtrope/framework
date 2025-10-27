@@ -6,32 +6,55 @@ use Ludens\Http\Responses\ViewResponse;
 use Ludens\Http\Responses\JsonResponse;
 use Ludens\Http\Responses\RedirectResponse;
 use Ludens\Http\Support\ResponseHeaders;
+use Ludens\Http\Support\SessionFlash;
 
 class Response
 {
     private string $body = '';
     private ResponseHeaders $headers;
-    private bool $sent = false;
+    private SessionFlash $sessionFlash;
+    private bool $sent = false; 
     private int $code = 200;
 
     /**
-     * Constructor to initialize headers.
+     * Constructor to initialize headers and session flash.
      */
     public function __construct()
     {
         $this->headers = new ResponseHeaders();
+        $this->sessionFlash = new SessionFlash();
     }
 
+    /**
+     * Render a view template.
+     *
+     * @param string $viewName
+     * @param array $data
+     * @return ViewResponse
+     */
     public static function view(string $viewName, array $data = []): self
     {
         return new ViewResponse($viewName, $data);
     }
 
+    /**
+     * Create a redirect response.
+     *
+     * @param string|null $url
+     * @param int $statusCode
+     * @return RedirectResponse
+     */
     public static function redirect(?string $url, int $statusCode = 302): self
     {
         return new RedirectResponse($url, $statusCode);
     }
 
+    /**
+     * Create a JSON response.
+     *
+     * @param array $data
+     * @return JsonResponse
+     */
     public static function json(array $data): self
     {
         return new JsonResponse($data);
@@ -39,25 +62,19 @@ class Response
 
     public function withFlash(string $type, string $message): self
     {
-        $_SESSION['flash'] = [
-            'type' => $type,
-            'message' => $message,
-        ];
-
+        $this->sessionFlash->setFlash($type, $message);
         return $this;
     }
 
     public function withErrors(array $errors): self
     {
-        $_SESSION['errors'] = $errors;
-
+        $this->sessionFlash->setErrors($errors);
         return $this;
     }
 
     public function withOldData(array $oldData): self
     {
-        $_SESSION['old'] = $oldData;
-
+        $this->sessionFlash->setOldData($oldData);
         return $this;
     }
 
@@ -69,8 +86,8 @@ class Response
 
         http_response_code($this->code);
         $this->headers->send();
-
         echo $this->body;
+
         $this->sent = true;
     }
 
