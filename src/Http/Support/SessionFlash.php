@@ -3,7 +3,7 @@
 namespace Ludens\Http\Support;
 
 /**
- * Class to manage session flash data, errors, and old input data.
+ * Manage session flash data, errors, and old input data.
  * 
  * @package Ludens\Http\Support
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
@@ -11,47 +11,24 @@ namespace Ludens\Http\Support;
  */
 class SessionFlash
 {
+    private static ?SessionFlash $instance = null;
+
     public function __construct()
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+
+        $this->clear();
     }
 
-    /** 
-     * Set a flash message.
-     *
-     * @param string $type
-     * @param string $message
-     * @return void
-     */
-    public function setFlash(string $type, string $message): void
+    public static function getInstance(): SessionFlash
     {
-        $_SESSION['flash'] = [
-            'type' => $type,
-            'message' => $message,
-        ];
-    }
+        if (self::$instance === null) {
+            self::$instance = new SessionFlash();
+        }
 
-    /**
-     * Get a flash message by key.
-     *
-     * @param string $key
-     * @return string|null
-     */
-    public function flash(string $key): string|null
-    {
-        return $_SESSION['flash'][$key] ?? null;
-    }
-
-    /**
-     * Check if a flash message exists.
-     *
-     * @return bool
-     */
-    public function hasFlash(): bool
-    {
-        return isset($_SESSION['flash']);
+        return self::$instance;
     }
 
     /**
@@ -63,6 +40,9 @@ class SessionFlash
     public function setErrors(array $errors): void
     {
         $_SESSION['errors'] = $errors;
+        if (! in_array('errors', $_SESSION['_flash.new'])) {
+            $_SESSION['_flash.new'][] = 'errors';
+        }
     }
 
     /**
@@ -88,66 +68,19 @@ class SessionFlash
     }
 
     /**
-     * Set old input data.
-     *
-     * @param array $oldData
-     * @return void
-     */
-    public function setOldData(array $oldData): void
-    {
-        $_SESSION['old'] = $oldData;
-    }
-
-    /**
-     * Get old input data by key.
-     *
-     * @param string $key
-     * @return string|null
-     */
-    public function oldData(string $key): string|null
-    {
-        return $_SESSION['old'][$key] ?? null;
-    }
-
-    /**
-     * Clear flash data.
-     *
-     * @return void
-     */
-    public function clearFlash(): void
-    {
-        unset($_SESSION['flash']);
-    }
-
-    /**
-     * Clear validation errors.
-     *
-     * @return void
-     */
-    public function clearErrors(): void
-    {
-        unset($_SESSION['errors']);
-    }
-
-    /**
-     * Clear old input data.
-     *
-     * @return void
-     */
-    public function clearOldData(): void
-    {
-        unset($_SESSION['old']);
-    }
-
-    /**
-     * Clear all session flash data, errors, and old input data.
+     * Clear old flash data from the session.
      *
      * @return void
      */
     public function clear(): void
     {
-        $this->clearFlash();
-        $this->clearErrors();
-        $this->clearOldData();
+        $old = $_SESSION['_flash.old'] ?? [];
+
+        foreach ($old as $key) {
+            unset($_SESSION[$key]);
+        }
+
+        $_SESSION['_flash.old'] = $_SESSION['_flash.new'] ?? [];
+        $_SESSION['_flash.new'] = [];
     }
 }

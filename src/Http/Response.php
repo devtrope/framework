@@ -22,7 +22,7 @@ class Response
     public function __construct()
     {
         $this->headers = new ResponseHeaders();
-        $this->sessionFlash = new SessionFlash();
+        $this->sessionFlash = $sessionFlash ?? SessionFlash::getInstance();
     }
 
     /**
@@ -60,11 +60,11 @@ class Response
         return new JsonResponse($data);
     }
 
-    public function withFlash(string $type, string $message): self
+    /*public function withFlash(string $type, string $message): self
     {
         $this->sessionFlash->setFlash($type, $message);
         return $this;
-    }
+    }*/
 
     public function withErrors(array $errors): self
     {
@@ -72,11 +72,11 @@ class Response
         return $this;
     }
 
-    public function withOldData(array $oldData): self
+    /*public function withOldData(array $oldData): self
     {
         $this->sessionFlash->setOldData($oldData);
         return $this;
-    }
+    }*/
 
     public function send(): void
     {
