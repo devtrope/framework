@@ -124,9 +124,9 @@ class Response
         return $this;
     }
 
-    public function header(string $key): string
+    public function header(string $key, ?string $default = null): string|null
     {
-        return $this->headers->get($key);
+        return $this->headers->get($key, $default);
     }
 
     public function headers(): ResponseHeaders
