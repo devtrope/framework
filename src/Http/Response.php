@@ -3,13 +3,22 @@
 namespace Ludens\Http;
 
 use Ludens\Core\Application;
+use Ludens\Http\Support\ResponseHeaders;
 
 class Response
 {
     private string $body = '';
-    private array $headers = [];
+    private ResponseHeaders $headers;
     private bool $sent = false;
     private int $code = 200;
+
+    /**
+     * Constructor to initialize headers.
+     */
+    public function __construct()
+    {
+        $this->headers = new ResponseHeaders();
+    }
 
     public static function render(string $viewName, array $data = []): self
     {
@@ -90,9 +99,8 @@ class Response
             throw new \Exception('Response has already been sent');
         }
 
-        foreach ($this->headers as $name => $value) {
-            header("$name: $value");
-        }
+        http_response_code($this->code);
+        $this->headers->send();
 
         echo $this->body;
         $this->sent = true;
@@ -112,25 +120,23 @@ class Response
 
     public function setHeader(string $name, string $value): self
     {
-        $this->headers[$name] = $value;
-
+        $this->headers->set($name, $value);
         return $this;
     }
 
-    public function header(?string $key): string|array|null
+    public function header(string $key): string
     {
-        if ($key === null) {
-            return $this->headers;
-        }
+        return $this->headers->get($key);
+    }
 
-        return $this->headers[$key] ?? null;
+    public function headers(): ResponseHeaders
+    {
+        return $this->headers;
     }
 
     public function setCode(int $code): self
     {
         $this->code = $code;
-        http_response_code($code);
-
         return $this;
     }
 
