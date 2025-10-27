@@ -2,7 +2,8 @@
 
 namespace Ludens\Http;
 
-use Ludens\Core\Application;
+use Ludens\Http\Responses\ViewResponse;
+use Ludens\Http\Responses\JsonResponse;
 use Ludens\Http\Responses\RedirectResponse;
 use Ludens\Http\Support\ResponseHeaders;
 
@@ -21,41 +22,19 @@ class Response
         $this->headers = new ResponseHeaders();
     }
 
-    public static function render(string $viewName, array $data = []): self
+    public static function view(string $viewName, array $data = []): self
     {
-        $templatesPath = rtrim(Application::templates());
-
-        if (! is_dir($templatesPath)) {
-            throw new \Exception("$templatesPath does not exist");
-        }
-
-        $filePath = rtrim(Application::templates(), '/') . '/' . $viewName . '.php';
-
-        if (! file_exists($filePath)) {
-            throw new \Exception("View file $viewName does not exist");
-        }
-
-        ob_start();
-        extract($data, EXTR_SKIP);
-        include $filePath;
-        $content = ob_get_clean();
-
-        if (! $content) {
-            $content = '';
-        }
-
-        $response = new self();
-        
-        $response
-            ->setBody($content)
-            ->setHeader('Content-Type', 'text/html; charset=UTF-8');
-        
-        return $response;
+        return new ViewResponse($viewName, $data);
     }
 
     public static function redirect(?string $url, int $statusCode = 302): self
     {
         return new RedirectResponse($url, $statusCode);
+    }
+
+    public static function json(array $data): self
+    {
+        return new JsonResponse($data);
     }
 
     public function withFlash(string $type, string $message): self
@@ -132,22 +111,5 @@ class Response
     public function code(): int
     {
         return $this->code;
-    }
-
-    public static function json(array $data): self
-    {
-        $response = new self();
-
-        $jsonData = json_encode($data);
-
-        if (! $jsonData) {
-            throw new \Exception('Failed to encode data to JSON');
-        }
-
-        $response
-            ->setBody($jsonData)
-            ->setHeader('Content-Type', 'application/json; charset=UTF-8');
-
-        return $response;
     }
 }
