@@ -19,9 +19,14 @@ class SessionFlash
             session_start();
         }
 
-        $this->clear();
+        $this->age();
     }
 
+    /**
+     * Get the singleton instance of SessionFlash.
+     *
+     * @return SessionFlash
+     */
     public static function getInstance(): SessionFlash
     {
         if (self::$instance === null) {
@@ -32,6 +37,44 @@ class SessionFlash
     }
 
     /**
+     * Set a flash message that will be available on the next request only.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return void
+     */
+    public function setFlash(string $key, mixed $value): void
+    {
+        $_SESSION[$key] = $value;
+
+        if (! in_array($key, $_SESSION['_flash.new'])) {
+            $_SESSION['_flash.new'][] = $key;
+        }
+    }
+
+    /**
+     * Get a flash message.
+     *
+     * @param string $key
+     * @return string|null
+     */
+    public function flash(string $key, ?string $default = null): string|null
+    {
+        return $_SESSION[$key] ?? $default;
+    }
+
+    /**
+     * Check if a flash message exists.
+     *
+     * @param string $key
+     * @return bool
+     */
+    public function hasFlash(string $key): bool
+    {
+        return isset($_SESSION[$key]);
+    }
+
+    /**
      * Set validation errors.
      *
      * @param array $errors
@@ -39,14 +82,11 @@ class SessionFlash
      */
     public function setErrors(array $errors): void
     {
-        $_SESSION['errors'] = $errors;
-        if (! in_array('errors', $_SESSION['_flash.new'])) {
-            $_SESSION['_flash.new'][] = 'errors';
-        }
+        $this->setFlash('errors', $errors);
     }
 
     /**
-     * Get a validation error by key.
+     * Get a specific validation error.
      *
      * @param string $key
      * @return string|null
@@ -56,6 +96,7 @@ class SessionFlash
         return $_SESSION['errors'][$key] ?? null;
     }
 
+    
     /**
      * Check if a validation error exists for a given key.
      *
@@ -68,18 +109,42 @@ class SessionFlash
     }
 
     /**
-     * Clear old flash data from the session.
+     * Set old input data (for form repopulation after validation errors).
+     *
+     * @param array $old
+     * @return void
+     */
+    public function setOldData(array $old): void
+    {
+        $this->setFlash('old', $old);
+    }
+
+    /**
+     * Get a specific old input value.
+     *
+     * @param string $key
+     * @return string|null
+     */
+    public function oldData(string $key): string|null
+    {
+        return $_SESSION['old'][$key] ?? null;
+    }
+
+    /**
+     * Age flash data - move current flash to old, prepare for new flash.
      *
      * @return void
      */
-    public function clear(): void
+    public function age(): void
     {
+        // Delete old flash data
         $old = $_SESSION['_flash.old'] ?? [];
 
         foreach ($old as $key) {
             unset($_SESSION[$key]);
         }
 
+        // Move new flash data to old
         $_SESSION['_flash.old'] = $_SESSION['_flash.new'] ?? [];
         $_SESSION['_flash.new'] = [];
     }

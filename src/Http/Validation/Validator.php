@@ -71,7 +71,7 @@ class Validator
 
         Response::redirect($request->referer() ?? '/')
             ->withErrors($errors)
-            //->withOldData($request->all())
+            ->withOldData($request->all())
             ->send();
         exit;
     }
