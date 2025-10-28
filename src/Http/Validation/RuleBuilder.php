@@ -50,6 +50,12 @@ class RuleBuilder
         return $this;
     }
 
+    public function image(): self
+    {
+        $this->rules[] = new Rules\Image();
+        return $this;
+    }
+
     /**
      * Get all configured rules.
      *
