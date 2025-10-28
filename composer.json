@@ -10,7 +10,10 @@
     "autoload": {
         "psr-4": {
             "Ludens\\": "src/"
-        }
+        },
+        "files": [
+            "helpers.php"
+        ]
     },
     "require-dev": {
         "phpstan/phpstan": "^2.1"
