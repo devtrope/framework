@@ -33,7 +33,7 @@ class Application
         } catch (\Ludens\Exceptions\NotFoundException $e) {
             $response = new \Ludens\Http\Response();
             
-            $response::render('errors/404', [
+            $response::view('errors/404', [
                 'message' => $e->getMessage()
             ])
             ->setHeader('Content-Type', 'text/html; charset=UTF-8')
