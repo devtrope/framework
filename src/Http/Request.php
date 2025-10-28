@@ -2,6 +2,8 @@
 
 namespace Ludens\Http;
 
+use Ludens\Files\FileError;
+use Ludens\Files\ImageUploader;
 use Ludens\Http\Support\RequestData;
 use Ludens\Http\Support\RequestHeaders;
 
@@ -20,6 +22,7 @@ class Request
     private ?string $referer = null;
     private RequestHeaders $headers;
     private RequestData $data;
+    private ImageUploader $imageUploader;
 
     /**
      * @param string $uri
@@ -33,12 +36,14 @@ class Request
         string $method,
         RequestHeaders $headers,
         RequestData $data,
+        ImageUploader $imageUploader,
         ?string $referer = null
     ){
         $this->uri = $uri;
         $this->method = $method;
         $this->headers = $headers;
         $this->data = $data;
+        $this->imageUploader = $imageUploader;
         $this->referer = $referer;
     }
 
@@ -55,8 +60,9 @@ class Request
 
         $headers = RequestHeaders::capture();
         $data = RequestData::capture($headers);
+        $imageUploader = new ImageUploader();
 
-        return new self($uri, $method, $headers, $data, $referer);
+        return new self($uri, $method, $headers, $data, $imageUploader, $referer);
     }
 
     /**
@@ -203,5 +209,10 @@ class Request
     public function referer(): ?string
     {
         return $this->referer;
+    }
+
+    public function image(array $file): string
+    {
+        return $this->imageUploader->upload($file);
     }
 }
