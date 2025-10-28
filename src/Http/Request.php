@@ -176,6 +176,16 @@ class Request
     }
 
     /**
+     * Check if the request content type is multipart/form-data
+     *
+     * @return bool
+     */
+    public function isFormData(): bool
+    {
+        return $this->headers()->isFormData();
+    }
+
+    /**
      * Check if the client expects a JSON response.
      *
      * @return bool
