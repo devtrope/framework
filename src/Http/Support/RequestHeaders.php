@@ -88,6 +88,17 @@ class RequestHeaders
     }
 
     /**
+     * Check if the request content type is a form data.
+     *
+     * @return bool
+     */
+    public function isFormData(): bool
+    {
+        $contentType = $this->get('Content-Type', '');
+        return str_contains($contentType, 'multipart/form-data');
+    }
+
+    /**
      * Check if the client expects a JSON response.
      *
      * @return bool

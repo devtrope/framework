@@ -138,6 +138,10 @@ class RequestData
             }
         }
 
+        if ($headers->isFormData()) {
+            return array_merge($data, $_POST, $_FILES);
+        }
+
         return array_merge($data, $_POST);
     }
 }
