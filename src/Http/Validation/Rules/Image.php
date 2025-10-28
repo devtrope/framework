@@ -4,6 +4,9 @@ namespace Ludens\Http\Validation\Rules;
 
 use Ludens\Http\Validation\ValidationRule;
 
+/**
+ * Rule to ensure that a file is an image.
+ */
 class Image implements ValidationRule
 {
     public function passes(string $field, mixed $value): bool
