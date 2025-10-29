@@ -23,13 +23,13 @@ class ViewResponse extends Response
     {
         parent::__construct();
 
-        $templatesPath = rtrim(Application::templates());
+        $templatesPath = rtrim(Application::getInstance()->path('templates'));
 
         if (! is_dir($templatesPath)) {
             throw new \Exception("$templatesPath does not exist");
         }
 
-        $filePath = rtrim(Application::templates(), '/') . '/' . $viewName . '.php';
+        $filePath = rtrim(Application::getInstance()->path('templates'), '/') . '/' . $viewName . '.php';
 
         if (! file_exists($filePath)) {
             throw new \Exception("View file $viewName does not exist");
