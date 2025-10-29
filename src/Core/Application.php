@@ -2,6 +2,14 @@
 
 namespace Ludens\Core;
 
+use Whoops\Run;
+use Dotenv\Dotenv;
+use Ludens\Http\Request;
+use Ludens\Routing\Route;
+use Ludens\Routing\Router;
+use Whoops\Handler\PrettyPageHandler;
+use Ludens\Exceptions\NotFoundException;
+
 /**
  * Main application class responsible for initializing the application,
  * loading routes, and managing global paths.
@@ -12,85 +20,249 @@ namespace Ludens\Core;
  */
 class Application
 {
-    private static ?string $templatesPath = null;
-    private static ?string $routesPath = null;
-    private static ?string $cachePath = null;
+    private static ?Application $instance = null;
+    private array $paths = [];
+    private array $config = [];
 
     /**
-     * Initialize the application by loading routes and dispatching the request.
-     * @param \Ludens\Http\Request $request
-     * @throws \Exception
-     * @return void
+     * Private constructor to prevent direct instantiation.
      */
-    public function init(\Ludens\Http\Request $request): void
-    {
-        if ($_ENV['APP_ENVIRONMENT'] === 'production') {
-            self::loadRoutesFromCache();
-        }
+    private function __construct() {}
 
-         try {
-            \Ludens\Routing\Router::dispatch($request);
-        } catch (\Ludens\Exceptions\NotFoundException $e) {
-            $response = new \Ludens\Http\Response();
-            
-            $response::view('errors/404', [
-                'message' => $e->getMessage()
-            ])
-            ->setHeader('Content-Type', 'text/html; charset=UTF-8')
-            ->setCode($e->getCode())
-            ->send();
-        }
+    /**
+     * Prevent cloning of the instance.
+     * 
+     * @return void;
+     */
+    private function __clone(): void {}
+
+    /**
+     * Prevent unserializing of the instance.
+     *
+     * @throws \Exception
+     * @return never
+     */
+    public function __wakeup(): void
+    {
+        throw new \Exception("Cannot unserialize singleton.");
     }
 
     /**
-     * Define the application global paths.
+     * Get the singleton instance.
+     *
+     * @return Application
+     */
+    public static function getInstance(): Application
+    {
+        if (self::$instance === null) {
+            self::$instance = new Application();
+        }
+
+        return self::$instance;
+    }
+
+    /**
+     * Set application paths from configuration.
+     *
      * @param array $paths
      * @return Application
      */
-    public function withPaths(string $templates, string $routes, string $cache): self
+    public function usePathsFrom(array $paths): self
     {
-        self::$templatesPath = $templates;
-        self::$routesPath = $routes;
-        self::$cachePath = $cache;
+        $this->paths = $paths;
+        return $this;
+    }
+
+    /**
+     * Get a specific path.
+     *
+     * @param string $key
+     * @throws \InvalidArgumentException If the path does not exist
+     * @return string
+     */
+    public function path(string $key): string
+    {
+        if (! isset($this->paths[$key])) {
+            throw new \InvalidArgumentException(
+                "Path [{$key}] not found."
+            );
+        }
+
+        return $this->paths[$key];
+    }
+
+    /**
+     * Load environment variables from .env file.
+     *
+     * @param string $path
+     * @throws \Exception If the .env file does not exist
+     * @return Application
+     */
+    public function loadEnvironmentFrom(string $path): self
+    {
+        if (! file_exists($path)) {
+            throw new \Exception(
+                ".env file is missing at: {$path}"
+            );
+        }
+
+        $dotenv = Dotenv::createImmutable(dirname($path));
+        $dotenv->load();
 
         return $this;
     }
 
-    public static function templates(): string
+    /**
+     * Load all configuration files from config directory.
+     *
+     * @return Application
+     */
+    public function loadConfiguration(): self
     {
-        return self::$templatesPath;
-    }
+        $configurationPath = $this->path('config');
 
-    public static function routes(): string
-    {
-        return self::$routesPath;
-    }
+        foreach (glob($configurationPath . '/*.php') as $file) {
+            $key = basename($file, '.php');
+            $this->config[$key] = require $file;
+        }
 
-    public static function cache(): string
-    {
-        return self::$cachePath;
+        return $this;
     }
 
     /**
-     * Loads the routes definitions from the cache file.
-     * @throws \Exception
-     * @return void
+     * Get a configuration value using dot notation.
+     *
+     * @param string $key Configuration key (e.g., 'app.name')
+     * @param mixed $default Default value if not found
+     * @return mixed
      */
-    private static function loadRoutesFromCache(): void
+    public function config(string $key, ?string $default = null): string|null
     {
-        $cacheFile = self::cache() . '/routes.php';
+        $keys = explode('.', $key);
+        $value = $this->config;
+
+        foreach ($keys as $segment) {
+            if (! isset($value[$segment])) {
+                return $default;
+            }
+
+            $value = $value[$segment];
+        }
+
+        return $value;
+    }
+
+    /**
+     * Configure exception and error handling (Whoops in dev).
+     *
+     * @return Application
+     */
+    public function configureExceptionHandling(): self
+    {
+        if (! $this->isProduction()) {
+            $whoops = new Run();
+            $whoops->pushHandler(new PrettyPageHandler());
+            $whoops->register();
+        }
+
+        return $this;
+    }
+
+    /**
+     * Load routes from the routes file.
+     *
+     * @throws \Exception If the routes file does not exist
+     * @return Application
+     */
+    public function loadRoutes(): self
+    {
+        $routesFile = $this->path('routes');
+
+        if (!file_exists($routesFile)) {
+            throw new \Exception("Routes file not found at: {$routesFile}");
+        }
+
+        require $routesFile;
+
+        return $this;
+    }
+
+    /**
+     * Loads the routes definitions from the cache file
+     * (or create cache if missing).
+     *
+     * @throws \Exception
+     * @return Application
+     */
+    public function loadRoutesFromCache(): self
+    {
+        $cacheFile = $this->path('cache') . '/routes.php';
 
         if (! file_exists($cacheFile)) {
-            if (! file_exists(self::routes())) {
-                throw new \Exception('Routes file not found at ' . self::routes());
-            }
-            
-            require self::routes();
-
-            \Ludens\Routing\Route::cache();
+            $this->loadRoutes();
+            Route::cache();
+            return $this;
         }
 
         $routes = require $cacheFile;
-        \Ludens\Routing\Route::load($routes);
+        Route::load($routes);
+        return $this;
+    }
+
+    /**
+     * Load routes based on environment.
+     * 
+     * Uses cache in production, fresh routes in development.
+     *
+     * @return Application
+     */
+    public function bootRoutes(): self
+    {
+        if ($this->isProduction()) {
+            return $this->loadRoutesFromCache();
+        }
+
+        return $this->loadRoutes();
+    }
+
+    /**
+     * Check if application is running in production.
+     *
+     * @return bool
+     */
+    public function isProduction(): bool
+    {
+        return $this->config('app.environment') === 'production';
+    }
+
+    /**
+     * Initialize and handle the incoming request.
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function init(Request $request): void
+    {
+        try {
+            Router::dispatch($request);
+        } catch (NotFoundException $e) {
+            $this->handleNotFoundException($e);
+        }
+    }
+
+    /**
+     * Handle 404 Not Found exceptions.
+     *
+     * @param \Ludens\Exceptions\NotFoundException $e
+     * @return void
+     */
+    private function handleNotFoundException(NotFoundException $e): void
+    {
+        \Ludens\Http\Response::view('errors/404', [
+            'message' => $e->getMessage()
+        ])
+        ->setCode(404)
+        ->setHeader('Content-Type', 'text/html; charset=UTF-8')
+        ->send();
     }
 }
