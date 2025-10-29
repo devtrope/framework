@@ -138,7 +138,7 @@ class RouteCollection
         }
 
         $export = var_export($routesForExport, true);
-        $cacheFile = Application::getInstance()->config('cache') . '/routes.php';
+        $cacheFile = Application::getInstance()->path('cache') . '/routes.php';
         $content = "<?php\n\nreturn " . $export . ";\n";
 
         if (! file_put_contents($cacheFile, $content)) {
