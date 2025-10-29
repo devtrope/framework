@@ -1,8 +1,7 @@
 <?php
 
-namespace Ludens\Http\Controller;
+namespace Ludens\Framework\Controller;
 
-use Ludens\Http\Request;
 use Ludens\Http\Response;
 use Ludens\Http\Validation\Validator;
 use Ludens\Http\Responses\JsonResponse;
