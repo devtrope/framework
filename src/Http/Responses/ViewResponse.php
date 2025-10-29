@@ -4,6 +4,7 @@ namespace Ludens\Http\Responses;
 
 use Ludens\Http\Response;
 use Ludens\Core\Application;
+use Ludens\Framework\View\ViewRenderer;
 
 /**
  * Handles responses with templates.
@@ -23,26 +24,11 @@ class ViewResponse extends Response
     {
         parent::__construct();
 
-        $templatesPath = rtrim(Application::getInstance()->path('templates'));
-
-        if (! is_dir($templatesPath)) {
-            throw new \Exception("$templatesPath does not exist");
+        if (! str_ends_with($viewName, '.html.twig')) {
+            $viewName .= '.html.twig';
         }
 
-        $filePath = rtrim(Application::getInstance()->path('templates'), '/') . '/' . $viewName . '.php';
-
-        if (! file_exists($filePath)) {
-            throw new \Exception("View file $viewName does not exist");
-        }
-
-        ob_start();
-        extract($data, EXTR_SKIP);
-        include $filePath;
-        $content = ob_get_clean();
-
-        if (! $content) {
-            $content = '';
-        }
+       $content = ViewRenderer::render($viewName, $data);
 
         $this
             ->setBody($content)
