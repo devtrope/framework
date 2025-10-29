@@ -2,7 +2,7 @@
 
 namespace Ludens\Http;
 
-use Ludens\Files\FileError;
+use Ludens\Core\Application;
 use Ludens\Files\ImageUploader;
 use Ludens\Http\Support\RequestData;
 use Ludens\Http\Support\RequestHeaders;
@@ -60,7 +60,9 @@ class Request
 
         $headers = RequestHeaders::capture();
         $data = RequestData::capture($headers);
-        $imageUploader = new ImageUploader();
+        $imageUploader = new ImageUploader(
+            Application::getInstance()->config('filesystems.images.root')
+        );
 
         return new self($uri, $method, $headers, $data, $imageUploader, $referer);
     }
