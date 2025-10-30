@@ -38,7 +38,7 @@ class ViewRenderer
             self::$twig->addExtension(new DebugExtension());
         }
 
-        //self::registerExtensions();
+        self::registerExtensions();
     }
 
     public static function getInstance(): Environment
@@ -53,5 +53,32 @@ class ViewRenderer
     public static function render(string $template, array $data = []): string
     {
         return self::getInstance()->render($template, $data);
+    }
+
+    private static function registerExtensions(): void
+    {
+        $twig = self::$twig;
+
+        $twig->addFunction(new \Twig\TwigFunction('asset', function (string $path) {
+            $app = Application::getInstance();
+            $baseUrl = $app->config('app.url', '');
+            return rtrim($baseUrl, '/') . '/assets/' . ltrim($path, '/');
+        }));
+
+        $twig->addFunction(new \Twig\TwigFunction('config', function (string $key, ?string $default = null) {
+            return Application::getInstance()->config($key, $default);
+        }));
+
+        $twig->addFunction(new \Twig\TwigFunction('error', function (string $field) {
+            return \error($field);
+        }));
+
+        $twig->addFunction(new \Twig\TwigFunction('old', function (string $field) {
+            return \old($field);
+        }));
+
+        $twig->addFunction(new \Twig\TwigFunction('flash', function (string $key) {
+            return \flash($key);
+        }));
     }
 }
