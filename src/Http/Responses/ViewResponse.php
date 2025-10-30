@@ -3,7 +3,6 @@
 namespace Ludens\Http\Responses;
 
 use Ludens\Http\Response;
-use Ludens\Core\Application;
 use Ludens\Framework\View\ViewRenderer;
 
 /**
@@ -29,7 +28,7 @@ class ViewResponse extends Response
             $viewName .= '.html.twig';
         }
 
-       $content = ViewRenderer::render($viewName, $data);
+        $content = ViewRenderer::render($viewName, $data);
 
         $this
             ->setBody($content)

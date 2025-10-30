@@ -4,17 +4,16 @@ namespace Ludens\Framework\View;
 
 use Ludens\Core\Application;
 use Twig\Environment;
-use Twig\Extension\DebugExtension;
 use Twig\Loader\FilesystemLoader;
 
 /**
- * View renderer using Twig template engine.
+ * Error renderer using Twig template engine.
  * 
  * @package Ludens\Framework\View
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0
  */
-class ViewRenderer
+class ErrorRenderer
 {
     private static ?Environment $twig = null;
 
@@ -30,18 +29,9 @@ class ViewRenderer
         }
 
         $app = Application::getInstance();
-        $loader = new FilesystemLoader($app->path('templates'));
+        $loader = new FilesystemLoader(dirname(__DIR__) . '/View/templates');
 
-        self::$twig = new Environment($loader, [
-            'cache' => $app->config('twig.cache'),
-            'debug' => $app->config('twig.debug'),
-            'auto_reload' => $app->config('twig.auto_reload'),
-            'strict_variables' => $app->config('twig.stric_variables')
-        ]);
-
-        if ($app->config('twig.debug')) {
-            self::$twig->addExtension(new DebugExtension());
-        }
+        self::$twig = new Environment($loader, []);
 
         self::registerExtensions();
     }

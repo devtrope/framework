@@ -3,7 +3,6 @@
 namespace Ludens\Http\Responses;
 
 use Ludens\Http\Response;
-use Ludens\Core\Application;
 
 /**
  * Handles JSON responses.

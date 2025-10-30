@@ -9,6 +9,7 @@ use Ludens\Routing\Route;
 use Ludens\Routing\Router;
 use Whoops\Handler\PrettyPageHandler;
 use Ludens\Exceptions\NotFoundException;
+use Ludens\Http\Responses\ErrorResponse;
 
 /**
  * Main application class responsible for initializing the application,
@@ -295,11 +296,6 @@ class Application
      */
     private function handleNotFoundException(NotFoundException $e): void
     {
-        \Ludens\Http\Response::view('errors/404', [
-            'message' => $e->getMessage()
-        ])
-        ->setCode(404)
-        ->setHeader('Content-Type', 'text/html; charset=UTF-8')
-        ->send();
+        ErrorResponse::notFound($e->getMessage())->send();
     }
 }
