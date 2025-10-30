@@ -23,6 +23,7 @@ class Handler
      * 
      * @param string $controller The fully qualified controller class name
      * @param string $method The method name to call on the controller
+     *
      * @throws InvalidArgumentException If the controller does not exist
      * @throws InvalidArgumentException If the method does not exist in the controller
      */
@@ -39,6 +40,7 @@ class Handler
      *
      * @param array $handler Format [ControllerClass::class, 'methodName']
      * @return Handler
+     *
      * @throws InvalidArgumentException If the array format is invalid
      */
     public static function fromArray(array $handler): self
@@ -66,6 +68,7 @@ class Handler
      * @param mixed $controller
      * @param mixed $method
      * @return void
+     *
      * @throws InvalidArgumentException
      */
     private function validate(string $controller, string $method): void

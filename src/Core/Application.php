@@ -39,8 +39,9 @@ class Application
     /**
      * Prevent unserializing of the instance.
      *
-     * @throws \Exception
      * @return never
+     *
+     * @throws \Exception
      */
     public function __wakeup(): void
     {
@@ -77,8 +78,9 @@ class Application
      * Get a specific path.
      *
      * @param string $key
-     * @throws \InvalidArgumentException If the path does not exist
      * @return string
+     *
+     * @throws \InvalidArgumentException If the path does not exist
      */
     public function path(string $key): string
     {
@@ -95,8 +97,9 @@ class Application
      * Load environment variables from .env file.
      *
      * @param string $path
-     * @throws \Exception If the .env file does not exist
      * @return Application
+     *
+     * @throws \Exception If the .env file does not exist
      */
     public function loadEnvironmentFrom(string $path): self
     {
@@ -134,9 +137,9 @@ class Application
      *
      * @param string $key Configuration key (e.g., 'app.name')
      * @param mixed $default Default value if not found
-     * @return mixed
+     * @return string|null|array
      */
-    public function config(string $key, ?string $default = null): string|null
+    public function config(string $key, string|null|array $default = null): string|null|array
     {
         $keys = explode('.', $key);
         $value = $this->config;
@@ -171,8 +174,9 @@ class Application
     /**
      * Load routes from the routes file.
      *
-     * @throws \Exception If the routes file does not exist
      * @return Application
+     *
+     * @throws \Exception If the routes file does not exist
      */
     public function loadRoutes(): self
     {
@@ -191,8 +195,9 @@ class Application
      * Loads the routes definitions from the cache file
      * (or create cache if missing).
      *
-     * @throws \Exception
      * @return Application
+     *
+     * @throws \Exception
      */
     public function loadRoutesFromCache(): self
     {
@@ -223,6 +228,38 @@ class Application
         }
 
         return $this->loadRoutes();
+    }
+
+    /**
+     * Boot all registered service providers.
+     *
+     * @return Application
+     * 
+     * @throws \Exception
+    */
+    public function bootProviders(): self
+    {
+        $providers = $this->config('providers.providers', []);
+
+        foreach ($providers as $providerClass) {
+            if (! class_exists($providerClass)) {
+                throw new \Exception(
+                    "Provider [{$providerClass}] not found."
+                );
+            }
+
+            $provider = new $providerClass();
+
+            if (! $provider instanceof \Ludens\Support\ServiceProvider) {
+                throw new \Exception(
+                    "Provider [$providerClass}] must implement ServiceProvider interface."
+                );
+            }
+
+            $provider->boot();
+        }
+
+        return $this;
     }
 
     /**

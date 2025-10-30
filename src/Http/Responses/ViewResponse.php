@@ -18,6 +18,7 @@ class ViewResponse extends Response
     /**
      * @param string $viewName
      * @param array $data
+     *
      * @throws \Exception If the view file does not exist.
      */
     public function __construct(string $viewName, array $data = [])

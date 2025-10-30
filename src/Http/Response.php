@@ -144,6 +144,7 @@ class Response
      * Send the response to the client.
      *
      * @return void
+     *
      * @throws \Exception
      */
     public function send(): void

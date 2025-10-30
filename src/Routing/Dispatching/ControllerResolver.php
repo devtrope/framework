@@ -23,6 +23,7 @@ class ControllerResolver
      * @param ResolvedRoute $resolvedRoute The resolved route
      * @param Request $request The current HTTP request
      * @return array
+     *
      * @throws NotFoundException If the controller class cannot be instantiated
      */
     public function resolve(ResolvedRoute $resolvedRoute, Request $request): array

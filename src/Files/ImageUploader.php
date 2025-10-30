@@ -50,8 +50,9 @@ class ImageUploader
     /**
      * Ensure upload directory exists and is writable.
      *
-     * @throws Exception
      * @return void
+     *
+     * @throws Exception
      */
     private function ensureDirectoryExists()
     {

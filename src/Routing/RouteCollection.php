@@ -27,6 +27,7 @@ class RouteCollection
      * @param string $path The route path
      * @param Handler $handler The route handler
      * @return void
+     *
      * @throws Exception If the route is already registered
      */
     public static function add(string $method, string $path, Handler $handler): void
@@ -124,6 +125,7 @@ class RouteCollection
      * Should only be called in production environments after all routes are registered.
      *
      * @return void
+     *
      * @throws RuntimeException If the cache file cannot be written
      */
     public static function cache(): void

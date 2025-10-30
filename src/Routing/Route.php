@@ -124,6 +124,7 @@ class Route
      *
      * @param HttpMethod $method The HTTP method for this route
      * @return void
+     *
      * @throws Exception If a route with the same method and path already exists
      */
     private function register(HttpMethod $method): void
@@ -135,6 +136,7 @@ class Route
      * Cache all registered routes.
      *
      * @return void
+     *
      * @throws RuntimeException If the cache file cannot be written
      */
     public static function cache(): void

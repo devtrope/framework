@@ -18,6 +18,11 @@ class ViewRenderer
 {
     private static ?Environment $twig = null;
 
+    /**
+     * Initialize Twig environment.
+     *
+     * @return void
+     */
     public static function initialize(): void
     {
         if (self::$twig !== null) {
@@ -41,6 +46,11 @@ class ViewRenderer
         self::registerExtensions();
     }
 
+    /**
+     * Get the Twig environment instance.
+     *
+     * @return Environment
+     */
     public static function getInstance(): Environment
     {
         if (self::$twig === null) {
@@ -50,11 +60,27 @@ class ViewRenderer
         return self::$twig;
     }
 
+    /**
+     * Render a template.
+     * 
+     * @param string $template Template name (e.g., 'users/index.twig')
+     * @param array $data Data to pass to the template
+     * @return string Rendered HTML
+     * 
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
+     */
     public static function render(string $template, array $data = []): string
     {
         return self::getInstance()->render($template, $data);
     }
 
+    /**
+     * Register custom Twig extensions and functions.
+     *
+     * @return void
+     */
     private static function registerExtensions(): void
     {
         $twig = self::$twig;

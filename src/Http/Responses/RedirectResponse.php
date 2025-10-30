@@ -16,6 +16,7 @@ class RedirectResponse extends Response
     /**
      * @param string|null $url
      * @param int $statusCode
+     *
      * @throws \Exception If no URL is provided.
      */
     public function __construct(?string $url, int $statusCode)

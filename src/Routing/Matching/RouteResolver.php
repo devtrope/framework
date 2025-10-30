@@ -23,6 +23,7 @@ class RouteResolver
      *
      * @param Request $request
      * @return ResolvedRoute
+     *
      * @throws NotFoundException If no matching route is found
      */
     public function resolve(Request $request): ResolvedRoute
@@ -39,6 +40,7 @@ class RouteResolver
      * @param string $uri The request URI
      * @param array $routes Available routes for the HTTP method
      * @return Handler
+     *
      * @throws NotFoundException If no matching route is found
      */
     private function match(string $uri, array $routes): Handler

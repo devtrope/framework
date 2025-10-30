@@ -16,6 +16,7 @@ class JsonResponse extends Response
 {
     /**
      * @param array $data
+     *
      * @throws \Exception If JSON encoding fails.
      */
     public function __construct(array $data)
