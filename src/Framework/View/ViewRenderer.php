@@ -5,10 +5,13 @@ namespace Ludens\Framework\View;
 use Ludens\Core\Application;
 use Twig\Environment;
 use Twig\Extension\DebugExtension;
+use Twig\Loader\ChainLoader;
 use Twig\Loader\FilesystemLoader;
 
 /**
  * View renderer using Twig template engine.
+ * 
+ * Handles both application views and framework error pages with fallback system.
  * 
  * @package Ludens\Framework\View
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
@@ -19,7 +22,7 @@ class ViewRenderer
     private static ?Environment $twig = null;
 
     /**
-     * Initialize Twig environment.
+     * Initialize Twig environment with fallback system.
      *
      * @return void
      */
@@ -30,7 +33,18 @@ class ViewRenderer
         }
 
         $app = Application::getInstance();
-        $loader = new FilesystemLoader($app->path('templates'));
+
+        $loaders = [];
+
+        $appTemplatesPath = $app->path('templates');
+        if (is_dir($appTemplatesPath)) {
+            $loaders[] = new FilesystemLoader($appTemplatesPath);
+        }
+
+        $frameworkTemplatesPath = dirname(__DIR__) . '/View/templates';
+        $loaders[] = new FilesystemLoader($frameworkTemplatesPath);
+
+        $loader = count($loaders) > 1 ? new ChainLoader($loaders) : $loaders[0];
 
         self::$twig = new Environment($loader, [
             'cache' => $app->config('twig.cache'),

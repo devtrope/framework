@@ -3,7 +3,7 @@
 namespace Ludens\Http\Responses;
 
 use Ludens\Http\Response;
-use Ludens\Framework\View\ErrorRenderer;
+use Ludens\Framework\View\ViewRenderer;
 
 /**
  * Handles error responses with templates.
@@ -23,7 +23,7 @@ class ErrorResponse extends Response
     {
         $template = "errors/{$statusCode}.html.twig";
 
-        $content = ErrorRenderer::render($template, [
+        $content = ViewRenderer::render($template, [
             'message' => $message,
             'code' => $statusCode
         ]);
