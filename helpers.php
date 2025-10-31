@@ -34,3 +34,24 @@ if (! function_exists('hasFlash')) {
         return \Ludens\Http\Support\SessionFlash::getInstance()->hasFlash($key);
     }
 }
+
+if (! function_exists('env')) {
+    function env(string $key, $default = null)
+    {
+        $value = $_ENV[$key];
+
+        if (! $value) {
+            return $default;
+        }
+
+        if ($value === 'true') {
+            return true;
+        }
+
+        if ($value === 'false') {
+            return false;
+        }
+
+        return $value;
+    }
+}
