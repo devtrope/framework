@@ -138,9 +138,9 @@ class Application
      *
      * @param string $key Configuration key (e.g., 'app.name')
      * @param mixed $default Default value if not found
-     * @return string|null|array
+     * @return string|null|bool|array
      */
-    public function config(string $key, string|null|array $default = null): string|null|array
+    public function config(string $key, string|null|array $default = null): string|null|bool|array
     {
         $keys = explode('.', $key);
         $value = $this->config;
