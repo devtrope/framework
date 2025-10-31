@@ -43,11 +43,16 @@ class ViewRenderer
 
         $frameworkTemplatesPath = dirname(__DIR__) . '/View/templates';
         $loaders[] = new FilesystemLoader($frameworkTemplatesPath);
-
+        
         $loader = count($loaders) > 1 ? new ChainLoader($loaders) : $loaders[0];
+ 
+        $cache = $app->config('twig.cache');
+        if ($cache) {
+            $cache = $app->path('cache');
+        }
 
         self::$twig = new Environment($loader, [
-            'cache' => $app->config('twig.cache'),
+            'cache' => $cache,
             'debug' => $app->config('twig.debug'),
             'auto_reload' => $app->config('twig.auto_reload'),
             'strict_variables' => $app->config('twig.stric_variables')

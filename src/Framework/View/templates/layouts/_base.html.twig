@@ -8,6 +8,13 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.ico') }}">
 </head>
 <body class="min-h-screen flex items-center justify-center p-6 relative">
-    {% block content %}{% endblock %}
+    <div class="max-w-3xl w-full text-center space-y-8">
+        <h1 class="text-5xl font-bold tracking-tight text-slate-800">
+            {% block code %}{% endblock %}
+        </h1>
+        <p class="text-lg">
+            {% block message %}{% endblock %}
+        </p>
+    </div>
 </body>
 </html>

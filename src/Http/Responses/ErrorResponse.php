@@ -19,6 +19,11 @@ class ErrorResponse extends Response
         return self::errorPage(404, $message); 
     }
 
+    public static function forbidden(?string $message = null): self
+    {
+        return self::errorPage(403, $message); 
+    }
+
     public static function errorPage(int $statusCode, ?string $message): Response
     {
         $template = "errors/{$statusCode}.html.twig";
