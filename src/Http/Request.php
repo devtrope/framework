@@ -60,9 +60,7 @@ class Request
 
         $headers = RequestHeaders::capture();
         $data = RequestData::capture($headers);
-        $imageUploader = new ImageUploader(
-            Application::getInstance()->config('filesystems.images.root')
-        );
+        $imageUploader = new ImageUploader();
 
         return new self($uri, $method, $headers, $data, $imageUploader, $referer);
     }

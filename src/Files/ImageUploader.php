@@ -19,10 +19,8 @@ class ImageUploader
     /**
      * @param string $uploadDirectory Physical path where files are stored
      */
-    public function __construct(
-        string $uploadDirectory
-    ) {
-        $this->uploadDirectory = $uploadDirectory;
+    public function __construct() {
+        $this->uploadDirectory = Application::getInstance()->config('filesystems.images.root');
         $this->ensureDirectoryExists();
     }
 
