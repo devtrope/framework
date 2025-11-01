@@ -11,7 +11,8 @@ class MaxRule implements ValidationRule
 {
     public function __construct(
         private int $maxLength
-    ) {}
+    ) {
+    }
 
     public function passes(string $field, mixed $value): bool
     {

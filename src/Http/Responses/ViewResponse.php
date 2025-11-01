@@ -7,7 +7,7 @@ use Ludens\Framework\View\ViewRenderer;
 
 /**
  * Handles responses with templates.
- * 
+ *
  * @package Ludens\Http\Responses
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0

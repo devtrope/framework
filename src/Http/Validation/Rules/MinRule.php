@@ -11,7 +11,8 @@ class MinRule implements ValidationRule
 {
     public function __construct(
         private int $minLength
-    ) {}
+    ) {
+    }
 
     public function passes(string $field, mixed $value): bool
     {

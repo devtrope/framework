@@ -9,9 +9,9 @@ use Ludens\Routing\Support\Handler;
 
 /**
  * Collection of all registered routes in the application.
- * 
+ *
  * Manages the storage, retrieval, caching and loading of route definitions.
- * 
+ *
  * @package Ludens\Routing
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0
@@ -80,7 +80,7 @@ class RouteCollection
 
     /**
      * Get a specific route handler.
-     * 
+     *
      * @param string $method
      * @param string $path
      * @return Handler|null
@@ -92,9 +92,9 @@ class RouteCollection
 
     /**
      * Clear all registered routes.
-     * 
+     *
      * Useful for testing purposes.
-     * 
+     *
      * @return void
      */
     public static function clear(): void
@@ -104,7 +104,7 @@ class RouteCollection
 
     /**
      * Count total number of routes.
-     * 
+     *
      * @return int
      */
     public static function count(): int
@@ -114,7 +114,7 @@ class RouteCollection
         foreach (self::$routes as $routes) {
             $count += count($routes);
         }
-        
+
         return $count;
     }
 

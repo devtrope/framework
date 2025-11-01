@@ -78,7 +78,7 @@ class RouteResolver
     private function segmentsMatch(array $routeSegments, array $uriSegments): bool
     {
         foreach ($routeSegments as $index => $segment) {
-            // We don't care if it's a perfect match for dynamic segments like {slug} or {id} 
+            // We don't care if it's a perfect match for dynamic segments like {slug} or {id}
             if (preg_match('/^{\w+}$/', $segment)) {
                 continue;
             }

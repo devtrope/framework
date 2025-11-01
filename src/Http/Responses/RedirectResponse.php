@@ -6,7 +6,7 @@ use Ludens\Http\Response;
 
 /**
  * Handles HTTP redirection responses.
- * 
+ *
  * @package Ludens\Http\Responses
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0

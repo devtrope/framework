@@ -4,7 +4,7 @@ namespace Ludens\Http\Support;
 
 /**
  * Handles HTTP request headers.
- * 
+ *
  * @package Ludens\Http\Support
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0
@@ -12,7 +12,7 @@ namespace Ludens\Http\Support;
 class RequestHeaders
 {
     private array $headers;
-    
+
     /**
      * @param array $headers
      */

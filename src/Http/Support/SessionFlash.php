@@ -4,7 +4,7 @@ namespace Ludens\Http\Support;
 
 /**
  * Manage session flash data, errors, and old input data.
- * 
+ *
  * @package Ludens\Http\Support
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0
@@ -95,7 +95,7 @@ class SessionFlash
         return $_SESSION['errors'][$key] ?? null;
     }
 
-    
+
     /**
      * Check if a validation error exists for a given key.
      *

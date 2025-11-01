@@ -10,7 +10,7 @@ use Ludens\Http\Support\SessionFlash;
 
 /**
  * Represents an HTTP Response and provides methodes to manage and send responses.
- * 
+ *
  * @package Ludens\Http
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0
@@ -18,7 +18,7 @@ use Ludens\Http\Support\SessionFlash;
 class Response
 {
     private string $body = '';
-    private bool $sent = false; 
+    private bool $sent = false;
     private int $code = 200;
     private ResponseHeaders $headers;
     private SessionFlash $sessionFlash;

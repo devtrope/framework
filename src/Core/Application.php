@@ -14,7 +14,7 @@ use Ludens\Http\Responses\ErrorResponse;
 /**
  * Main application class responsible for initializing the application,
  * loading routes, and managing global paths.
- * 
+ *
  * @package Ludens\Core
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0
@@ -28,14 +28,18 @@ class Application
     /**
      * Private constructor to prevent direct instantiation.
      */
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 
     /**
      * Prevent cloning of the instance.
-     * 
+     *
      * @return void;
      */
-    private function __clone(): void {}
+    private function __clone(): void
+    {
+    }
 
     /**
      * Prevent unserializing of the instance.
@@ -214,7 +218,7 @@ class Application
 
     /**
      * Load routes based on environment.
-     * 
+     *
      * Uses cache in production, fresh routes in development.
      *
      * @return Application
@@ -232,7 +236,7 @@ class Application
      * Boot all registered service providers.
      *
      * @return Application
-     * 
+     *
      * @throws \Exception
     */
     public function bootProviders(): self

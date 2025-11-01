@@ -10,9 +10,9 @@ use Ludens\Http\Responses\RedirectResponse;
 
 /**
  * Base controller class providing common functionality.
- * 
+ *
  * All application controllers should extend this class.
- * 
+ *
  * @package Ludens\Http\Controller
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0
@@ -25,7 +25,7 @@ abstract class AbstractController
      * @param string $viewName View name (e.g., 'users/index')
      * @param array $data Data to pass to the view
      * @return ViewResponse
-     * 
+     *
      * @example
      * return $this->render('home', ['title' => 'Welcome']);
      */
@@ -39,7 +39,7 @@ abstract class AbstractController
      *
      * @param array $data Data to encode as JSON
      * @return JsonResponse
-     * 
+     *
      * @example
      * return $this->json(['user' => $user]);
      */

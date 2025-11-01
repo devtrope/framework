@@ -12,10 +12,10 @@ enum FileError: int
     case NO_TMP_DIR = 6;
     case CANT_WRITE = 7;
     case EXTENSION  = 8;
-    
+
     public function message(): string
     {
-        return match($this) {
+        return match ($this) {
             self::OK         => 'There is no error, the file uploaded successfully.',
             self::INI_SIZE   => 'The uploaded file exceeds the upload_max_filesize directive in php.ini.',
             self::FORM_SIZE  => 'The uploaded file exceeds the MAX_FILE_SIZE directive in the HTML form.',
@@ -26,7 +26,7 @@ enum FileError: int
             self::EXTENSION  => 'A PHP extension stopped the file upload.',
         };
     }
-    
+
     public static function fromCode(int $code): self
     {
         if (! self::tryFrom($code)) {

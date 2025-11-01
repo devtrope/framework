@@ -7,7 +7,7 @@ use Ludens\Core\Application;
 
 /**
  * Handle secure image uploads with validation.
- * 
+ *
  * @package Ludens\Files
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0
@@ -16,7 +16,8 @@ class ImageUploader
 {
     private string $uploadDirectory;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->uploadDirectory = Application::getInstance()->config('filesystems.images.root');
         $this->ensureDirectoryExists();
     }

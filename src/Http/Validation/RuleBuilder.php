@@ -6,7 +6,7 @@ use Ludens\Http\Validation\Rules;
 
 /**
  * Fluent builder for validation rules.
- * 
+ *
  * @package Ludens\Http\Validation
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0

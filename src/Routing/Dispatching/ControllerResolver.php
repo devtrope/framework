@@ -10,7 +10,7 @@ use Ludens\Routing\Matching\ResolvedRoute;
 
 /**
  * Resolves and prepares controller method call with their arguments.
- * 
+ *
  * @package Ludens\Routing\Dispatching
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0
@@ -31,7 +31,7 @@ class ControllerResolver
         $handler = $resolvedRoute->handler();
         $controller = $handler->controller();
         $method = $handler->method();
-        
+
         try {
             $controllerInstance = new $controller();
         } catch (\Error $e) {

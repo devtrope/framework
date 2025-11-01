@@ -8,9 +8,9 @@ use Ludens\Routing\Matching\RouteResolver;
 
 /**
  * Dispatches HTTP requests to their appropriate controllers.
- * 
+ *
  * Coordinates route resolution, controller instantiation, and response handling.
- * 
+ *
  * @package Ludens\Routing\Dispatching
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0
@@ -24,11 +24,12 @@ class Dispatcher
     public function __construct(
         private RouteResolver $routeResolver = new RouteResolver(),
         private ControllerResolver $controllerResolver = new ControllerResolver()
-    ) {}
+    ) {
+    }
 
     /**
      * Dispatch a request to its controller and send the response.
-     * 
+     *
      * @param Request $request
      * @return void
      */
@@ -51,7 +52,7 @@ class Dispatcher
 
      /**
      * Send the response to the client.
-     * 
+     *
      * @param mixed $response
      * @return void
      */

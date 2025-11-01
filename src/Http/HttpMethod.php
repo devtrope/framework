@@ -4,7 +4,7 @@ namespace Ludens\Http;
 
 /**
  * Enum representing HTTP methods.
- * 
+ *
  * @package Ludens\Http
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0

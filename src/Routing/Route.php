@@ -9,10 +9,10 @@ use Ludens\Routing\Support\Handler;
 
 /**
  * Route registration and management class.
- * 
+ *
  * Provides a fluent interface for defining application routes with their HTTP methods
  * and handlers. Supports route caching for production environments.
- * 
+ *
  * @package Ludens\Routing
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0

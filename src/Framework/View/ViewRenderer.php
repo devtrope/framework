@@ -10,9 +10,9 @@ use Twig\Loader\FilesystemLoader;
 
 /**
  * View renderer using Twig template engine.
- * 
+ *
  * Handles both application views and framework error pages with fallback system.
- * 
+ *
  * @package Ludens\Framework\View
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0
@@ -43,9 +43,9 @@ class ViewRenderer
 
         $frameworkTemplatesPath = dirname(__DIR__) . '/View/templates';
         $loaders[] = new FilesystemLoader($frameworkTemplatesPath);
-        
+
         $loader = count($loaders) > 1 ? new ChainLoader($loaders) : $loaders[0];
- 
+
         $cache = $app->config('twig.cache');
         if ($cache) {
             $cache = $app->path('cache');
@@ -75,17 +75,17 @@ class ViewRenderer
         if (self::$twig === null) {
             self::initialize();
         }
-        
+
         return self::$twig;
     }
 
     /**
      * Render a template.
-     * 
+     *
      * @param string $template Template name (e.g., 'users/index.twig')
      * @param array $data Data to pass to the template
      * @return string Rendered HTML
-     * 
+     *
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError

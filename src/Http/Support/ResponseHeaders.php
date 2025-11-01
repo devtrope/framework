@@ -4,7 +4,7 @@ namespace Ludens\Http\Support;
 
 /**
  * Handles HTTP response headers.
- * 
+ *
  * @package Ludens\Http\Support
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0
@@ -71,7 +71,7 @@ class ResponseHeaders
 
     /**
      * Send all headers to the client.
-     * 
+     *
      * Should only be called once in Response::send().
      *
      * @return void
