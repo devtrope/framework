@@ -37,7 +37,7 @@ class Validator
         $data = $request->isJson() ? $request->json() : $request->all();
         if (! is_array($data)) {
             throw new Exception(
-                "The data provided by the request should be an array"
+                "Request data must be an array. Ensure the request is properly formatted."
             );
         }
 

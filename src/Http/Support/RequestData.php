@@ -86,10 +86,10 @@ class RequestData
             $jsonDecoded = json_decode($this->rawBody, true);
             if (! is_array($jsonDecoded)) {
                 throw new Exception(
-                    "The JSON could not be decoded"
+                    "The request body contains invalid JSON and could not be decoded."
                 );
             }
-            
+
             $this->jsonData = $jsonDecoded;
         }
 

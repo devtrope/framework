@@ -3,6 +3,7 @@
 namespace Ludens\Http\Validation\Rules;
 
 use Exception;
+use Ludens\Exceptions\ConfigurationException;
 use Ludens\Http\Validation\ValidationRule;
 
 /**
@@ -14,9 +15,7 @@ class Image implements ValidationRule
     {
         $supportedFilesTypes = ['image/png', 'image/jpeg', 'image/gif'];
         if (! is_array($value)) {
-            throw new Exception(
-                "The value should be an array"
-            );
+            throw ConfigurationException::invalidValue($field, 'array', $value);
         }
         return in_array($value['type'], $supportedFilesTypes);
     }

@@ -11,6 +11,7 @@ use Whoops\Handler\PrettyPageHandler;
 use Ludens\Exceptions\NotFoundException;
 use Ludens\Http\Responses\ErrorResponse;
 use Exception;
+use Ludens\Exceptions\ConfigurationException;
 
 /**
  * Main application class responsible for initializing the application,
@@ -132,9 +133,7 @@ class Application
 
         $filesToIterate = glob($configurationPath . '/*.php');
         if (! $filesToIterate) {
-            throw new Exception(
-                "The configuration path at [{$configurationPath}] could not be analyzed"
-            );
+            throw ConfigurationException::pathNotAnalyzable($configurationPath);
         }
 
         foreach ($filesToIterate as $file) {
@@ -251,9 +250,7 @@ class Application
     {
         $providers = $this->config('providers.providers', []);
         if (! is_array($providers)) {
-            throw new Exception(
-                "The providers should be an array"
-            );
+            throw ConfigurationException::invalidProvidersFormat();
         }
 
         foreach ($providers as $providerClass) {

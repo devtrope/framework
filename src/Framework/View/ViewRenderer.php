@@ -4,6 +4,7 @@ namespace Ludens\Framework\View;
 
 use Exception;
 use Ludens\Core\Application;
+use Ludens\Exceptions\ConfigurationException;
 use Twig\Environment;
 use Twig\Extension\DebugExtension;
 use Twig\Loader\ChainLoader;
@@ -115,9 +116,7 @@ class ViewRenderer
             $app = Application::getInstance();
             $baseUrl = $app->config('app.url', '');
             if (! is_string($baseUrl)) {
-                throw new Exception(
-                    "No App URL provided"
-                );
+                throw ConfigurationException::missingAppUrl();
             }
 
             return rtrim($baseUrl, '/') . '/assets/' . ltrim($path, '/');

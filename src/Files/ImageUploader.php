@@ -4,6 +4,7 @@ namespace Ludens\Files;
 
 use Exception;
 use Ludens\Core\Application;
+use Ludens\Exceptions\ConfigurationException;
 
 /**
  * Handle secure image uploads with validation.
@@ -20,9 +21,7 @@ class ImageUploader
     {
         $uploadDirectory = Application::getInstance()->config('filesystems.images.root');
         if (! is_string($uploadDirectory)) {
-            throw new Exception(
-                "No upload directory was provided"
-            );
+            throw ConfigurationException::missingUploadDirectory();
         }
         $this->uploadDirectory = $uploadDirectory;
         $this->ensureDirectoryExists();
