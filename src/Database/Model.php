@@ -56,4 +56,9 @@ class Model
         $instance->attributes = $data;
         return $instance;
     }
+
+    public function __get(string $name)
+    {
+        return $this->attributes[$name] ?? null;
+    }
 }
