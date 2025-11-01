@@ -76,4 +76,29 @@ class Model
     {
         $this->attributes[$name] = $value;
     }
+
+    public function update()
+    {
+        $id = $this->attributes[$this->primaryKey];
+
+        $setClauses = [];
+        $parameters = [];
+
+        foreach ($this->attributes as $key => $value) {
+            if ($key === $this->primaryKey) {
+                continue;
+            }
+
+            $setClauses[] = "{$key} = :{$key}";
+            $parameters[$key] = $value;
+        }
+
+        $parameters[$this->primaryKey] = $id;
+
+        $setString = implode(', ', $setClauses);
+        $query = "UPDATE {$this->table} SET {$setString} WHERE {$this->primaryKey} = :{$this->primaryKey}";
+
+        $stmt = $this->database->prepare($query);
+        $stmt->execute($parameters);
+    }
 }
