@@ -2,6 +2,7 @@
 
 namespace Ludens\Routing\Dispatching;
 
+use Ludens\Database\ModelManager;
 use ReflectionMethod;
 use Ludens\Http\Request;
 use Ludens\Exceptions\NotFoundException;
@@ -79,6 +80,11 @@ class ControllerResolver
 
                 if ($parameterType->getName() === Validator::class) {
                     $arguments[] = new Validator();
+                    continue;
+                }
+
+                if ($parameterType->getName() === ModelManager::class) {
+                    $arguments[] = new ModelManager();
                     continue;
                 }
             }
