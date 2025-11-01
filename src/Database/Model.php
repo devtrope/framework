@@ -71,4 +71,9 @@ class Model
     {
         return $this->attributes[$name] ?? null;
     }
+
+    public function __set(string $name, mixed $value)
+    {
+        $this->attributes[$name] = $value;
+    }
 }
