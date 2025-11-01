@@ -2,10 +2,10 @@
 
 namespace Ludens\Http;
 
-use Ludens\Core\Application;
 use Ludens\Files\ImageUploader;
 use Ludens\Http\Support\RequestData;
 use Ludens\Http\Support\RequestHeaders;
+use Ludens\Http\Support\ServerBag;
 
 /**
  * Represents an HTTP request and provides methods to access request data,
@@ -54,15 +54,19 @@ class Request
      */
     public static function capture(): self
     {
-        $uri = $_SERVER['REQUEST_URI'] ?? '/';
-        $method = strtoupper($_SERVER['REQUEST_METHOD']) ?? 'GET';
-        $referer = $_SERVER['HTTP_REFERER'] ?? null;
-
+        $server = ServerBag::fromGlobal();
         $headers = RequestHeaders::capture();
         $data = RequestData::capture($headers);
         $imageUploader = new ImageUploader();
 
-        return new self($uri, $method, $headers, $data, $imageUploader, $referer);
+        return new self(
+            $server->getRequestUri(),
+            $server->getRequestMethod(),
+            $headers,
+            $data,
+            $imageUploader,
+            $server->getReferer()
+        );
     }
 
     /**
