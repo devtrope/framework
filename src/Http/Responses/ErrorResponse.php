@@ -14,12 +14,12 @@ use Ludens\Framework\View\ViewRenderer;
  */
 class ErrorResponse extends Response
 {
-    public static function notFound(?string $message = null): self
+    public static function notFound(?string $message = null): Response
     {
         return self::errorPage(404, $message);
     }
 
-    public static function forbidden(?string $message = null): self
+    public static function forbidden(?string $message = null): Response
     {
         return self::errorPage(403, $message);
     }

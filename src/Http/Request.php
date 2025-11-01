@@ -99,7 +99,7 @@ class Request
      * Get a specific header.
      *
      * @param string $name
-     * @param mixed $default
+     * @param string|null $default
      * @return string|null
      */
     public function header(string $name, ?string $default = null): string|null
@@ -111,7 +111,7 @@ class Request
      * Get a parameter value.
      *
      * @param string $key
-     * @param mixed $default
+     * @param string|null $default
      * @return string|array|null
      */
     public function get(string $key, ?string $default = null): string|array|null

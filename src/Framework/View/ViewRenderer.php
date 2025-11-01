@@ -2,6 +2,7 @@
 
 namespace Ludens\Framework\View;
 
+use Exception;
 use Ludens\Core\Application;
 use Twig\Environment;
 use Twig\Extension\DebugExtension;
@@ -76,6 +77,9 @@ class ViewRenderer
             self::initialize();
         }
 
+        /**
+        * @var Environment
+        */
         return self::$twig;
     }
 
@@ -102,11 +106,20 @@ class ViewRenderer
      */
     private static function registerExtensions(): void
     {
+        /**
+         * @var Environment
+         */
         $twig = self::$twig;
 
         $twig->addFunction(new \Twig\TwigFunction('asset', function (string $path) {
             $app = Application::getInstance();
             $baseUrl = $app->config('app.url', '');
+            if (! is_string($baseUrl)) {
+                throw new Exception(
+                    "No App URL provided"
+                );
+            }
+
             return rtrim($baseUrl, '/') . '/assets/' . ltrim($path, '/');
         }));
 

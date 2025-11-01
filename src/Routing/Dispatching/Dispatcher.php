@@ -42,8 +42,13 @@ class Dispatcher
             $request
         );
 
+        /**
+         * @var callable
+         */
+        $callable = [$controllerInstance, $method];
+
         $response = call_user_func_array(
-            [$controllerInstance, $method],
+            $callable,
             $arguments
         );
 
@@ -63,6 +68,9 @@ class Dispatcher
             return;
         }
 
+        /**
+         * @var string $response
+         */
         echo $response;
     }
 }

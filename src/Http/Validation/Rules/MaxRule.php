@@ -2,6 +2,7 @@
 
 namespace Ludens\Http\Validation\Rules;
 
+use Exception;
 use Ludens\Http\Validation\ValidationRule;
 
 /**
@@ -16,7 +17,12 @@ class MaxRule implements ValidationRule
 
     public function passes(string $field, mixed $value): bool
     {
-        return strlen((string)$value) <= $this->maxLength;
+        if (! is_string($value)) {
+            throw new Exception(
+                "The value should be a string"
+            );
+        }
+        return strlen($value) <= $this->maxLength;
     }
 
     public function message(string $field): string

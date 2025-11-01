@@ -29,7 +29,7 @@ class Response
     public function __construct()
     {
         $this->headers = new ResponseHeaders();
-        $this->sessionFlash = $sessionFlash ?? SessionFlash::getInstance();
+        $this->sessionFlash = SessionFlash::getInstance();
     }
 
     /**

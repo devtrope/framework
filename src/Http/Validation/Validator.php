@@ -2,6 +2,7 @@
 
 namespace Ludens\Http\Validation;
 
+use Exception;
 use Ludens\Http\Request;
 use Ludens\Http\Response;
 
@@ -34,6 +35,12 @@ class Validator
     public function fields(Request $request, array $fields): array
     {
         $data = $request->isJson() ? $request->json() : $request->all();
+        if (! is_array($data)) {
+            throw new Exception(
+                "The data provided by the request should be an array"
+            );
+        }
+
         $errors = [];
 
         foreach ($fields as $fieldName => $ruleBuilder) {

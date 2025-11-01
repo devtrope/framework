@@ -64,8 +64,8 @@ class Handler
     /**
      * Validate the controller and method.
      *
-     * @param mixed $controller
-     * @param mixed $method
+     * @param string $controller
+     * @param string $method
      * @return void
      *
      * @throws InvalidArgumentException

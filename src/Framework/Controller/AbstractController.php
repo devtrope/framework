@@ -51,7 +51,7 @@ abstract class AbstractController
     /**
      * Redirect to a URL.
      *
-     * @param mixed $url
+     * @param string|null $url
      * @param int $statusCode
      * @return RedirectResponse
      *

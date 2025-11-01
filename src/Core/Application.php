@@ -10,6 +10,7 @@ use Ludens\Routing\Router;
 use Whoops\Handler\PrettyPageHandler;
 use Ludens\Exceptions\NotFoundException;
 use Ludens\Http\Responses\ErrorResponse;
+use Exception;
 
 /**
  * Main application class responsible for initializing the application,
@@ -35,7 +36,7 @@ class Application
     /**
      * Prevent cloning of the instance.
      *
-     * @return void;
+     * @return void
      */
     private function __clone(): void
     {
@@ -50,7 +51,7 @@ class Application
      */
     public function __wakeup(): void
     {
-        throw new \Exception("Cannot unserialize singleton.");
+        throw new Exception("Cannot unserialize singleton.");
     }
 
     /**
@@ -109,7 +110,7 @@ class Application
     public function loadEnvironmentFrom(string $path): self
     {
         if (! file_exists($path)) {
-            throw new \Exception(
+            throw new Exception(
                 ".env file is missing at: {$path}"
             );
         }
@@ -129,7 +130,14 @@ class Application
     {
         $configurationPath = $this->path('config');
 
-        foreach (glob($configurationPath . '/*.php') as $file) {
+        $filesToIterate = glob($configurationPath . '/*.php');
+        if (! $filesToIterate) {
+            throw new Exception(
+                "The configuration path at [{$configurationPath}] could not be analyzed"
+            );
+        }
+
+        foreach ($filesToIterate as $file) {
             $key = basename($file, '.php');
             $this->config[$key] = require $file;
         }
@@ -141,7 +149,7 @@ class Application
      * Get a configuration value using dot notation.
      *
      * @param string $key Configuration key (e.g., 'app.name')
-     * @param mixed $default Default value if not found
+     * @param string|null|array $default Default value if not found
      * @return string|null|bool|array
      */
     public function config(string $key, string|null|array $default = null): string|null|bool|array
@@ -186,7 +194,7 @@ class Application
     {
         $routesFile = $this->path('routes');
         if (! file_exists($routesFile)) {
-            throw new \Exception("Routes file not found at: {$routesFile}");
+            throw new Exception("Routes file not found at: {$routesFile}");
         }
 
         require $routesFile;
@@ -242,17 +250,22 @@ class Application
     public function bootProviders(): self
     {
         $providers = $this->config('providers.providers', []);
+        if (! is_array($providers)) {
+            throw new Exception(
+                "The providers should be an array"
+            );
+        }
 
         foreach ($providers as $providerClass) {
             if (! class_exists($providerClass)) {
-                throw new \Exception(
+                throw new Exception(
                     "Provider [{$providerClass}] not found."
                 );
             }
 
             $provider = new $providerClass();
             if (! $provider instanceof \Ludens\Support\ServiceProvider) {
-                throw new \Exception(
+                throw new Exception(
                     "Provider [$providerClass}] must implement ServiceProvider interface."
                 );
             }

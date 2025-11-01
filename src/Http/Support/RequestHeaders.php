@@ -73,6 +73,9 @@ class RequestHeaders
     public function isJson(): bool
     {
         $contentType = $this->get('Content-Type', '');
+        if ($contentType === null) {
+            return false;
+        }
         return str_contains($contentType, 'application/json');
     }
 
@@ -84,6 +87,9 @@ class RequestHeaders
     public function isFormUrlEncoded(): bool
     {
         $contentType = $this->get('Content-Type', '');
+        if ($contentType === null) {
+            return false;
+        }
         return str_contains($contentType, 'application/x-www-form-urlencoded');
     }
 
@@ -95,6 +101,9 @@ class RequestHeaders
     public function isFormData(): bool
     {
         $contentType = $this->get('Content-Type', '');
+        if ($contentType === null) {
+            return false;
+        }
         return str_contains($contentType, 'multipart/form-data');
     }
 
@@ -106,6 +115,9 @@ class RequestHeaders
     public function wantsJson(): bool
     {
         $accept = $this->get('Accept', '');
+        if ($accept === null) {
+            return false;
+        }
         return str_contains($accept, 'application/json');
     }
 }

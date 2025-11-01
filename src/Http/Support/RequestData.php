@@ -2,6 +2,8 @@
 
 namespace Ludens\Http\Support;
 
+use Exception;
+
 /**
  * Handles request data from various sources (query, body, JSON).
  *
@@ -81,7 +83,14 @@ class RequestData
     public function json(?string $key = null): mixed
     {
         if ($this->jsonData === null) {
-            $this->jsonData = json_decode($this->rawBody, true) ?? [];
+            $jsonDecoded = json_decode($this->rawBody, true);
+            if (! is_array($jsonDecoded)) {
+                throw new Exception(
+                    "The JSON could not be decoded"
+                );
+            }
+            
+            $this->jsonData = $jsonDecoded;
         }
 
         if ($key === null) {
@@ -132,10 +141,7 @@ class RequestData
 
         if ($headers->isFormUrlEncoded()) {
             parse_str($rawBody, $parsedData);
-
-            if (is_array($parsedData)) {
-                return array_merge($data, $parsedData);
-            }
+            return array_merge($data, $parsedData);
         }
 
         if ($headers->isFormData()) {

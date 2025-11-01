@@ -18,7 +18,13 @@ class ImageUploader
 
     public function __construct()
     {
-        $this->uploadDirectory = Application::getInstance()->config('filesystems.images.root');
+        $uploadDirectory = Application::getInstance()->config('filesystems.images.root');
+        if (! is_string($uploadDirectory)) {
+            throw new Exception(
+                "No upload directory was provided"
+            );
+        }
+        $this->uploadDirectory = $uploadDirectory;
         $this->ensureDirectoryExists();
     }
 
@@ -34,7 +40,7 @@ class ImageUploader
         $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         $fileName = uniqid() . '.' . $fileExtension;
 
-        $targetPath = Application::getInstance()->config('public') . $this->uploadDirectory . $fileName;
+        $targetPath = Application::getInstance()->path('public') . $this->uploadDirectory . $fileName;
         if (! move_uploaded_file($file['tmp_name'], $targetPath)) {
             throw new Exception("An error occured during the upload of the file.");
         }
