@@ -2,6 +2,8 @@
 
 namespace Ludens\Http\Support;
 
+use Ludens\Http\Support\SessionBag;
+
 /**
  * Manage session flash data, errors, and old input data.
  *
@@ -12,13 +14,11 @@ namespace Ludens\Http\Support;
 class SessionFlash
 {
     private static ?SessionFlash $instance = null;
+    private SessionBag $session;
 
     public function __construct()
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
+        $this->session = new SessionBag();
         $this->age();
     }
 
@@ -45,9 +45,15 @@ class SessionFlash
      */
     public function setFlash(string $key, mixed $value): void
     {
-        $_SESSION[$key] = $value;
-        if (! in_array($key, $_SESSION['_flash.new'])) {
-            $_SESSION['_flash.new'][] = $key;
+        $this->session->set($key, $value);
+
+        /**
+         * @var array $flashNew
+         */
+        $flashNew = $this->session->getArray('_flash.new', []);
+        if (! in_array($key, $flashNew)) {
+            $flashNew[] = $key;
+            $this->session->set('_flash.new', $flashNew);
         }
     }
 
@@ -59,7 +65,7 @@ class SessionFlash
      */
     public function flash(string $key, ?string $default = null): string|null
     {
-        return $_SESSION[$key] ?? $default;
+        return $this->session->getString($key, $default);
     }
 
     /**
@@ -70,7 +76,7 @@ class SessionFlash
      */
     public function hasFlash(string $key): bool
     {
-        return isset($_SESSION[$key]);
+        return $this->session->has($key);
     }
 
     /**
@@ -85,6 +91,20 @@ class SessionFlash
     }
 
     /**
+     * Get all validation errors.
+     *
+     * @return array<string, string>
+     */
+    public function errors(): array
+    {
+        /**
+         * @var array $errors
+         */
+        $errors = $this->session->getArray('errors', []);
+        return $errors;
+    }
+
+    /**
      * Get a specific validation error.
      *
      * @param string $key
@@ -92,9 +112,9 @@ class SessionFlash
      */
     public function error(string $key): string|null
     {
-        return $_SESSION['errors'][$key] ?? null;
+        $errors = $this->errors();
+        return is_string($errors[$key] ?? null) ? $errors[$key] : null;
     }
-
 
     /**
      * Check if a validation error exists for a given key.
@@ -104,7 +124,8 @@ class SessionFlash
      */
     public function hasError(string $key): bool
     {
-        return isset($_SESSION['errors'][$key]);
+        $errors = $this->errors();
+        return isset($errors[$key]);
     }
 
     /**
@@ -126,7 +147,8 @@ class SessionFlash
      */
     public function oldData(string $key): string|null
     {
-        return $_SESSION['old'][$key] ?? null;
+        $old = $this->session->getArray('old', []);
+        return $old[$key] ?? null;
     }
 
     /**
@@ -137,14 +159,19 @@ class SessionFlash
     public function age(): void
     {
         // Delete old flash data
-        $old = $_SESSION['_flash.old'] ?? [];
+        /**
+         * @var array $old
+         */
+        $old = $this->session->getArray('_flash.old', []);
 
         foreach ($old as $key) {
-            unset($_SESSION[$key]);
+            $this->session->remove($key);
         }
 
+        $new = $this->session->getArray('_flash.new', []);
+
         // Move new flash data to old
-        $_SESSION['_flash.old'] = $_SESSION['_flash.new'] ?? [];
-        $_SESSION['_flash.new'] = [];
+        $this->session->set('_flash.old', $new);
+        $this->session->set('_flash.new', []);
     }
 }

@@ -27,7 +27,7 @@ class ServerBag
     }
 
     /**
-     * Return a specific server key and ensure it's a string
+     * Return a specific server key and ensure it's a string.
      *
      * @param string $key
      * @param string|null $default
@@ -71,7 +71,7 @@ class ServerBag
     }
 
     /**
-     * Get HTTP referer
+     * Get HTTP referer.
      *
      * @return string|null
      */
