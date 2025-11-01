@@ -46,7 +46,6 @@ class SessionFlash
     public function setFlash(string $key, mixed $value): void
     {
         $_SESSION[$key] = $value;
-
         if (! in_array($key, $_SESSION['_flash.new'])) {
             $_SESSION['_flash.new'][] = $key;
         }

@@ -52,7 +52,6 @@ class Handler
         }
 
         [$controller, $method] = $handler;
-
         if (! is_string($controller) || ! is_string($method)) {
             throw new InvalidArgumentException(
                 "Both controller and method must be strings"

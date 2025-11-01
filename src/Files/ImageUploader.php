@@ -24,7 +24,6 @@ class ImageUploader
     public function upload(array $file): string
     {
         $noErrorFile = FileError::OK;
-
         if ($file['error'] !== $noErrorFile->value) {
             throw new Exception(
                 FileError::fromCode($file['error'])->message()
@@ -33,8 +32,8 @@ class ImageUploader
 
         $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         $fileName = uniqid() . '.' . $fileExtension;
-        $targetPath = Application::getInstance()->config('public') . $this->uploadDirectory . $fileName;
 
+        $targetPath = Application::getInstance()->config('public') . $this->uploadDirectory . $fileName;
         if (! move_uploaded_file($file['tmp_name'], $targetPath)) {
             throw new Exception("An error occured during the upload of the file.");
         }
@@ -52,7 +51,6 @@ class ImageUploader
     private function ensureDirectoryExists()
     {
         $completeUploadDirectory = Application::getInstance()->path('public') . $this->uploadDirectory;
-
         if (! is_dir($completeUploadDirectory)) {
             throw new Exception(
                 "The {$completeUploadDirectory} directory does not exist."

@@ -149,7 +149,6 @@ class Application
             if (! isset($value[$segment])) {
                 return $default;
             }
-
             $value = $value[$segment];
         }
 
@@ -182,8 +181,7 @@ class Application
     public function loadRoutes(): self
     {
         $routesFile = $this->path('routes');
-
-        if (!file_exists($routesFile)) {
+        if (! file_exists($routesFile)) {
             throw new \Exception("Routes file not found at: {$routesFile}");
         }
 
@@ -203,7 +201,6 @@ class Application
     public function loadRoutesFromCache(): self
     {
         $cacheFile = $this->path('cache') . '/routes.php';
-
         if (! file_exists($cacheFile)) {
             $this->loadRoutes();
             Route::cache();
@@ -250,7 +247,6 @@ class Application
             }
 
             $provider = new $providerClass();
-
             if (! $provider instanceof \Ludens\Support\ServiceProvider) {
                 throw new \Exception(
                     "Provider [$providerClass}] must implement ServiceProvider interface."

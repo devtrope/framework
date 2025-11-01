@@ -30,7 +30,6 @@ class RouteResolver
     {
         $routes = RouteCollection::getRoutesForMethod($request->method());
         $handler = $this->match($request->uri(), $routes);
-
         return new ResolvedRoute($handler, $this->parameters);
     }
 
@@ -54,7 +53,6 @@ class RouteResolver
 
         foreach ($routes as $route => $handler) {
             $explodedRoute = explode('/', trim($route, '/'));
-
             if (count($explodedUri) !== count($explodedRoute)) {
                 continue;
             }

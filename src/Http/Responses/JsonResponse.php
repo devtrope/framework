@@ -23,7 +23,6 @@ class JsonResponse extends Response
         parent::__construct();
 
         $jsonData = json_encode($data);
-
         if (! $jsonData) {
             throw new \Exception('Failed to encode data to JSON');
         }
