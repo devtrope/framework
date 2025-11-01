@@ -9,6 +9,7 @@ class Model
     private PDO $database;
     private string $table;
     protected array $attributes = [];
+    private string $primaryKey = 'id';
 
     public function __construct()
     {
@@ -44,10 +45,19 @@ class Model
 
     public function all()
     {
-        $sql = $this->database->query("SELECT * FROM {$this->table}");
-        $data = $sql->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $this->database->query("SELECT * FROM {$this->table}");
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         return array_map(fn($row) => $this->hydrate($row), $data);
+    }
+
+    public function find(int|string $id)
+    {
+        $stmt = $this->database->prepare("SELECT * FROM {$this->table} WHERE {$this->primaryKey} = :id LIMIT 1");
+        $stmt->execute(['id' => $id]);
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $data ? $this->hydrate($data) : null;
     }
 
     protected function hydrate(array $data)
