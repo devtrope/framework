@@ -55,3 +55,17 @@ if (! function_exists('env')) {
         return $value;
     }
 }
+
+if (! function_exists('dd')) {
+    function dd(mixed ...$vars) {
+        echo '<pre style="background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 5px; font-family: monospace;">';
+
+        foreach ($vars as $var) {
+            var_dump($var);
+            echo "\n\n";
+        }
+
+        echo '</pre>';
+        die(1);
+    }
+}
