@@ -4,6 +4,7 @@ namespace Ludens\Database;
 
 use PDO;
 use Exception;
+use Ludens\Core\Application;
 
 class Database
 {
@@ -53,13 +54,15 @@ class Database
 
     public function connect(): PDO
     {
+        $app = Application::getInstance();
+
         return new PDO(
-            "mysql:host=localhost;
-            dbname=blog_test;
+            "mysql:host={$app->config('database.host')};
+            dbname={$app->config('database.name')};
             charset=utf8mb4;
-            port=3306",
-            "root",
-            "root",
+            port={$app->config('database.port')}",
+            "{$app->config('database.username')}",
+            "{$app->config('database.password')}",
             [
                 PDO::ATTR_ERRMODE,
                 PDO::ERRMODE_EXCEPTION

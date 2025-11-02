@@ -60,11 +60,31 @@ class Model
         return $data ? $this->hydrate($data) : null;
     }
 
+    public function where(array $conditions)
+    {
+        $whereClauses = [];
+        $parameters = [];
+
+        foreach ($conditions as $key => $value) {
+            $whereClauses[] = "{$key} = :{$key}";
+            $parameters[$key] = $value;
+        }
+
+        $whereString = implode(' AND ', $whereClauses);
+        $query = "SELECT * FROM {$this->table} WHERE {$whereString}";
+
+        $stmt = $this->database->prepare($query);
+        $stmt->execute($parameters);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return array_map(fn($row) => $this->hydrate($row), $data);
+    }
+
     protected function hydrate(array $data)
     {
         $instance = new static();
         $instance->attributes = $data;
-        return $instance;
+        return $instance->attributes;
     }
 
     public function __get(string $name)
