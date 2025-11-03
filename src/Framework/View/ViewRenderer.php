@@ -122,6 +122,18 @@ class ViewRenderer
             return rtrim($baseUrl, '/') . '/assets/' . ltrim($path, '/');
         }));
 
+        $twig->addFunction(new \Twig\TwigFunction('image', function (string $path) {
+            $app = Application::getInstance();
+            $baseUrl = $app->config('app.url', '');
+            if (! is_string($baseUrl)) {
+                throw ConfigurationException::missingAppUrl();
+            }
+            
+            $pictureUploadDirectory = $app->config('filesystems.uploads.images.directory', 'uploads/images');
+
+            return rtrim($baseUrl, '/') . '/' . rtrim($pictureUploadDirectory) . '/' . ltrim($path, '/');
+        }));
+
         $twig->addFunction(new \Twig\TwigFunction('config', function (string $key, ?string $default = null) {
             return Application::getInstance()->config($key, $default);
         }));
