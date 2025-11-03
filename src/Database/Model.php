@@ -85,6 +85,19 @@ class Model implements ArrayAccess
     {
         $instance = new static();
         $instance->attributes = $data;
+
+        if (isset($instance->belongsTo)) {
+            foreach ($instance->belongsTo as $relationName => $config) {
+                $foreignKey = $config['foreign_key'];
+                $modelClass = $config['model'];
+    
+                if (isset($data[$foreignKey])) {
+                    $relatedModel = new $modelClass();
+                    $instance->attributes[$relationName] = $relatedModel->find($data[$foreignKey]);
+                }
+            }
+        }
+        
         return $instance;
     }
 
@@ -96,6 +109,11 @@ class Model implements ArrayAccess
     public function __set(string $name, mixed $value)
     {
         $this->attributes[$name] = $value;
+    }
+
+    public function __isset(string $name)
+    {
+        return isset($this->attributes[$name]);
     }
 
     public function update()
