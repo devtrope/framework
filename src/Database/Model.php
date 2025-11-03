@@ -2,9 +2,10 @@
 
 namespace Ludens\Database;
 
+use ArrayAccess;
 use PDO;
 
-class Model
+class Model implements ArrayAccess
 {
     private PDO $database;
     private string $table;
@@ -84,7 +85,7 @@ class Model
     {
         $instance = new static();
         $instance->attributes = $data;
-        return $instance->attributes;
+        return $instance;
     }
 
     public function __get(string $name)
@@ -120,5 +121,25 @@ class Model
 
         $stmt = $this->database->prepare($query);
         $stmt->execute($parameters);
+    }
+
+    public function offsetExists($offset): bool
+    {
+        return isset($this->attributes[$offset]);
+    }
+
+    public function offsetGet($offset): mixed
+    {
+        return $this->attributes[$offset] ?? null;
+    }
+
+    public function offsetSet($offset, $value): void
+    {
+        $this->attributes[$offset] = $value;
+    }
+
+    public function offsetUnset(mixed $offset): void
+    {
+        unset($this->attributes[$offset]);
     }
 }
