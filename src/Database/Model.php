@@ -123,6 +123,30 @@ class Model implements ArrayAccess
         $stmt->execute($parameters);
     }
 
+    public function save()
+    {
+        $setValues = [];
+        $setKeys = [];
+        $parameters = [];
+
+        foreach ($this->attributes as $key => $value) {
+            if ($key === $this->primaryKey) {
+                continue;
+            }
+
+            $setValues[] = "{$key}";
+            $setKeys[] = ":{$key}";
+            $parameters[$key] = $value;
+        }
+
+        $setValuesString = implode(', ', $setValues);
+        $setKeysString = implode(', ', $setKeys);
+        $query = "INSERT INTO {$this->table} ({$setValuesString}) VALUES ({$setKeysString})";
+
+        $stmt = $this->database->prepare($query);
+        $stmt->execute($parameters);
+    }
+
     public function offsetExists($offset): bool
     {
         return isset($this->attributes[$offset]);
