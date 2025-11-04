@@ -63,6 +63,10 @@ class Model implements ArrayAccess
 
     public function where(array $conditions)
     {
+        if (empty($conditions)) {
+            return $this->all();
+        }
+
         $whereClauses = [];
         $parameters = [];
 
