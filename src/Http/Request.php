@@ -219,4 +219,9 @@ class Request
     {
         return $this->imageUploader->upload($file);
     }
+
+    public function __get(string $name): array|string|null
+    {
+        return $this->data->get($name);
+    }
 }
