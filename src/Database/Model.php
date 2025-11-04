@@ -85,25 +85,32 @@ class Model implements ArrayAccess
     {
         $instance = new static();
         $instance->attributes = $data;
-
-        if (isset($instance->belongsTo)) {
-            foreach ($instance->belongsTo as $relationName => $config) {
-                $foreignKey = $config['foreign_key'];
-                $modelClass = $config['model'];
-    
-                if (isset($data[$foreignKey])) {
-                    $relatedModel = new $modelClass();
-                    $instance->attributes[$relationName] = $relatedModel->find($data[$foreignKey]);
-                }
-            }
-        }
-        
         return $instance;
     }
 
     public function __get(string $name)
     {
-        return $this->attributes[$name] ?? null;
+        if (array_key_exists($name, $this->attributes)) {
+            return $this->attributes[$name];
+        }
+
+        if (isset($this->belongsTo[$name])) {
+            $foreignKey = $this->belongsTo[$name]['foreign_key'];
+            $modelClass = $this->belongsTo[$name]['model'];
+
+            $relatedModel = new $modelClass();
+            return $relatedModel->find($this->{$foreignKey});
+        }
+
+        if (isset($this->hasMany[$name])) {
+            $foreignKey = $this->hasMany[$name]['foreign_key'];
+            $modelClass = $this->hasMany[$name]['model'];
+
+            $relatedModel = new $modelClass();
+            return $relatedModel->where([$foreignKey => $this->id]);
+        }
+
+        return null;
     }
 
     public function __set(string $name, mixed $value)
@@ -167,12 +174,44 @@ class Model implements ArrayAccess
 
     public function offsetExists($offset): bool
     {
-        return isset($this->attributes[$offset]);
+        if (isset($this->attributes[$offset])) {
+            return true;
+        }
+
+        if (isset($this->belongsTo[$offset])) {
+            return true;
+        }
+
+        if (isset($this->hasMany[$offset])) {
+            return true;
+        }
+
+        return false;
     }
 
     public function offsetGet($offset): mixed
     {
-        return $this->attributes[$offset] ?? null;
+        if (array_key_exists($offset, $this->attributes)) {
+            return $this->attributes[$offset];
+        }
+
+        if (isset($this->belongsTo[$offset])) {
+            $foreignKey = $this->belongsTo[$offset]['foreign_key'];
+            $modelClass = $this->belongsTo[$offset]['model'];
+
+            $relatedModel = new $modelClass();
+            return $relatedModel->find($this->{$foreignKey});
+        }
+
+        if (isset($this->hasMany[$offset])) {
+            $foreignKey = $this->hasMany[$offset]['foreign_key'];
+            $modelClass = $this->hasMany[$offset]['model'];
+
+            $relatedModel = new $modelClass();
+            return $relatedModel->where([$foreignKey => $this->id]);
+        }
+
+        return null;
     }
 
     public function offsetSet($offset, $value): void
