@@ -92,6 +92,23 @@ class Model implements ArrayAccess
         return $instance;
     }
 
+    public function __isset(string $name)
+    {
+        if (isset($this->attributes[$name])) {
+            return true;
+        }
+
+        if (isset($this->belongsTo[$name])) {
+            return true;
+        }
+
+        if (isset($this->hasMany[$name])) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function __get(string $name)
     {
         if (array_key_exists($name, $this->attributes)) {
@@ -120,11 +137,6 @@ class Model implements ArrayAccess
     public function __set(string $name, mixed $value)
     {
         $this->attributes[$name] = $value;
-    }
-
-    public function __isset(string $name)
-    {
-        return isset($this->attributes[$name]);
     }
 
     public function update()
