@@ -14,7 +14,7 @@ class Model implements ArrayAccess
 
     public function __construct()
     {
-        $this->database = Database::getInstance()->connect();
+        $this->database = ConnectionManager::getInstance()->getConnection();
 
         if (! isset($this->table)) {
             $this->table = $this->getTableName();

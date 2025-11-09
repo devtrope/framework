@@ -27,6 +27,14 @@ class ImageUploader
         $this->ensureDirectoryExists();
     }
 
+    /**
+     * Handle the upload of an image.
+     *
+     * @param array $file
+     *
+     * @return string
+     * @throws Exception
+     */
     public function upload(array $file): string
     {
         $noErrorFile = FileError::OK;
