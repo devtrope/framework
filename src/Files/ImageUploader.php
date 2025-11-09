@@ -44,7 +44,7 @@ class ImageUploader
             throw new Exception("An error occured during the upload of the file.");
         }
 
-        return $this->uploadDirectory . $fileName;
+        return $fileName;
     }
 
     /**
