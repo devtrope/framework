@@ -21,16 +21,22 @@ class Model implements ArrayAccess
         }
     }
 
-    public function query(): QueryBuilder
+    public static function query(): QueryBuilder
     {
         $instance = new static();
         return new QueryBuilder($instance->database, $instance->table);
     }
 
-    public function all()
+    public function all(): array
     {
-        $data = $this->query()->get();
+        $data = self::query()->get();
         return array_map(fn($row) => $this->hydrate($row), $data);
+    }
+
+    public function find(int|string $id): self|null
+    {
+        $data = self::query()->where($this->primaryKey, $id)->first();
+        return $data ? $this->hydrate($data) : null;
     }
 
     protected function getTableName()
@@ -54,39 +60,6 @@ class Model implements ArrayAccess
         }
 
         return $word . 's';
-    }
-
-    public function find(int|string $id)
-    {
-        $stmt = $this->database->prepare("SELECT * FROM {$this->table} WHERE {$this->primaryKey} = :id LIMIT 1");
-        $stmt->execute(['id' => $id]);
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        return $data ? $this->hydrate($data) : null;
-    }
-
-    public function where(array $conditions)
-    {
-        if (empty($conditions)) {
-            return $this->all();
-        }
-
-        $whereClauses = [];
-        $parameters = [];
-
-        foreach ($conditions as $key => $value) {
-            $whereClauses[] = "{$key} = :{$key}";
-            $parameters[$key] = $value;
-        }
-
-        $whereString = implode(' AND ', $whereClauses);
-        $query = "SELECT * FROM {$this->table} WHERE {$whereString}";
-
-        $stmt = $this->database->prepare($query);
-        $stmt->execute($parameters);
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return array_map(fn($row) => $this->hydrate($row), $data);
     }
 
     public function update()
@@ -181,7 +154,7 @@ class Model implements ArrayAccess
             $modelClass = $this->hasMany[$name]['model'];
 
             $relatedModel = new $modelClass();
-            return $relatedModel->where([$foreignKey => $this->id]);
+            return $relatedModel::query()->where($foreignKey, $this->id);
         }
 
         return null;
@@ -228,7 +201,7 @@ class Model implements ArrayAccess
             $modelClass = $this->hasMany[$offset]['model'];
 
             $relatedModel = new $modelClass();
-            return $relatedModel->where([$foreignKey => $this->id]);
+            return $relatedModel::query()->where($foreignKey, $this->id);
         }
 
         return null;

@@ -51,6 +51,8 @@ class QueryBuilder
         }
 
         $placeholder = $this->createPlaceholder($column);
+
+        $this->where[] = "{$column} {$operator} {$placeholder}";
         $this->bindings[$placeholder] = $value;
 
         return $this;
@@ -65,13 +67,27 @@ class QueryBuilder
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function first(): array
+    {
+        $this->limit(1);
+        $results = $this->get();
+
+        return $results[0] ?? null;
+    }
+
+    public function limit(int $limit): self
+    {
+        $this->limit = $limit;
+        return $this;
+    }
+
     public function toSQL(): string
     {
         $sql = 'SELECT ' . implode(', ', $this->select);
         $sql .= ' FROM ' . $this->table;
 
         if (! empty($this->where)) {
-            ' WHERE ' . implode(' AND ', $this->where);
+            $sql .= ' WHERE ' . implode(' AND ', $this->where);
         }
 
         return $sql;
