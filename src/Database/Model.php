@@ -21,6 +21,18 @@ class Model implements ArrayAccess
         }
     }
 
+    public function query(): QueryBuilder
+    {
+        $instance = new static();
+        return new QueryBuilder($instance->database, $instance->table);
+    }
+
+    public function all()
+    {
+        $data = $this->query()->get();
+        return array_map(fn($row) => $this->hydrate($row), $data);
+    }
+
     protected function getTableName()
     {
         $className = (new \ReflectionClass($this))->getShortName();
@@ -42,14 +54,6 @@ class Model implements ArrayAccess
         }
 
         return $word . 's';
-    }
-
-    public function all()
-    {
-        $stmt = $this->database->query("SELECT * FROM {$this->table}");
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        return array_map(fn($row) => $this->hydrate($row), $data);
     }
 
     public function find(int|string $id)
@@ -83,6 +87,55 @@ class Model implements ArrayAccess
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return array_map(fn($row) => $this->hydrate($row), $data);
+    }
+
+    public function update()
+    {
+        $id = $this->attributes[$this->primaryKey];
+
+        $setClauses = [];
+        $parameters = [];
+
+        foreach ($this->attributes as $key => $value) {
+            if ($key === $this->primaryKey) {
+                continue;
+            }
+
+            $setClauses[] = "{$key} = :{$key}";
+            $parameters[$key] = $value;
+        }
+
+        $parameters[$this->primaryKey] = $id;
+
+        $setString = implode(', ', $setClauses);
+        $query = "UPDATE {$this->table} SET {$setString} WHERE {$this->primaryKey} = :{$this->primaryKey}";
+
+        $stmt = $this->database->prepare($query);
+        $stmt->execute($parameters);
+    }
+
+    public function save()
+    {
+        $setValues = [];
+        $setKeys = [];
+        $parameters = [];
+
+        foreach ($this->attributes as $key => $value) {
+            if ($key === $this->primaryKey) {
+                continue;
+            }
+
+            $setValues[] = "{$key}";
+            $setKeys[] = ":{$key}";
+            $parameters[$key] = $value;
+        }
+
+        $setValuesString = implode(', ', $setValues);
+        $setKeysString = implode(', ', $setKeys);
+        $query = "INSERT INTO {$this->table} ({$setValuesString}) VALUES ({$setKeysString})";
+
+        $stmt = $this->database->prepare($query);
+        $stmt->execute($parameters);
     }
 
     protected function hydrate(array $data)
@@ -137,55 +190,6 @@ class Model implements ArrayAccess
     public function __set(string $name, mixed $value)
     {
         $this->attributes[$name] = $value;
-    }
-
-    public function update()
-    {
-        $id = $this->attributes[$this->primaryKey];
-
-        $setClauses = [];
-        $parameters = [];
-
-        foreach ($this->attributes as $key => $value) {
-            if ($key === $this->primaryKey) {
-                continue;
-            }
-
-            $setClauses[] = "{$key} = :{$key}";
-            $parameters[$key] = $value;
-        }
-
-        $parameters[$this->primaryKey] = $id;
-
-        $setString = implode(', ', $setClauses);
-        $query = "UPDATE {$this->table} SET {$setString} WHERE {$this->primaryKey} = :{$this->primaryKey}";
-
-        $stmt = $this->database->prepare($query);
-        $stmt->execute($parameters);
-    }
-
-    public function save()
-    {
-        $setValues = [];
-        $setKeys = [];
-        $parameters = [];
-
-        foreach ($this->attributes as $key => $value) {
-            if ($key === $this->primaryKey) {
-                continue;
-            }
-
-            $setValues[] = "{$key}";
-            $setKeys[] = ":{$key}";
-            $parameters[$key] = $value;
-        }
-
-        $setValuesString = implode(', ', $setValues);
-        $setKeysString = implode(', ', $setKeys);
-        $query = "INSERT INTO {$this->table} ({$setValuesString}) VALUES ({$setKeysString})";
-
-        $stmt = $this->database->prepare($query);
-        $stmt->execute($parameters);
     }
 
     public function offsetExists($offset): bool

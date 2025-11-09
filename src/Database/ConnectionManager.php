@@ -15,6 +15,7 @@ use Ludens\Exceptions\DatabaseException;
  *
  * @package Ludens\Database
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
+ * @version 1.0.0
  */
 class ConnectionManager
 {
