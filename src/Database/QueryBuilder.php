@@ -90,6 +90,10 @@ class QueryBuilder
             $sql .= ' WHERE ' . implode(' AND ', $this->where);
         }
 
+        if ($this->limit !== null) {
+            $sql .= ' LIMIT ' . $this->limit;
+        }
+
         return $sql;
     }
 
