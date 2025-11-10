@@ -201,7 +201,7 @@ class Model implements ArrayAccess
             $modelClass = $this->hasMany[$offset]['model'];
 
             $relatedModel = new $modelClass();
-            return $relatedModel::query()->where($foreignKey, $this->id);
+            return $relatedModel::query()->where($foreignKey, $this->id)->get();
         }
 
         return null;
