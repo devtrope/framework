@@ -58,6 +58,12 @@ class QueryBuilder
         return $this;
     }
 
+    public function order(string $column, string $suffix = 'ASC'): self
+    {
+        $this->orderBy[] = "{$column} {$suffix}";
+        return $this;
+    }
+
     public function get(): array
     {
         $sql = $this->toSQL();
@@ -88,6 +94,10 @@ class QueryBuilder
 
         if (! empty($this->where)) {
             $sql .= ' WHERE ' . implode(' AND ', $this->where);
+        }
+
+        if (! empty($this->orderBy)) {
+            $sql .= ' ORDER BY ' . implode(', ', $this->orderBy);
         }
 
         if ($this->limit !== null) {
