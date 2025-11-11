@@ -5,14 +5,14 @@ namespace Ludens\Database;
 use ArrayAccess;
 use PDO;
 
-final class Model implements ArrayAccess
+class Model implements ArrayAccess
 {
     private PDO $database;
     private string $table;
     protected array $attributes = [];
     private string $primaryKey = 'id';
 
-    public function __construct()
+    final public function __construct()
     {
         $this->database = ConnectionManager::getInstance()->getConnection();
 
