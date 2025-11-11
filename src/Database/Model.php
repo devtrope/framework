@@ -105,28 +105,37 @@ class Model implements ArrayAccess
         $stmt->execute($parameters);
     }
 
-    public function save(): void
+    public function save(): bool
     {
-        $setValues = [];
-        $setKeys = [];
-        $parameters = [];
+        $columns = [];
+        $placeholders = [];
+        $bindings = [];
 
         foreach ($this->attributes as $key => $value) {
-            if ($key === $this->primaryKey) {
+            if ($key === $this->primaryKey && $value === null) {
                 continue;
             }
 
-            $setValues[] = "{$key}";
-            $setKeys[] = ":{$key}";
-            $parameters[$key] = $value;
+            $columns[] = $key;
+            $placeholders[] = ":{$key}";
+            $bindings[$key] = $value;
         }
 
-        $setValuesString = implode(', ', $setValues);
-        $setKeysString = implode(', ', $setKeys);
-        $query = "INSERT INTO {$this->table} ({$setValuesString}) VALUES ({$setKeysString})";
+        $sql = sprintf(
+            "INSERT INTO %s (%s) VALUES (%s)",
+            $this->table,
+            implode(', ', $columns),
+            implode(', ', $placeholders)
+        );
 
-        $stmt = $this->database->prepare($query);
-        $stmt->execute($parameters);
+        $stmt = $this->database->prepare($sql);
+        $result = $stmt->execute($bindings);
+
+        if ($result) {
+            $this->attributes[$this->primaryKey] = $this->database->lastInsertId();
+        }
+
+        return $result;
     }
 
     public function delete(): bool
