@@ -131,6 +131,10 @@ class ViewRenderer
             
             $pictureUploadDirectory = $app->config('filesystems.uploads.images.directory', 'uploads/images');
 
+            if (! is_string($pictureUploadDirectory)) {
+                throw ConfigurationException::invalidPictureUploadDirectory();
+            }
+
             return rtrim($baseUrl, '/') . '/' . rtrim($pictureUploadDirectory) . '/' . ltrim($path, '/');
         }));
 

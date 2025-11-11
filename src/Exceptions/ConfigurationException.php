@@ -39,6 +39,14 @@ class ConfigurationException extends \RuntimeException
         );
     }
 
+    public static function invalidPictureUploadDirectory(): self
+    {
+        return new self(
+            "Invalid upload directory provided. " .
+            "Please set 'filesystems.images.root' in config/filesystems.php"
+        );
+    }
+
     public static function invalidValue(string $key, string $expectedType, mixed $actualValue): self
     {
         $actualType = get_debug_type($actualValue);

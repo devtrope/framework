@@ -5,6 +5,15 @@ namespace Ludens\Database;
 use ArrayAccess;
 use PDO;
 
+/**
+ * Handle the methods for the models.
+ *
+ * @package Ludens\Database
+ * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
+ * @version 1.0.0
+ * 
+ * @implements ArrayAccess<string, string|null|array>
+ */
 class Model implements ArrayAccess
 {
     private PDO $database;
@@ -39,14 +48,21 @@ class Model implements ArrayAccess
         return $data ? $this->hydrate($data) : null;
     }
 
-    protected function getTableName()
+    protected function getTableName(): string
     {
         $className = (new \ReflectionClass($this))->getShortName();
-        $snakeCase = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $className));
+        $purifiedClassName = preg_replace('/(?<!^)[A-Z]/', '_$0', $className);
+        if (! is_string($purifiedClassName)) {
+            throw new \Exception(
+                "The class name {$className} is invalid."
+            );
+        }
+
+        $snakeCase = strtolower($purifiedClassName);
         return $this->pluralize($snakeCase);
     }
 
-    protected function pluralize(string $word)
+    protected function pluralize(string $word): string
     {
         if (str_ends_with($word, 'y')) {
             return substr($word, 0, -1) . 'ies';
@@ -62,7 +78,7 @@ class Model implements ArrayAccess
         return $word . 's';
     }
 
-    public function update()
+    public function update(): void
     {
         $id = $this->attributes[$this->primaryKey];
 
@@ -87,7 +103,7 @@ class Model implements ArrayAccess
         $stmt->execute($parameters);
     }
 
-    public function save()
+    public function save(): void
     {
         $setValues = [];
         $setKeys = [];
@@ -111,21 +127,21 @@ class Model implements ArrayAccess
         $stmt->execute($parameters);
     }
 
-    public function delete()
+    public function delete(): bool
     {
         $sql = "DELETE FROM {$this->table} WHERE {$this->primaryKey} = :id";
         $stmt = $this->database->prepare($sql);
         return $stmt->execute(['id' => $this->attributes[$this->primaryKey]]);
     }
 
-    protected function hydrate(array $data)
+    protected function hydrate(array $data): self
     {
         $instance = new static();
         $instance->attributes = $data;
         return $instance;
     }
 
-    public function __isset(string $name)
+    public function __isset(string $name): bool
     {
         if (isset($this->attributes[$name])) {
             return true;
@@ -142,7 +158,7 @@ class Model implements ArrayAccess
         return false;
     }
 
-    public function __get(string $name)
+    public function __get(string $name): mixed
     {
         if (array_key_exists($name, $this->attributes)) {
             return $this->attributes[$name];
@@ -152,6 +168,9 @@ class Model implements ArrayAccess
             $foreignKey = $this->belongsTo[$name]['foreign_key'];
             $modelClass = $this->belongsTo[$name]['model'];
 
+            /**
+             * @var Model $relatedModel
+             */
             $relatedModel = new $modelClass();
             return $relatedModel->find($this->{$foreignKey});
         }
@@ -160,63 +179,37 @@ class Model implements ArrayAccess
             $foreignKey = $this->hasMany[$name]['foreign_key'];
             $modelClass = $this->hasMany[$name]['model'];
 
+            /**
+             * @var Model $relatedModel
+             */
             $relatedModel = new $modelClass();
-            return $relatedModel::query()->where($foreignKey, $this->id)->get();
+            return $relatedModel::query()->where($foreignKey, $this->attributes['id'])->get();
         }
 
         return null;
     }
 
-    public function __set(string $name, mixed $value)
+    public function __set(string $name, mixed $value): void
     {
         $this->attributes[$name] = $value;
     }
 
     public function offsetExists($offset): bool
     {
-        if (isset($this->attributes[$offset])) {
-            return true;
-        }
-
-        if (isset($this->belongsTo[$offset])) {
-            return true;
-        }
-
-        if (isset($this->hasMany[$offset])) {
-            return true;
-        }
-
-        return false;
+        return $this->__isset($offset);
     }
 
     public function offsetGet($offset): mixed
     {
-        if (array_key_exists($offset, $this->attributes)) {
-            return $this->attributes[$offset];
-        }
-
-        if (isset($this->belongsTo[$offset])) {
-            $foreignKey = $this->belongsTo[$offset]['foreign_key'];
-            $modelClass = $this->belongsTo[$offset]['model'];
-
-            $relatedModel = new $modelClass();
-            return $relatedModel->find($this->{$foreignKey});
-        }
-
-        if (isset($this->hasMany[$offset])) {
-            $foreignKey = $this->hasMany[$offset]['foreign_key'];
-            $modelClass = $this->hasMany[$offset]['model'];
-
-            $relatedModel = new $modelClass();
-            return $relatedModel::query()->where($foreignKey, $this->id)->get();
-        }
-
-        return null;
+        return $this->__get($offset);
     }
 
     public function offsetSet($offset, $value): void
     {
-        $this->attributes[$offset] = $value;
+        if ($offset === null) {
+            return;
+        }
+        $this->__set($offset, $value);
     }
 
     public function offsetUnset(mixed $offset): void

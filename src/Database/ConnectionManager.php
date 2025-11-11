@@ -83,7 +83,7 @@ class ConnectionManager
     /**
      * Create a new PDO connection.
      *
-     * @return void
+     * @return PDO
      *
      * @throws DatabaseException
      */
