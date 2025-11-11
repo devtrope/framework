@@ -81,6 +81,14 @@ class QueryBuilder
         return $results[0] ?? null;
     }
 
+    public function count(): int
+    {
+        $this->select = ['COUNT(*) as count'];
+        $results = $this->first();
+
+        return $results['count'] ?? 0;
+    }
+
     public function limit(int $limit): self
     {
         $this->limit = $limit;
