@@ -5,7 +5,7 @@ namespace Ludens\Database;
 use ArrayAccess;
 use PDO;
 
-class Model implements ArrayAccess
+final class Model implements ArrayAccess
 {
     private PDO $database;
     private string $table;
