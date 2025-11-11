@@ -2,29 +2,24 @@
 
 namespace Ludens\Http\Validation\Rules;
 
-use Ludens\Http\Validation\ValidationRule;
 use Ludens\Exceptions\ConfigurationException;
+use Ludens\Http\Validation\ValidationRule;
 
 /**
- * Rule to ensure a field has a minimum length.
+ * Rule to ensure that a field is a valid email.
  */
-class MaxRule implements ValidationRule
+class Email implements ValidationRule
 {
-    public function __construct(
-        private int $maxLength
-    ) {
-    }
-
     public function passes(string $field, mixed $value): bool
     {
         if (! is_string($value)) {
             throw ConfigurationException::invalidValue($field, 'string', $value);
         }
-        return strlen($value) <= $this->maxLength;
+        return filter_var($value, FILTER_VALIDATE_EMAIL);
     }
 
     public function message(string $field): string
     {
-        return "The {$field} field must not exceed {$this->maxLength} characters.";
+        return "The {$field} is not in the correct format.";
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Ludens\Http\Validation\Rules;
 
-use Exception;
 use Ludens\Http\Validation\ValidationRule;
 use Ludens\Exceptions\ConfigurationException;
 

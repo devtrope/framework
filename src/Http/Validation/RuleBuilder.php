@@ -50,9 +50,25 @@ class RuleBuilder
         return $this;
     }
 
+    /**
+     * Verify if a field is an image.
+     *
+     * @return RuleBuilder
+     */
     public function image(): self
     {
         $this->rules[] = new Rules\Image();
+        return $this;
+    }
+
+    /**
+     * Verify if a field is an email.
+     *
+     * @return RuleBuilder
+     */
+    public function email(): self
+    {
+        $this->rules[] = new Rules\Email();
         return $this;
     }
 
