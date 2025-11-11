@@ -80,12 +80,10 @@ class Model implements ArrayAccess
         return $word . 's';
     }
 
-    public function update(): void
+    public function update(): bool
     {
-        $id = $this->attributes[$this->primaryKey];
-
         $setClauses = [];
-        $parameters = [];
+        $bindings = [];
 
         foreach ($this->attributes as $key => $value) {
             if ($key === $this->primaryKey) {
@@ -93,16 +91,21 @@ class Model implements ArrayAccess
             }
 
             $setClauses[] = "{$key} = :{$key}";
-            $parameters[$key] = $value;
+            $bindings[$key] = $value;
         }
 
-        $parameters[$this->primaryKey] = $id;
+        $bindings[$this->primaryKey] = $this->attributes[$this->primaryKey];
 
-        $setString = implode(', ', $setClauses);
-        $query = "UPDATE {$this->table} SET {$setString} WHERE {$this->primaryKey} = :{$this->primaryKey}";
+        $sql = sprintf(
+            "UPDATE %s SET %s WHERE %s = :%s",
+            $this->table,
+            implode(', ', $setClauses),
+            $this->primaryKey,
+            $this->primaryKey
+        );
 
-        $stmt = $this->database->prepare($query);
-        $stmt->execute($parameters);
+        $stmt = $this->database->prepare($sql);
+        return $stmt->execute($bindings);
     }
 
     public function save(): bool
