@@ -11,7 +11,7 @@ use PDO;
  * @package Ludens\Database
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0
- * 
+ *
  * @implements ArrayAccess<string, string|null|array>
  */
 class Model implements ArrayAccess
@@ -68,10 +68,12 @@ class Model implements ArrayAccess
             return substr($word, 0, -1) . 'ies';
         }
 
-        if (str_ends_with($word, 's') ||
-        str_ends_with($word, 'x') ||
-        str_ends_with($word, 'ch') ||
-        str_ends_with($word, 'sh')) {
+        if (
+            str_ends_with($word, 's') ||
+            str_ends_with($word, 'x') ||
+            str_ends_with($word, 'ch') ||
+            str_ends_with($word, 'sh')
+        ) {
             return $word . 'es';
         }
 

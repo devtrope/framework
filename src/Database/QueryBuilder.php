@@ -6,7 +6,7 @@ use PDO;
 
 /**
  * Fluent SQL Query Builder.
- * 
+ *
  * @package Ludens\Database
  * @author Quentin SCHIFFERLE <dev.trope@gmail.com>
  * @version 1.0.0
@@ -58,7 +58,7 @@ class QueryBuilder
      */
     public function where(string $column, mixed $operator, mixed $value = null): self
     {
-        // If 2 arguments: where('name', 'John') -> where('name' '=', 'John') 
+        // If 2 arguments: where('name', 'John') -> where('name' '=', 'John')
         if ($value === null) {
             $value = $operator;
             $operator = '=';

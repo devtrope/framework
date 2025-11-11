@@ -128,7 +128,7 @@ class ViewRenderer
             if (! is_string($baseUrl)) {
                 throw ConfigurationException::missingAppUrl();
             }
-            
+
             $pictureUploadDirectory = $app->config('filesystems.uploads.images.directory', 'uploads/images');
 
             if (! is_string($pictureUploadDirectory)) {
