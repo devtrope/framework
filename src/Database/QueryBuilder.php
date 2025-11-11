@@ -36,15 +36,29 @@ class QueryBuilder
         $this->table = $table;
     }
 
+    /**
+     * Set columns to select.
+     *
+     * @param string|array<string> $columns
+     * @return QueryBuilder
+     */
     public function select(string|array $columns): self
     {
         $this->select = is_array($columns) ? $columns : func_get_args();
         return $this;
     }
 
+    /**
+     * Add a WHERE clause.
+     *
+     * @param string $column
+     * @param mixed $operator
+     * @param mixed $value
+     * @return QueryBuilder
+     */
     public function where(string $column, mixed $operator, mixed $value = null): self
     {
-        // If 2 arguments: where('name', 'John') -> where('name' '=', 'John')
+        // If 2 arguments: where('name', 'John') -> where('name' '=', 'John') 
         if ($value === null) {
             $value = $operator;
             $operator = '=';
@@ -58,12 +72,48 @@ class QueryBuilder
         return $this;
     }
 
-    public function order(string $column, string $suffix = 'ASC'): self
+    /**
+     * Add ORDER BY clause.
+     *
+     * @param string $column
+     * @param string $suffix
+     * @return QueryBuilder
+     */
+    public function orderBy(string $column, string $suffix = 'ASC'): self
     {
         $this->orderBy[] = "{$column} {$suffix}";
         return $this;
     }
 
+    /**
+     * Add LIMIT clause.
+     *
+     * @param int $limit
+     * @return QueryBuilder
+     */
+    public function limit(int $limit): self
+    {
+        $this->limit = $limit;
+        return $this;
+    }
+
+    /**
+     * Add OFFSET clause.
+     *
+     * @param int $offset
+     * @return QueryBuilder
+     */
+    public function offset(int $offset): self
+    {
+        $this->offset = $offset;
+        return $this;
+    }
+
+    /**
+     * Get all results.
+     *
+     * @return array
+     */
     public function get(): array
     {
         $sql = $this->toSQL();
@@ -73,6 +123,11 @@ class QueryBuilder
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Get first result.
+     *
+     * @return array|null
+     */
     public function first(): array|null
     {
         $this->limit(1);
@@ -81,26 +136,34 @@ class QueryBuilder
         return $results[0] ?? null;
     }
 
+    /**
+     * Get count of results.
+     *
+     * @return int
+     */
     public function count(): int
     {
         $this->select = ['COUNT(*) as count'];
-        $results = $this->first();
+        $result = $this->first();
 
-        return $results['count'] ?? 0;
+        return $result['count'] ?? 0;
     }
 
-    public function limit(int $limit): self
+    /**
+     * Check if results exist.
+     *
+     * @return bool
+     */
+    public function exists(): bool
     {
-        $this->limit = $limit;
-        return $this;
+        return $this->count() > 0;
     }
 
-    public function offset(int $offset): self
-    {
-        $this->offset = $offset;
-        return $this;
-    }
-
+    /**
+     * Build the SQL query.
+     *
+     * @return string
+     */
     public function toSQL(): string
     {
         $sql = 'SELECT ' . implode(', ', $this->select);
@@ -125,11 +188,22 @@ class QueryBuilder
         return $sql;
     }
 
+    /**
+     * Get bindings.
+     *
+     * @return array
+     */
     public function getBindings(): array
     {
         return $this->bindings;
     }
 
+    /**
+     * Create unique placeholder for binding.
+     *
+     * @param string $column
+     * @return string
+     */
     private function createPlaceholder(string $column): string
     {
         static $counter = 0;
