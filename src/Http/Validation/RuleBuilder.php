@@ -73,6 +73,17 @@ class RuleBuilder
     }
 
     /**
+     * Verify if a field is an integer.
+     *
+     * @return RuleBuilder
+     */
+    public function integer(): self
+    {
+        $this->rules[] = new Rules\Integer();
+        return $this;
+    }
+
+    /**
      * Get all configured rules.
      *
      * @return array
