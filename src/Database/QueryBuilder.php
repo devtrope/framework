@@ -73,7 +73,7 @@ class QueryBuilder
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function first(): array
+    public function first(): array|null
     {
         $this->limit(1);
         $results = $this->get();
@@ -84,6 +84,12 @@ class QueryBuilder
     public function limit(int $limit): self
     {
         $this->limit = $limit;
+        return $this;
+    }
+
+    public function offset(int $offset): self
+    {
+        $this->offset = $offset;
         return $this;
     }
 
@@ -102,6 +108,10 @@ class QueryBuilder
 
         if ($this->limit !== null) {
             $sql .= ' LIMIT ' . $this->limit;
+        }
+
+        if ($this->offset !== null) {
+            $sql .= ' OFFSET ' . $this->offset;
         }
 
         return $sql;

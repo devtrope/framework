@@ -111,6 +111,13 @@ class Model implements ArrayAccess
         $stmt->execute($parameters);
     }
 
+    public function delete()
+    {
+        $sql = "DELETE FROM {$this->table} WHERE {$this->primaryKey} = :id";
+        $stmt = $this->database->prepare($sql);
+        return $stmt->execute(['id' => $this->attributes[$this->primaryKey]]);
+    }
+
     protected function hydrate(array $data)
     {
         $instance = new static();
