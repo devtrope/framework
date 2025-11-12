@@ -2,6 +2,7 @@
 
 namespace Ludens\Routing\Dispatching;
 
+use Ludens\Http\Middleware\MiddlewarePipeline;
 use Ludens\Http\Request;
 use Ludens\Http\Response;
 use Ludens\Routing\Matching\RouteResolver;
@@ -42,15 +43,16 @@ class Dispatcher
             $request
         );
 
-        /**
-         * @var callable
-         */
-        $callable = [$controllerInstance, $method];
+        $pipeline = new MiddlewarePipeline($resolvedRoute->middleware());
 
-        $response = call_user_func_array(
-            $callable,
-            $arguments
-        );
+        $response = $pipeline->handle($request, function($request) use ($controllerInstance, $method, $arguments) {
+            /**
+             * @var callable
+             */
+            $callable = [$controllerInstance, $method];
+
+            return call_user_func_array($callable, $arguments);
+        });
 
         $this->sendResponse($response);
     }

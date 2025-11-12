@@ -26,17 +26,21 @@ class RouteCollection
      * @param string $method The HTTP method
      * @param string $path The route path
      * @param Handler $handler The route handler
+     * @param array $middleware Middleware classes
      * @return void
      *
      * @throws Exception If the route is already registered
      */
-    public static function add(string $method, string $path, Handler $handler): void
+    public static function add(string $method, string $path, Handler $handler, array $middleware): void
     {
         if (isset(self::$routes[$method][$path])) {
             throw new Exception("Route {$method} {$path} is already registered");
         }
 
-        self::$routes[$method][$path] = $handler;
+        self::$routes[$method][$path] = [
+            'handler' => $handler,
+            'middleware' => $middleware
+        ];
     }
 
     /**

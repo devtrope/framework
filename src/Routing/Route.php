@@ -5,6 +5,7 @@ namespace Ludens\Routing;
 use Exception;
 use RuntimeException;
 use Ludens\Http\HttpMethod;
+use Ludens\Http\Middleware\AuthMiddleware;
 use Ludens\Routing\Support\Handler;
 
 /**
@@ -22,6 +23,7 @@ class Route
     protected static array $routes = [];
     private Handler $handler;
     private string $path;
+    private array $middleware = [];
 
     /**
      * Create a new Route instance.
@@ -59,6 +61,22 @@ class Route
     public function when(string $path): self
     {
         $this->path = $path;
+        return $this;
+    }
+
+    /**
+     * Add middleware to this route.
+     *
+     * @param string|array $middleware Middleware class name(s)
+     * @return Route
+     */
+    public function middleware(string|array $middleware): self
+    {
+        $this->middleware = array_merge(
+            $this->middleware,
+            is_array($middleware) ? $middleware : [$middleware]
+        );
+
         return $this;
     }
 
@@ -129,7 +147,12 @@ class Route
      */
     private function register(HttpMethod $method): void
     {
-        RouteCollection::add($method->value, $this->path, $this->handler);
+        RouteCollection::add(
+            $method->value,
+            $this->path,
+            $this->handler,
+            $this->middleware
+        );
     }
 
     /**
@@ -153,5 +176,16 @@ class Route
     public static function load(array $routes): void
     {
         RouteCollection::load($routes);
+    }
+
+    /**
+     * Add an authentication middleware to this route.
+     *
+     * @return Route
+     */
+    public function withAuth(): self
+    {
+        $this->middleware(AuthMiddleware::class);
+        return $this;
     }
 }

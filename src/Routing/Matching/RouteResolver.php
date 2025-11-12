@@ -29,8 +29,9 @@ class RouteResolver
     public function resolve(Request $request): ResolvedRoute
     {
         $routes = RouteCollection::getRoutesForMethod($request->method());
-        $handler = $this->match($request->uri(), $routes);
-        return new ResolvedRoute($handler, $this->parameters);
+        $result = $this->match($request->uri(), $routes);
+
+        return new ResolvedRoute($result['handler'], $this->parameters, $result['middleware']);
     }
 
     /**
@@ -42,7 +43,7 @@ class RouteResolver
      *
      * @throws NotFoundException If no matching route is found
      */
-    private function match(string $uri, array $routes): Handler
+    private function match(string $uri, array $routes): array
     {
         // Search for an exact match before continuing to more complex matching
         if (isset($routes[$uri])) {

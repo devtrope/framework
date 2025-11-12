@@ -16,10 +16,12 @@ class ResolvedRoute
     /**
      * @param Handler $handler
      * @param array $parameters
+     * @param array $middleware
      */
     public function __construct(
         private Handler $handler,
-        private array $parameters = []
+        private array $parameters = [],
+        private array $middleware = []
     ) {
     }
 
@@ -53,5 +55,10 @@ class ResolvedRoute
     public function parameter(string $name, mixed $default): mixed
     {
         return $this->parameters[$name] ?? $default;
+    }
+
+    public function middleware(): array
+    {
+        return $this->middleware;
     }
 }
