@@ -5,6 +5,7 @@ namespace Ludens\Framework\View;
 use Exception;
 use Ludens\Core\Application;
 use Ludens\Exceptions\ConfigurationException;
+use Ludens\Http\Support\SessionBag;
 use Twig\Environment;
 use Twig\Extension\DebugExtension;
 use Twig\Loader\ChainLoader;
@@ -152,6 +153,16 @@ class ViewRenderer
 
         $twig->addFunction(new \Twig\TwigFunction('flash', function (string $key) {
             return \flash($key);
+        }));
+
+        $twig->addFunction(new \Twig\TwigFunction('isAuth', function () {
+            $session = new SessionBag();
+            return $session->has('user_id');
+        }));
+
+        $twig->addFunction(new \Twig\TwigFunction('isGuest', function () {
+            $session = new SessionBag();
+            return ! $session->has('user_id');
         }));
     }
 }
