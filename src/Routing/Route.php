@@ -6,6 +6,7 @@ use Exception;
 use RuntimeException;
 use Ludens\Http\HttpMethod;
 use Ludens\Http\Middleware\AuthMiddleware;
+use Ludens\Http\Middleware\GuestMiddleware;
 use Ludens\Routing\Support\Handler;
 
 /**
@@ -186,6 +187,17 @@ class Route
     public function withAuth(): self
     {
         $this->middleware(AuthMiddleware::class);
+        return $this;
+    }
+
+    /**
+     * Add an guest middleware to this route.
+     *
+     * @return Route
+     */
+    public function withGuest(): self
+    {
+        $this->middleware(GuestMiddleware::class);
         return $this;
     }
 }
