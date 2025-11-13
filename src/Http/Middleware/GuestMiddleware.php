@@ -18,7 +18,7 @@ class GuestMiddleware implements MiddlewareInterface
         $session = new SessionBag();
 
         if ($session->has('user_id')) {
-            return Response::redirect('/')
+            return Response::back()
                 ->withFlash('info', 'You are already logged in');
         }
 

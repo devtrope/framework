@@ -57,6 +57,19 @@ class Response
     }
 
     /**
+     * Create a redirect response to the referer.
+     *
+     * @param int $statusCode
+     * @return RedirectResponse
+     */
+    public static function back(int $statusCode = 302): self
+    {
+        $server = \Ludens\Http\Support\ServerBag::fromGlobal();
+        $url = $server->getReferer();
+        return new RedirectResponse($url, $statusCode);
+    }
+
+    /**
      * Create a JSON response.
      *
      * @param array $data
