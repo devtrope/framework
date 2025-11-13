@@ -64,6 +64,20 @@ abstract class AbstractController
     }
 
     /**
+     * Redirect to the referer.
+     *
+     * @param int $statusCode
+     * @return RedirectResponse
+     *
+     * @example
+     * return $this->back();
+     */
+    public function back(int $statusCode = 302): RedirectResponse
+    {
+        return Response::back($statusCode);
+    }
+
+    /**
      * Create a new Validator.
      *
      * @return Validator
