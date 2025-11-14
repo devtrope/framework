@@ -2,6 +2,7 @@
 
 namespace Ludens\Framework\Controller;
 
+use Ludens\Framework\View\ViewRenderer;
 use Ludens\Http\Response;
 use Ludens\Http\Validation\Validator;
 use Ludens\Http\Responses\JsonResponse;
@@ -91,5 +92,10 @@ abstract class AbstractController
     public function validator(): Validator
     {
         return new Validator();
+    }
+
+    public function share(string $key, mixed $value): void
+    {
+        ViewRenderer::set($key, $value);
     }
 }
