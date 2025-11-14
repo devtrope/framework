@@ -138,8 +138,8 @@ class RouteCollection
         $routesForExport = [];
 
         foreach (self::$routes as $method => $routes) {
-            foreach ($routes as $path => $handler) {
-                $routesForExport[$method][$path] = $handler->toArray();
+            foreach ($routes as $path => $result) {
+                $routesForExport[$method][$path] = $result['handler']->toArray();
             }
         }
 
@@ -165,8 +165,8 @@ class RouteCollection
     {
         // Convert array to handlers
         foreach ($routes as $method => $methodRoutes) {
-            foreach ($methodRoutes as $path => $handler) {
-                self::$routes[$method][$path] = Handler::fromArray($handler);
+            foreach ($methodRoutes as $path => $result) {
+                self::$routes[$method][$path] = Handler::fromArray($result['handler']);
             }
         }
     }
