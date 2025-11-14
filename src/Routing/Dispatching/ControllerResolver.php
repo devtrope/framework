@@ -2,6 +2,8 @@
 
 namespace Ludens\Routing\Dispatching;
 
+use DI\ContainerBuilder;
+use DI\Container;
 use Ludens\Database\ModelManager;
 use ReflectionMethod;
 use Ludens\Http\Request;
@@ -34,7 +36,10 @@ class ControllerResolver
         $method = $handler->method();
 
         try {
-            $controllerInstance = new $controller();
+            $builder = new ContainerBuilder();
+            $container = new Container();
+            $container = $builder->build();
+            $controllerInstance = $container->get($controller);
         } catch (\Error $e) {
             throw new NotFoundException(
                 "The page you are looking for could not be found."

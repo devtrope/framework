@@ -101,6 +101,11 @@ class ViewRenderer
         return self::getInstance()->render($template, $data);
     }
 
+    public static function set(string $key, mixed $value): void
+    {
+        self::getInstance()->addGlobal($key, $value);
+    }
+
     /**
      * Register custom Twig extensions and functions.
      *
