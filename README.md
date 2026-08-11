@@ -1,6 +1,6 @@
 # Ludens - PHP Framework
 
-## Why ?
+## Why ?
 
 Yes good question. Why try to build a PHP framework when there's already everything I need with Symfony and Laravel ?
 
