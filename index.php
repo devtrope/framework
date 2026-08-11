@@ -1,7 +1,9 @@
 <?php
 
 $request = $_SERVER['REQUEST_URI'];
-$routes = [
+$method = $_SERVER['REQUEST_METHOD'];
+
+$routes['GET'] = [
     '/' => function () {
         echo "Home Page\n";
     },
@@ -13,11 +15,17 @@ $routes = [
     }
 ];
 
-if (isset($routes[$request])) {
-    call_user_func($routes[$request]);
+$routes['POST'] = [
+    '/' => function () {
+        echo "Home Page but in POST\n";
+    }
+];
+
+if (isset($routes[$method][$request])) {
+    call_user_func($routes[$method][$request]);
 } else {
     $found = false;
-    foreach ($routes as $key => $callback) {
+    foreach ($routes[$method] as $key => $callback) {
         $explodedKey = explode('/', trim($key, '/'));
         $explodedRequest = explode('/', trim($request, '/'));
         $arguments = [];
