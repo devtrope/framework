@@ -1,25 +1,29 @@
 <?php
 
+require 'vendor/autoload.php';
+
+use Ludens\Routes;
+
 $request = $_SERVER['REQUEST_URI'];
 $method = $_SERVER['REQUEST_METHOD'];
 
-$routes['GET'] = [
-    '/' => function () {
-        echo "Home Page\n";
-    },
-    '/test' => function () {
-        echo "Test Page\n";
-    },
-    '/user/{username}' => function (string $username) {
-        echo "Welcome {$username}\n";
-    }
-];
+$routes = new Routes();
 
-$routes['POST'] = [
-    '/' => function () {
-        echo "Home Page but in POST\n";
-    }
-];
+$routes->add('GET', '/', function () {
+    echo "Home Page\n";
+});
+
+$routes->add('GET', '/test', function () {
+    echo "Test Page\n";
+});
+
+$routes->add('GET', '/user/{username}', function (string $username) {
+    echo "Welcome {$username}\n";
+});
+
+$routes->add('POST', '/', function () {
+    echo "Home Page but in POST\n";
+});
 
 function run(array $routes, string $request): void
 {
@@ -57,4 +61,4 @@ function run(array $routes, string $request): void
     });
 }
 
-run($routes[$method], $request);
+run($routes->getAll($method), $request);
