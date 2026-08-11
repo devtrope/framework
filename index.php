@@ -11,7 +11,7 @@ $routes['GET'] = [
         echo "Test Page\n";
     },
     '/user/{username}' => function (string $username) {
-        echo "Welcome {$username}";
+        echo "Welcome {$username}\n";
     }
 ];
 
@@ -21,11 +21,14 @@ $routes['POST'] = [
     }
 ];
 
-if (isset($routes[$method][$request])) {
-    call_user_func($routes[$method][$request]);
-} else {
-    $found = false;
-    foreach ($routes[$method] as $key => $callback) {
+function run(array $routes, string $request): void
+{
+    if (isset($routes[$request])) {
+        call_user_func($routes[$request]);
+        return;
+    }
+
+    foreach ($routes as $key => $callback) {
         $explodedKey = explode('/', trim($key, '/'));
         $explodedRequest = explode('/', trim($request, '/'));
         $arguments = [];
@@ -46,10 +49,12 @@ if (isset($routes[$method][$request])) {
         }
 
         call_user_func_array($callback, $arguments);
-        $found = true;
+        return;
     }
 
-    if (false === $found) {
-        die('404');
-    }
+    call_user_func(function () {
+        echo "404\n";
+    });
 }
+
+run($routes[$method], $request);
