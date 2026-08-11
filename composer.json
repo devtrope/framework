@@ -1,0 +1,9 @@
+{
+    "name": "devtrope/framework",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Ludens\\": "src/"
+        }
+    }
+}
