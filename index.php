@@ -29,4 +29,11 @@ foreach ($files as $file) {
     }
 }
 
-Ludens\Routing\Router::run(Routes::getAll($requestMethod), $request);
+try {
+    Ludens\Routing\Router::run(
+        Routes::getAll($requestMethod),
+        $request
+    );
+} catch (\Exception $e) {
+    echo $e->getMessage() . "\n";
+}

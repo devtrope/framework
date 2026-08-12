@@ -2,18 +2,17 @@
 
 namespace Ludens\Routing;
 
+use Exception;
+
 final class Router
 {
     public static function run(array $routes, string $path): void
     {
         if (isset($routes[$path])) {
-            $handler = $routes[$path];
-            if (is_array($handler)) {
-                $class = $handler[0];
-                $method = $handler[1];
-                $instance = new $class();
-                $handler = [$instance, $method];
-            }
+            $class = $routes[$path][0];
+            $method = $routes[$path][1];
+            $instance = new $class();
+            $handler = [$instance, $method];
             call_user_func($handler);
             return;
         }
@@ -38,19 +37,15 @@ final class Router
                 }
             }
 
-            if (is_array($handler)) {
-                $class = $handler[0];
-                $method = $handler[1];
-                $instance = new $class();
-                $handler = [$instance, $method];
-            }
+            $class = $handler[0];
+            $method = $handler[1];
+            $instance = new $class();
+            $handler = [$instance, $method];
 
             call_user_func_array($handler, $arguments);
             return;
         }
 
-        call_user_func(function () {
-            echo "404\n";
-        });
+        throw new Exception("No route found for path {$path}");
     }
 }
