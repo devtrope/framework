@@ -6,7 +6,7 @@ final class Routes
 {
     private static array $routes = [];
 
-    public static function add(string $method, string $uri, callable $callback): void
+    public static function add(string $method, string $uri, callable|array $callback): void
     {
         if (false === isset(self::$routes[$method])) {
             self::$routes[$method] = [];

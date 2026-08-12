@@ -5,11 +5,9 @@ require 'vendor/autoload.php';
 use Ludens\Routes;
 
 $request = $_SERVER['REQUEST_URI'];
-$method = $_SERVER['REQUEST_METHOD'];
+$requestMethod = $_SERVER['REQUEST_METHOD'];
 
-Routes::add('GET', '/', function () {
-    echo "Home Page\n";
-});
+Routes::add('GET', '/', [Ludens\Home::class, 'index']);
 
 Routes::add('GET', '/test', function () {
     echo "Test Page\n";
@@ -26,7 +24,14 @@ Routes::add('POST', '/', function () {
 function run(array $routes, string $request): void
 {
     if (isset($routes[$request])) {
-        call_user_func($routes[$request]);
+        $callback = $routes[$request];
+        if (is_array($callback)) {
+            $class = $callback[0];
+            $method = $callback[1];
+            $instance = new $class();
+            $callback = [$instance, $method];
+        }
+        call_user_func($callback);
         return;
     }
 
@@ -59,4 +64,4 @@ function run(array $routes, string $request): void
     });
 }
 
-run(Routes::getAll($method), $request);
+run(Routes::getAll($requestMethod), $request);
