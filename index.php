@@ -7,17 +7,23 @@ use Ludens\Routes;
 $request = $_SERVER['REQUEST_URI'];
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 
-Routes::add('GET', '/', [Ludens\Home::class, 'index']);
-
-Routes::add('GET', '/test', function () {
-    echo "Test Page\n";
-});
-
-Routes::add('GET', '/user/{username}', [Ludens\Home::class, 'user']);
-
-Routes::add('POST', '/', function () {
-    echo "Home Page but in POST\n";
-});
+// Retrieve all the attributes from the controller to automatically construct the routes
+$controllerFolder = 'src/Controller/';
+$files = glob($controllerFolder . '*.php');
+foreach ($files as $file) {
+    $class = str_replace($controllerFolder, '', $file);
+    $class = str_replace('.php', '', $class);
+    $class = '\\Ludens\\Controller\\' . $class;
+    $reflectionClass = new ReflectionClass($class);
+    $methods = $reflectionClass->getMethods();
+    foreach ($methods as $method) {
+        $attributes = $method->getAttributes();
+        foreach ($attributes as $attribute) {
+            $attributeMethod = 'GET';
+            Routes::add($attributeMethod, $attribute->getArguments()['url'], [$class, $method->getName()]);
+        }
+    }
+}
 
 function run(array $routes, string $request): void
 {
@@ -27,7 +33,7 @@ function run(array $routes, string $request): void
             $class = $handler[0];
             $method = $handler[1];
             $instance = new $class();
-            $callback = [$instance, $method];
+            $handler = [$instance, $method];
         }
         call_user_func($handler);
         return;
