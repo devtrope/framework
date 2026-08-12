@@ -2,7 +2,6 @@
 
 require 'vendor/autoload.php';
 
-use Ludens\HttpMethodInterface;
 use Ludens\Routes;
 
 $request = $_SERVER['REQUEST_URI'];
@@ -20,13 +19,8 @@ foreach ($files as $file) {
     foreach ($methods as $method) {
         $attributes = $method->getAttributes();
         foreach ($attributes as $attribute) {
-            $attributeInstance = new $attribute->name();
-            if (!$attributeInstance instanceof HttpMethodInterface) {
-                throw new Exception(
-                    "Http attributes must implement HttpMethodInterface"
-                );
-            }
-            Routes::add($attributeInstance->getHttpMethod(), $attribute->getArguments()['url'], [$class, $method->getName()]);
+            $attributeInstance = $attribute->newInstance();
+            Routes::add($attributeInstance->getHttpMethod(), $attributeInstance->getPath(), [$class, $method->getName()]);
         }
     }
 }

@@ -5,9 +5,14 @@ namespace Ludens;
 use Attribute;
 
 #[Attribute]
-final class Post implements HttpMethodInterface
+final class Post
 {
-    private string $httpMethod = 'POST';
+    public function __construct(private string $path, private string $httpMethod = 'POST') {}
+
+    public function getPath(): string
+    {
+        return $this->path;
+    }
 
     public function getHttpMethod(): string
     {
