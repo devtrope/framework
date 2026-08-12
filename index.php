@@ -7,21 +7,19 @@ use Ludens\Routes;
 $request = $_SERVER['REQUEST_URI'];
 $method = $_SERVER['REQUEST_METHOD'];
 
-$routes = new Routes();
-
-$routes->add('GET', '/', function () {
+Routes::add('GET', '/', function () {
     echo "Home Page\n";
 });
 
-$routes->add('GET', '/test', function () {
+Routes::add('GET', '/test', function () {
     echo "Test Page\n";
 });
 
-$routes->add('GET', '/user/{username}', function (string $username) {
+Routes::add('GET', '/user/{username}', function (string $username) {
     echo "Welcome {$username}\n";
 });
 
-$routes->add('POST', '/', function () {
+Routes::add('POST', '/', function () {
     echo "Home Page but in POST\n";
 });
 
@@ -61,4 +59,4 @@ function run(array $routes, string $request): void
     });
 }
 
-run($routes->getAll($method), $request);
+run(Routes::getAll($method), $request);

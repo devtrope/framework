@@ -4,21 +4,21 @@ namespace Ludens;
 
 final class Routes
 {
-    private array $routes = [];
+    private static array $routes = [];
 
-    public function add(string $method, string $uri, callable $callback): void
+    public static function add(string $method, string $uri, callable $callback): void
     {
-        if (false === isset($this->routes[$method])) {
-            $this->routes[$method] = [];
+        if (false === isset(self::$routes[$method])) {
+            self::$routes[$method] = [];
         }
-        $this->routes[$method][$uri] = $callback;
+        self::$routes[$method][$uri] = $callback;
     }
 
-    public function getAll(string $method)
+    public static function getAll(string $method)
     {
-        if (false === isset($this->routes[$method])) {
+        if (false === isset(self::$routes[$method])) {
             return [];
         }
-        return $this->routes[$method];
+        return self::$routes[$method];
     }
 }
