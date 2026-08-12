@@ -63,7 +63,7 @@ function run(array $routes, string $request): void
             $class = $handler[0];
             $method = $handler[1];
             $instance = new $class();
-            $callback = [$instance, $method];
+            $handler = [$instance, $method];
         }
 
         call_user_func_array($handler, $arguments);
