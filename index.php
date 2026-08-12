@@ -22,18 +22,18 @@ Routes::add('POST', '/', function () {
 function run(array $routes, string $request): void
 {
     if (isset($routes[$request])) {
-        $callback = $routes[$request];
-        if (is_array($callback)) {
-            $class = $callback[0];
-            $method = $callback[1];
+        $handler = $routes[$request];
+        if (is_array($handler)) {
+            $class = $handler[0];
+            $method = $handler[1];
             $instance = new $class();
             $callback = [$instance, $method];
         }
-        call_user_func($callback);
+        call_user_func($handler);
         return;
     }
 
-    foreach ($routes as $key => $callback) {
+    foreach ($routes as $key => $handler) {
         $explodedKey = explode('/', trim($key, '/'));
         $explodedRequest = explode('/', trim($request, '/'));
         $arguments = [];
@@ -53,14 +53,14 @@ function run(array $routes, string $request): void
             }
         }
 
-        if (is_array($callback)) {
-            $class = $callback[0];
-            $method = $callback[1];
+        if (is_array($handler)) {
+            $class = $handler[0];
+            $method = $handler[1];
             $instance = new $class();
             $callback = [$instance, $method];
         }
 
-        call_user_func_array($callback, $arguments);
+        call_user_func_array($handler, $arguments);
         return;
     }
 

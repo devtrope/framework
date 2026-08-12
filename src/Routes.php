@@ -6,12 +6,12 @@ final class Routes
 {
     private static array $routes = [];
 
-    public static function add(string $method, string $uri, callable|array $callback): void
+    public static function add(string $method, string $uri, callable|array $handler): void
     {
         if (false === isset(self::$routes[$method])) {
             self::$routes[$method] = [];
         }
-        self::$routes[$method][$uri] = $callback;
+        self::$routes[$method][$uri] = $handler;
     }
 
     public static function getAll(string $method)
