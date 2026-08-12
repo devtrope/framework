@@ -3,10 +3,11 @@
 namespace Ludens\Controller;
 
 use Ludens\Get;
+use Ludens\Post;
 
 final class Home
 {
-    #[Get(url: '/')]
+    #[Post(url: '/')]
     public function index(): void
     {
         echo "Home Page\n";

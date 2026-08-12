@@ -5,9 +5,9 @@ namespace Ludens;
 use Attribute;
 
 #[Attribute]
-final class Get implements HttpMethodInterface
+final class Post implements HttpMethodInterface
 {
-    private string $httpMethod = 'GET';
+    private string $httpMethod = 'POST';
 
     public function getHttpMethod(): string
     {
