@@ -9,11 +9,8 @@ final class Router
     public static function run(array $routes, string $path): void
     {
         if (isset($routes[$path])) {
-            $class = $routes[$path][0];
-            $method = $routes[$path][1];
-            $instance = new $class();
-            $handler = [$instance, $method];
-            call_user_func($handler);
+            $handler = (new self)->extract($routes[$path]);
+            \call_user_func($handler);
             return;
         }
 
@@ -22,11 +19,11 @@ final class Router
             $explodedRequest = explode('/', trim($path, '/'));
             $arguments = [];
 
-            if (count($explodedRequest) !== count($explodedKey)) {
+            if (\count($explodedRequest) !== \count($explodedKey)) {
                 continue;
             }
 
-            for ($i = 0; $i < count($explodedKey); $i++) {
+            for ($i = 0; $i < \count($explodedKey); $i++) {
                 if (str_starts_with($explodedKey[$i], '{')) {
                     $arguments[] = $explodedRequest[$i];
                     continue;
@@ -37,15 +34,19 @@ final class Router
                 }
             }
 
-            $class = $handler[0];
-            $method = $handler[1];
-            $instance = new $class();
-            $handler = [$instance, $method];
-
-            call_user_func_array($handler, $arguments);
+            $handler = (new self)->extract($handler);
+            \call_user_func_array($handler, $arguments);
             return;
         }
 
         throw new Exception("No route found for path {$path}");
+    }
+
+    private function extract(array $handler): array
+    {
+        $class = $handler[0];
+        $method = $handler[1];
+        $instance = new $class();
+        return [$instance, $method];
     }
 }
