@@ -3,9 +3,10 @@
 namespace Ludens;
 
 use Attribute;
+use Ludens\Contracts\HttpMethodAttributeInterface;
 
 #[Attribute]
-final class Get
+final class Get implements HttpMethodAttributeInterface
 {
     public function __construct(private string $path, private string $httpMethod = 'GET') {}
 
