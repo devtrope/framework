@@ -13,9 +13,7 @@ Routes::add('GET', '/test', function () {
     echo "Test Page\n";
 });
 
-Routes::add('GET', '/user/{username}', function (string $username) {
-    echo "Welcome {$username}\n";
-});
+Routes::add('GET', '/user/{username}', [Ludens\Home::class, 'user']);
 
 Routes::add('POST', '/', function () {
     echo "Home Page but in POST\n";
@@ -53,6 +51,13 @@ function run(array $routes, string $request): void
             if ($explodedRequest[$i] !== $explodedKey[$i]) {
                 continue 2;
             }
+        }
+
+        if (is_array($callback)) {
+            $class = $callback[0];
+            $method = $callback[1];
+            $instance = new $class();
+            $callback = [$instance, $method];
         }
 
         call_user_func_array($callback, $arguments);
