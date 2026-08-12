@@ -1,6 +1,6 @@
 <?php
 
-namespace Ludens;
+namespace Ludens\Routing;
 
 final class Routes
 {

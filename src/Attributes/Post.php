@@ -1,6 +1,6 @@
 <?php
 
-namespace Ludens;
+namespace Ludens\Attributes;
 
 use Attribute;
 use Ludens\Contracts\HttpMethodAttributeInterface;

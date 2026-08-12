@@ -2,8 +2,8 @@
 
 namespace Ludens\Controller;
 
-use Ludens\Get;
-use Ludens\Post;
+use Ludens\Attributes\Get;
+use Ludens\Attributes\Post;
 
 final class Home
 {
