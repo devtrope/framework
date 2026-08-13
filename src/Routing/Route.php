@@ -2,6 +2,8 @@
 
 namespace Ludens\Routing;
 
+use Ludens\Routing\Support\Handler;
+
 final class Route
 {
     private static array $routes = [];
@@ -11,7 +13,7 @@ final class Route
         if (false === isset(self::$routes[$method])) {
             self::$routes[$method] = [];
         }
-        self::$routes[$method][$uri] = $handler;
+        self::$routes[$method][$uri] = Handler::fromArray($handler);
     }
 
     public static function getAllByRequestMethod(string $method)

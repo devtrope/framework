@@ -3,6 +3,7 @@
 namespace Ludens\Routing;
 
 use Ludens\Exceptions\RouteNotFoundException;
+use Ludens\Routing\Support\Handler;
 
 final class RouteResolver
 {
@@ -14,7 +15,7 @@ final class RouteResolver
         return new ResolvedRoute($result, $this->parameters);
     }
 
-    private function match(array $routes, string $path): array
+    private function match(array $routes, string $path): Handler
     {
         if (isset($routes[$path])) {
             return $routes[$path];

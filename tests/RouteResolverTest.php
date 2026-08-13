@@ -8,6 +8,7 @@ use Ludens\Exceptions\InvalidControllerException;
 use Ludens\Exceptions\InvalidMethodException;
 use Ludens\Exceptions\RouteNotFoundException;
 use Ludens\Routing\RouteResolver;
+use Ludens\Routing\Support\Handler;
 use PHPUnit\Framework\TestCase;
 use Tests\Fixtures\FakeController;
 
@@ -22,7 +23,7 @@ final class RouteResolverTest extends TestCase
 
     public function testResolvesStaticRoute(): void
     {
-        $routes = ['/' => ['controller' => FakeController::class, 'method' => 'index']];
+        $routes = ['/' => Handler::fromArray([FakeController::class, 'index'])];
         $resolvedRoute = $this->resolver->resolve($routes, '/');
 
         [$controller, $method] = $resolvedRoute->getHandler();
@@ -34,7 +35,7 @@ final class RouteResolverTest extends TestCase
 
     public function testResolvesDynamicRouteWithArgument(): void
     {
-        $routes = ['/user/{username}' => ['controller' => FakeController::class, 'method' => 'withArgument']];
+        $routes = ['/user/{username}' => Handler::fromArray([FakeController::class, 'withArgument'])];
         $resolvedRoute = $this->resolver->resolve($routes, '/user/quentin');
 
         [$controller, $method] = $resolvedRoute->getHandler();
@@ -46,7 +47,7 @@ final class RouteResolverTest extends TestCase
 
     public function testResolvesDynamicRouteWithMultipleArguments(): void
     {
-        $routes = ['/posts/{category}/{id}' => ['controller' => FakeController::class, 'method' => 'withMultipleArguments']];
+        $routes = ['/posts/{category}/{id}' => Handler::fromArray([FakeController::class, 'withMultipleArguments'])];
         $resolvedRoute = $this->resolver->resolve($routes, '/posts/php/8');
 
         [$controller, $method] = $resolvedRoute->getHandler();
@@ -64,7 +65,7 @@ final class RouteResolverTest extends TestCase
 
     public function testThrowsWhenControllerDoesNotExist(): void
     {
-        $routes = ['/contact' => ['controller' => 'JustANonExistingController', 'method' => 'index']];
+        $routes = ['/contact' => Handler::fromArray(['JustANonExistingController', 'index'])];
 
         $this->expectException(InvalidControllerException::class);
         $this->resolver->resolve($routes, '/contact');
@@ -72,7 +73,7 @@ final class RouteResolverTest extends TestCase
 
     public function testThrowsWhenMethodDoesNotExist(): void
     {
-        $routes = ['/contact' => ['controller' => FakeController::class, 'method' => 'contact']];
+        $routes = ['/contact' => Handler::fromArray([FakeController::class, 'contact'])];
 
         $this->expectException(InvalidMethodException::class);
         $this->resolver->resolve($routes, '/contact');
@@ -80,7 +81,7 @@ final class RouteResolverTest extends TestCase
 
     public function testDoesNotMatchWhenSegmentCountDiffers(): void
     {
-        $routes = ['/user/{username}/profile' => ['controller' => FakeController::class, 'method' => 'withArgument']];
+        $routes = ['/user/{username}/profile' => Handler::fromArray([FakeController::class, 'withArgument'])];
 
         $this->expectException(RouteNotFoundException::class);
         $this->resolver->resolve($routes, '/user/quentin');
