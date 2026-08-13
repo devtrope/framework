@@ -33,7 +33,7 @@ final class RouteResolverTest extends TestCase
         [$handler, $arguments] = $this->resolver->resolve($routes, '/user/quentin');
 
         $this->assertSame([FakeController::class, 'withArgument'], $handler);
-        $this->assertSame(['quentin'], $arguments);
+        $this->assertSame(['username' => 'quentin'], $arguments);
     }
 
     public function testResolvesDynamicRouteWithMultipleArguments(): void
@@ -42,7 +42,7 @@ final class RouteResolverTest extends TestCase
         [$handler, $arguments] = $this->resolver->resolve($routes, '/posts/php/8');
 
         $this->assertSame([FakeController::class, 'withMultipleArguments'], $handler);
-        $this->assertSame(['php', '8'], $arguments);
+        $this->assertSame(['category' => 'php', 'id' => '8'], $arguments);
     }
 
     public function testThrowsWhenNoRouteMatches(): void
