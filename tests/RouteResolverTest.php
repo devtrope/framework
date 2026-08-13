@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use Exception;
 use Ludens\Exceptions\RouteNotFoundException;
 use Ludens\Routing\RouteResolver;
 use PHPUnit\Framework\TestCase;
@@ -56,7 +55,7 @@ final class RouteResolverTest extends TestCase
     {
         $routes = ['/user/{username}/profile' => [FakeController::class, 'withArgument']];
 
-        $this->expectException(Exception::class);
+        $this->expectException(RouteNotFoundException::class);
         $this->resolver->resolve($routes, '/user/quentin');
     }
 }
