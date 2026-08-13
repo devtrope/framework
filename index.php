@@ -24,7 +24,7 @@ foreach ($files as $file) {
             if (!$attributeInstance instanceof HttpMethodAttributeInterface) {
                 continue;
             }
-            Route::add($attributeInstance->getHttpMethod(), $attributeInstance->getPath(), [$class, $method->getName()]);
+            Route::add($attributeInstance->getHttpMethod(), $attributeInstance->getPath(), ['controller' => $class, 'method' => $method->getName()]);
         }
     }
 }

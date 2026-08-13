@@ -2,6 +2,9 @@
 
 namespace Ludens\Routing;
 
+use Exception;
+use ReflectionClass;
+
 final class ResolvedRoute
 {
     private array $handler;
@@ -25,9 +28,26 @@ final class ResolvedRoute
 
     private function instantiate(array $handler): array
     {
-        $class = $handler[0];
-        $method = $handler[1];
-        $instance = new $class();
-        return [$instance, $method];
+        if (false === class_exists($handler['controller'])) {
+            throw new Exception(
+                "The controller {$handler['controller']} does not exist"
+            );
+        }
+
+        $reflectionClass = new ReflectionClass($handler['controller']);
+        if (false === $reflectionClass->hasMethod($handler['method'])) {
+            throw new Exception(
+                "The method {$handler['method']} does not exist in controller {$handler['controller']}"
+            );
+        }
+
+        $constructor = $reflectionClass->getConstructor();
+        $arguments = [];
+        if (null !== $constructor) {
+            $arguments = $constructor->getParameters();
+        }
+
+        $instance = $reflectionClass->newInstance(...$arguments);
+        return [$instance, $handler['method']];
     }
 }

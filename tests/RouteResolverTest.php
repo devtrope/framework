@@ -20,7 +20,7 @@ final class RouteResolverTest extends TestCase
 
     public function testResolvesStaticRoute(): void
     {
-        $routes = ['/' => [FakeController::class, 'index']];
+        $routes = ['/' => ['controller' => FakeController::class, 'method' => 'index']];
         $resolvedRoute = $this->resolver->resolve($routes, '/');
 
         [$controller, $method] = $resolvedRoute->getHandler();
@@ -32,7 +32,7 @@ final class RouteResolverTest extends TestCase
 
     public function testResolvesDynamicRouteWithArgument(): void
     {
-        $routes = ['/user/{username}' => [FakeController::class, 'withArgument']];
+        $routes = ['/user/{username}' => ['controller' => FakeController::class, 'method' => 'withArgument']];
         $resolvedRoute = $this->resolver->resolve($routes, '/user/quentin');
 
         [$controller, $method] = $resolvedRoute->getHandler();
@@ -44,7 +44,7 @@ final class RouteResolverTest extends TestCase
 
     public function testResolvesDynamicRouteWithMultipleArguments(): void
     {
-        $routes = ['/posts/{category}/{id}' => [FakeController::class, 'withMultipleArguments']];
+        $routes = ['/posts/{category}/{id}' => ['controller' => FakeController::class, 'method' => 'withMultipleArguments']];
         $resolvedRoute = $this->resolver->resolve($routes, '/posts/php/8');
 
         [$controller, $method] = $resolvedRoute->getHandler();
@@ -60,9 +60,15 @@ final class RouteResolverTest extends TestCase
         $this->resolver->resolve([], '/unknown');
     }
 
+    public function testThrowsWhenControllerDoesNotExist(): void
+    {
+        $this->expectException(RouteNotFoundException::class);
+        $this->resolver->resolve([], '/unknown');
+    }
+
     public function testDoesNotMatchWhenSegmentCountDiffers(): void
     {
-        $routes = ['/user/{username}/profile' => [FakeController::class, 'withArgument']];
+        $routes = ['/user/{username}/profile' => ['controller' => FakeController::class, 'method' => 'withArgument']];
 
         $this->expectException(RouteNotFoundException::class);
         $this->resolver->resolve($routes, '/user/quentin');
