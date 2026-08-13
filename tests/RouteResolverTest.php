@@ -65,17 +65,17 @@ final class RouteResolverTest extends TestCase
 
     public function testThrowsWhenControllerDoesNotExist(): void
     {
+        $this->expectException(InvalidControllerException::class);
         $routes = ['/contact' => Handler::fromArray(['JustANonExistingController', 'index'])];
 
-        $this->expectException(InvalidControllerException::class);
         $this->resolver->resolve($routes, '/contact');
     }
 
     public function testThrowsWhenMethodDoesNotExist(): void
     {
+        $this->expectException(InvalidMethodException::class);
         $routes = ['/contact' => Handler::fromArray([FakeController::class, 'contact'])];
 
-        $this->expectException(InvalidMethodException::class);
         $this->resolver->resolve($routes, '/contact');
     }
 
