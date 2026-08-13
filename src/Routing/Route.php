@@ -2,7 +2,7 @@
 
 namespace Ludens\Routing;
 
-final class Routes
+final class Route
 {
     private static array $routes = [];
 
@@ -14,7 +14,7 @@ final class Routes
         self::$routes[$method][$uri] = $handler;
     }
 
-    public static function getAll(string $method)
+    public static function getAllByRequestMethod(string $method)
     {
         if (false === isset(self::$routes[$method])) {
             return [];

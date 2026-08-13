@@ -3,7 +3,7 @@
 require 'vendor/autoload.php';
 
 use Ludens\Contracts\HttpMethodAttributeInterface;
-use Ludens\Routing\Routes;
+use Ludens\Routing\Route;
 
 $request = $_SERVER['REQUEST_URI'];
 $requestMethod = $_SERVER['REQUEST_METHOD'];
@@ -24,14 +24,14 @@ foreach ($files as $file) {
             if (!$attributeInstance instanceof HttpMethodAttributeInterface) {
                 continue;
             }
-            Routes::add($attributeInstance->getHttpMethod(), $attributeInstance->getPath(), [$class, $method->getName()]);
+            Route::add($attributeInstance->getHttpMethod(), $attributeInstance->getPath(), [$class, $method->getName()]);
         }
     }
 }
 
 try {
     Ludens\Routing\Router::run(
-        Routes::getAll($requestMethod),
+        Route::getAllByRequestMethod($requestMethod),
         $request
     );
 } catch (\Exception $e) {
