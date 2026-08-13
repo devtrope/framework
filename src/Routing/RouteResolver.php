@@ -20,29 +20,44 @@ final class RouteResolver
             return $routes[$path];
         }
 
-        foreach ($routes as $key => $handler) {
-            $explodedKey = explode('/', trim($key, '/'));
-            $explodedPath = explode('/', trim($path, '/'));
-
-            if (\count($explodedPath) !== \count($explodedKey)) {
+        foreach ($routes as $route => $handler) {
+            if (false === $this->checkPathAndRouteParameters($route, $path)) {
                 continue;
-            }
-
-            for ($i = 0; $i < \count($explodedKey); $i++) {
-                if (str_starts_with($explodedKey[$i], '{')) {
-                    $parameterKey = trim($explodedKey[$i], '{}');
-                    $this->parameters[$parameterKey] = $explodedPath[$i];
-                    continue;
-                }
-
-                if ($explodedPath[$i] !== $explodedKey[$i]) {
-                    continue 2;
-                }
             }
 
             return $handler;
         }
 
         throw new Exception("No route found for path {$path}");
+    }
+
+    private function checkPathAndRouteParameters(string $route, string $path): bool
+    {
+        // If the route doesn't contain arguments, there's no need to go further
+        // because this checking is done for routes with arguments
+        if (false === str_contains($route, '{')) {
+            return false;
+        }
+
+        $routeParameters = explode('/', trim($route, '/'));
+        $pathParameters = explode('/', trim($path, '/'));
+
+        if (\count($routeParameters) !== \count($pathParameters)) {
+            return false;
+        }
+
+        for ($i = 0; $i < \count($pathParameters); $i++) {
+            if (str_starts_with($routeParameters[$i], '{')) {
+                $parameterKey = trim($routeParameters[$i], '{}');
+                $this->parameters[$parameterKey] = $pathParameters[$i];
+                continue;
+            }
+
+            if ($pathParameters[$i] !== $routeParameters[$i]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
