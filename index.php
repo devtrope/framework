@@ -34,6 +34,6 @@ try {
         Route::getAllByRequestMethod($requestMethod),
         $request
     );
-} catch (\Exception $e) {
+} catch (Ludens\Exceptions\RouteNotFoundException $e) {
     echo $e->getMessage() . "\n";
 }

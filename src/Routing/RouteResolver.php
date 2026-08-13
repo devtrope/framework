@@ -2,7 +2,7 @@
 
 namespace Ludens\Routing;
 
-use Exception;
+use Ludens\Exceptions\RouteNotFoundException;
 
 final class RouteResolver
 {
@@ -28,7 +28,7 @@ final class RouteResolver
             return $handler;
         }
 
-        throw new Exception("No route found for path {$path}");
+        throw new RouteNotFoundException("No route found for path {$path}");
     }
 
     private function checkPathAndRouteParameters(string $route, string $path): bool
