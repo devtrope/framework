@@ -2,18 +2,17 @@
 
 namespace Ludens\Controller;
 
-use Ludens\Attributes\Get;
-use Ludens\Attributes\Post;
+use Ludens\Routing\Routes;
 
 final class Home
 {
-    #[Post('/')]
+    #[Routes\Post('/')]
     public function index(): void
     {
         echo "Home Page\n";
     }
 
-    #[Get('/user/{username}')]
+    #[Routes\Get('/user/{username}')]
     public function user(string $username): void
     {
         echo "Welcome {$username}\n";

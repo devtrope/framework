@@ -1,6 +1,6 @@
 <?php
 
-namespace Ludens\Attributes;
+namespace Ludens\Routing\Routes;
 
 use Attribute;
 use Ludens\Contracts\HttpMethodAttributeInterface;
