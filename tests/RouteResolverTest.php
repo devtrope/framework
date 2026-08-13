@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use Ludens\Exceptions\InvalidControllerException;
+use Ludens\Exceptions\InvalidMethodException;
 use Ludens\Exceptions\RouteNotFoundException;
 use Ludens\Routing\RouteResolver;
 use PHPUnit\Framework\TestCase;
@@ -62,8 +64,18 @@ final class RouteResolverTest extends TestCase
 
     public function testThrowsWhenControllerDoesNotExist(): void
     {
-        $this->expectException(RouteNotFoundException::class);
-        $this->resolver->resolve([], '/unknown');
+        $routes = ['/contact' => ['controller' => 'JustANonExistingController', 'method' => 'index']];
+
+        $this->expectException(InvalidControllerException::class);
+        $this->resolver->resolve($routes, '/contact');
+    }
+
+    public function testThrowsWhenMethodDoesNotExist(): void
+    {
+        $routes = ['/contact' => ['controller' => FakeController::class, 'method' => 'contact']];
+
+        $this->expectException(InvalidMethodException::class);
+        $this->resolver->resolve($routes, '/contact');
     }
 
     public function testDoesNotMatchWhenSegmentCountDiffers(): void

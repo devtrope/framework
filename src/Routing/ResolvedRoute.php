@@ -2,7 +2,8 @@
 
 namespace Ludens\Routing;
 
-use Exception;
+use Ludens\Exceptions\InvalidControllerException;
+use Ludens\Exceptions\InvalidMethodException;
 use ReflectionClass;
 
 final class ResolvedRoute
@@ -29,14 +30,14 @@ final class ResolvedRoute
     private function instantiate(array $handler): array
     {
         if (false === class_exists($handler['controller'])) {
-            throw new Exception(
+            throw new InvalidControllerException(
                 "The controller {$handler['controller']} does not exist"
             );
         }
 
         $reflectionClass = new ReflectionClass($handler['controller']);
         if (false === $reflectionClass->hasMethod($handler['method'])) {
-            throw new Exception(
+            throw new InvalidMethodException(
                 "The method {$handler['method']} does not exist in controller {$handler['controller']}"
             );
         }
