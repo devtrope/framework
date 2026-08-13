@@ -21,28 +21,37 @@ final class RouteResolverTest extends TestCase
     public function testResolvesStaticRoute(): void
     {
         $routes = ['/' => [FakeController::class, 'index']];
-        [$handler, $arguments] = $this->resolver->resolve($routes, '/');
+        $resolvedRoute = $this->resolver->resolve($routes, '/');
 
-        $this->assertSame([FakeController::class, 'index'], $handler);
-        $this->assertSame([], $arguments);
+        [$controller, $method] = $resolvedRoute->getHandler();
+
+        $this->assertInstanceOf(FakeController::class, $controller);
+        $this->assertSame('index', $method);
+        $this->assertSame([], $resolvedRoute->getParameters());
     }
 
     public function testResolvesDynamicRouteWithArgument(): void
     {
         $routes = ['/user/{username}' => [FakeController::class, 'withArgument']];
-        [$handler, $arguments] = $this->resolver->resolve($routes, '/user/quentin');
+        $resolvedRoute = $this->resolver->resolve($routes, '/user/quentin');
 
-        $this->assertSame([FakeController::class, 'withArgument'], $handler);
-        $this->assertSame(['username' => 'quentin'], $arguments);
+        [$controller, $method] = $resolvedRoute->getHandler();
+
+        $this->assertInstanceOf(FakeController::class, $controller);
+        $this->assertSame('withArgument', $method);
+        $this->assertSame(['username' => 'quentin'], $resolvedRoute->getParameters());
     }
 
     public function testResolvesDynamicRouteWithMultipleArguments(): void
     {
         $routes = ['/posts/{category}/{id}' => [FakeController::class, 'withMultipleArguments']];
-        [$handler, $arguments] = $this->resolver->resolve($routes, '/posts/php/8');
+        $resolvedRoute = $this->resolver->resolve($routes, '/posts/php/8');
 
-        $this->assertSame([FakeController::class, 'withMultipleArguments'], $handler);
-        $this->assertSame(['category' => 'php', 'id' => '8'], $arguments);
+        [$controller, $method] = $resolvedRoute->getHandler();
+
+        $this->assertInstanceOf(FakeController::class, $controller);
+        $this->assertSame('withMultipleArguments', $method);
+        $this->assertSame(['category' => 'php', 'id' => '8'], $resolvedRoute->getParameters());
     }
 
     public function testThrowsWhenNoRouteMatches(): void

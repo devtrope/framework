@@ -8,10 +8,10 @@ final class RouteResolver
 {
     private array $parameters = [];
 
-    public function resolve(array $routes, string $path): array
+    public function resolve(array $routes, string $path): ResolvedRoute
     {
         $result = $this->match($routes, $path);
-        return [$result, $this->parameters];
+        return new ResolvedRoute($result, $this->parameters);
     }
 
     private function match(array $routes, string $path): array
