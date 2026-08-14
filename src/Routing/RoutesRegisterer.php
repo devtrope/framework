@@ -19,21 +19,33 @@ final class RoutesRegisterer
     public function register(): void
     {
         foreach ($this->retrieveControllersFiles() as $file) {
-            $classname = $this->formatClassname($file);
-            $reflectionClass = new ReflectionClass($classname);
-            $methods = $reflectionClass->getMethods();
-            foreach ($methods as $method) {
-                $attributes = $method->getAttributes();
-                foreach ($attributes as $attribute) {
-                    $attributeInstance = $attribute->newInstance();
-                    if (!$attributeInstance instanceof HttpMethodAttributeInterface) {
-                        continue;
-                    }
-                    $handler = new Handler($classname, $method->getName());
-                    Route::add($attributeInstance->getHttpMethod(), $attributeInstance->getPath(), $handler);
-                }
+            $attributes = $this->getAttributesByMethod($this->formatClassname($file));
+            foreach ($attributes as $attribute) {
+                $handler = new Handler($attribute['classname'], $attribute['method']);
+                Route::add($attribute['instance']->getHttpMethod(), $attribute['instance']->getPath(), $handler);
             }
         }
+    }
+
+    private function getAttributesByMethod(string $classname): array
+    {
+        $methodAttributes = [];
+        $reflectionClass = new ReflectionClass($classname);
+        $methods = $reflectionClass->getMethods();
+        foreach ($methods as $method) {
+            /**
+             * @var ReflectionMethod $method
+             */
+            $attributes = $method->getAttributes();
+            foreach ($attributes as $attribute) {
+                $attributeInstance = $attribute->newInstance();
+                if (!$attributeInstance instanceof HttpMethodAttributeInterface) {
+                    continue;
+                }
+                $methodAttributes[] = ['classname' => $classname, 'method' => $method->getName(), 'instance' => $attributeInstance];
+            }
+        }
+        return $methodAttributes;
     }
 
     private function retrieveControllersFiles(): array
