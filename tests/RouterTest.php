@@ -7,7 +7,7 @@ namespace Tests;
 use Ludens\Routing\Router;
 use Ludens\Routing\Support\Handler;
 use PHPUnit\Framework\TestCase;
-use Tests\Fixtures\FakeController;
+use Tests\Fixtures\Controller\FakeController;
 
 final class RouterTest extends TestCase
 {

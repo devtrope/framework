@@ -16,6 +16,12 @@ final class RoutesRegisterer
     // TODO: add the controller namespace into a configuration file instead
     private const CONTROLLER_NAMESPACE = '\\Ludens\\Controller\\';
 
+    public function __construct(
+        private readonly string $controllerFolder = self::CONTROLLER_FOLDER,
+        private readonly string $controllerNamespace = self::CONTROLLER_NAMESPACE
+    )
+    {}
+
     public function register(): void
     {
         foreach ($this->retrieveControllersFiles() as $file) {
@@ -50,22 +56,18 @@ final class RoutesRegisterer
 
     private function retrieveControllersFiles(): array
     {
-        // String interpolation doesn't want to work with 'self', so I've got to do this kind of useless bypass
-        $controllerFolder = self::CONTROLLER_FOLDER;
-        if (false === is_dir(self::CONTROLLER_FOLDER)) {
+        if (false === is_dir($this->controllerFolder)) {
             throw new InvalidControllerFolderException(
-                "The controller folder {$controllerFolder} does not exist"
+                "The controller folder {$this->controllerFolder} does not exist"
             );
         }
-        return glob("{$controllerFolder}*.php");
+        return glob("{$this->controllerFolder}*.php");
     }
 
     private function formatClassname(string $file): string
     {
-        $classname = str_replace(self::CONTROLLER_FOLDER, '', $file);
+        $classname = str_replace($this->controllerFolder, '', $file);
         $classname = str_replace('.php', '', $classname);
-        // Again with the string interpolation problem...
-        $controllerNamespace = self::CONTROLLER_NAMESPACE;
-        return "{$controllerNamespace}{$classname}";
+        return "{$this->controllerNamespace}{$classname}";
     }
 }

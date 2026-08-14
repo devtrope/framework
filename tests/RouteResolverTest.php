@@ -8,7 +8,7 @@ use Ludens\Exceptions\RouteNotFoundException;
 use Ludens\Routing\RouteResolver;
 use Ludens\Routing\Support\Handler;
 use PHPUnit\Framework\TestCase;
-use Tests\Fixtures\FakeController;
+use Tests\Fixtures\Controller\FakeController;
 
 final class RouteResolverTest extends TestCase
 {
