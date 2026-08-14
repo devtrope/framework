@@ -2,11 +2,9 @@
 
 namespace Ludens\Routing;
 
-use Ludens\Contracts\HttpMethodAttributeInterface;
 use Ludens\Exceptions\InvalidControllerFolderException;
 use Ludens\Routing\Support\Handler;
-use ReflectionClass;
-use ReflectionMethod;
+use Ludens\Routing\Support\MethodAttribute;
 
 final class RoutesRegisterer
 {
@@ -18,40 +16,23 @@ final class RoutesRegisterer
 
     public function __construct(
         private readonly string $controllerFolder = self::CONTROLLER_FOLDER,
-        private readonly string $controllerNamespace = self::CONTROLLER_NAMESPACE
+        private readonly string $controllerNamespace = self::CONTROLLER_NAMESPACE,
+        private MethodAttributesResolver $methodAttributesResolver = new MethodAttributesResolver()
     )
     {}
 
     public function register(): void
     {
         foreach ($this->retrieveControllersFiles() as $file) {
-            $attributes = $this->getAttributesByMethod($this->formatClassname($file));
-            foreach ($attributes as $attribute) {
-                $handler = new Handler($attribute['classname'], $attribute['method']);
-                Route::add($attribute['instance']->getHttpMethod(), $attribute['instance']->getPath(), $handler);
-            }
-        }
-    }
-
-    private function getAttributesByMethod(string $classname): array
-    {
-        $methodAttributes = [];
-        $reflectionClass = new ReflectionClass($classname);
-        $methods = $reflectionClass->getMethods();
-        foreach ($methods as $method) {
+            $attributes = $this->methodAttributesResolver->getAllByClassName($this->formatClassName($file));
             /**
-             * @var ReflectionMethod $method
+             * @var MethodAttribute $attribute
              */
-            $attributes = $method->getAttributes();
             foreach ($attributes as $attribute) {
-                $attributeInstance = $attribute->newInstance();
-                if (!$attributeInstance instanceof HttpMethodAttributeInterface) {
-                    continue;
-                }
-                $methodAttributes[] = ['classname' => $classname, 'method' => $method->getName(), 'instance' => $attributeInstance];
+                $handler = new Handler($attribute->getClassName(), $attribute->getMethod());
+                Route::add($attribute->getInstance()->getHttpMethod(), $attribute->getInstance()->getPath(), $handler);
             }
         }
-        return $methodAttributes;
     }
 
     private function retrieveControllersFiles(): array
@@ -64,7 +45,7 @@ final class RoutesRegisterer
         return glob("{$this->controllerFolder}*.php");
     }
 
-    private function formatClassname(string $file): string
+    private function formatClassName(string $file): string
     {
         $classname = str_replace($this->controllerFolder, '', $file);
         $classname = str_replace('.php', '', $classname);
