@@ -9,6 +9,6 @@ final class Router
         $routeResolver = new RouteResolver();
         $resolvedRoute = $routeResolver->resolve($routes, $path);
         
-        \call_user_func_array($resolvedRoute->getHandler(), $resolvedRoute->getParameters());
+        echo \call_user_func_array($resolvedRoute->getHandler(), $resolvedRoute->getParameters());
     }
 }

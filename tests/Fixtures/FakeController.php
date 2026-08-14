@@ -6,18 +6,18 @@ namespace Tests\Fixtures;
 
 final class FakeController
 {
-    public function index(): void
+    public function index(): string
     {
-        echo "index called\n";
+        return "index called";
     }
 
-    public function withArgument(string $username): void
+    public function withArgument(string $username): string
     {
-        echo "hello {$username}\n";
+        return "hello {$username}";
     }
 
-    public function withMultipleArguments(string $category, string $id): void
+    public function withMultipleArguments(string $category, string $id): string
     {
-        echo "{$category}:{$id}\n";
+        return "{$category}:{$id}";
     }
 }

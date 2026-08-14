@@ -7,14 +7,14 @@ use Ludens\Routing\Routes;
 final class Home
 {
     #[Routes\Post('/')]
-    public function index(): void
+    public function index(): string
     {
-        echo "Home Page\n";
+        return "Home Page\n";
     }
 
     #[Routes\Get('/user/{username}')]
-    public function user(string $username): void
+    public function user(string $username): string
     {
-        echo "Welcome {$username}\n";
+        return "Welcome {$username}\n";
     }
 }
