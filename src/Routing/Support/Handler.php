@@ -27,12 +27,6 @@ final class Handler
         return $this->method;
     }
 
-    public static function fromArray(array $handler): self
-    {
-        [$controller, $method] = $handler;
-        return new self($controller, $method);
-    }
-
     private function validate(string $controller, string $method): void
     {
         if (false === class_exists($controller)) {
