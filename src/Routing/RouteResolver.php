@@ -11,8 +11,8 @@ final class RouteResolver
 
     public function resolve(array $routes, string $path): ResolvedRoute
     {
-        $result = $this->match($routes, $path);
-        return new ResolvedRoute($result, $this->parameters);
+        $handler = $this->match($routes, $path);
+        return new ResolvedRoute($handler, $this->parameters);
     }
 
     private function match(array $routes, string $path): Handler
@@ -22,7 +22,7 @@ final class RouteResolver
         }
 
         foreach ($routes as $route => $handler) {
-            if (false === $this->checkPathAndRouteParameters($route, $path)) {
+            if (false === $this->hasAMatchingRoute($route, $path)) {
                 continue;
             }
 
@@ -32,7 +32,7 @@ final class RouteResolver
         throw new RouteNotFoundException("No route found for path {$path}");
     }
 
-    private function checkPathAndRouteParameters(string $route, string $path): bool
+    private function hasAMatchingRoute(string $route, string $path): bool
     {
         // If the route doesn't contain arguments, there's no need to go further
         // because this checking is done for routes with arguments
