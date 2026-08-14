@@ -6,7 +6,8 @@ $request = $_SERVER['REQUEST_URI'];
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 
 // Retrieve all the attributes from the controller to automatically construct the routes
-Ludens\Routing\RoutesRegisterer::register();
+$routeRegisterer = new Ludens\Routing\RoutesRegisterer();
+$routeRegisterer->register();
 
 try {
     Ludens\Routing\Router::run(
