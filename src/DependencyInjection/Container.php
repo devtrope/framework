@@ -2,6 +2,7 @@
 
 namespace Ludens\DependencyInjection;
 
+use Exception;
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionParameter;
@@ -36,6 +37,24 @@ final class Container
         }
         $reflectionClass = new ReflectionClass($identifier);
         return $reflectionClass->newInstance(...$arguments);
+    }
+
+    public function load(string $filename): void
+    {
+        if (false === file_exists($filename)) {
+            throw new Exception(
+                "The configuration file {$filename} does not exist"
+            );
+        }
+
+        $configuration = require $filename;
+        foreach ($configuration as $service) {
+            if (isset($service['bind'])) {
+                foreach ($service['bind'] as $key => $value) {
+                    $this->bindings[$key] = $value;
+                }
+            }
+        }
     }
 
     public function bind(string $identifier, mixed $value): void
