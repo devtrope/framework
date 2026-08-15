@@ -8,8 +8,6 @@ use ReflectionParameter;
 
 final class Container
 {
-    private array $instances = [];
-
     public function get(string $identifier): mixed
     {
         $arguments = [];
@@ -22,16 +20,15 @@ final class Container
              * @var ReflectionNamedType
              */
             $dependencyType = $dependency->getType();
-            $dependencyClass = $dependencyType->getName();
-            $arguments[] = $dependencyClass;
-            if (false === isset($this->instances[$dependencyClass])) {
-                $this->get($dependencyClass);
+            $dependencyTypeName = $dependencyType->getName();
+            if (false === class_exists($dependencyTypeName)) {
+                $arguments[] = $dependency->getDefaultValue();
+                continue;
             }
+            $arguments[] = $this->get($dependencyTypeName);
         }
-        $instances = $this->getInstancesByArguments($arguments);
         $reflectionClass = new ReflectionClass($identifier);
-        $this->instances[$identifier] = $reflectionClass->newInstance(...$instances);
-        return $this->instances[$identifier];
+        return $reflectionClass->newInstance(...$arguments);
     }
 
     private function resolveDependencies(string $identifier): array
@@ -47,14 +44,5 @@ final class Container
         }
 
         return $constructor->getParameters();
-    }
-
-    private function getInstancesByArguments(array $arguments): array
-    {
-        $instances = [];
-        foreach ($arguments as $argument) {
-            $instances[] = $this->instances[$argument];
-        }
-        return $instances;
     }
 }
