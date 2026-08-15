@@ -5,8 +5,10 @@ require 'vendor/autoload.php';
 $request = $_SERVER['REQUEST_URI'];
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 
+$container = new Ludens\DependencyInjection\Container();
+
 // Retrieve all the attributes from the controller to automatically construct the routes
-$registerer = new Ludens\Routing\RoutesRegisterer();
+$registerer = $container->get(Ludens\Routing\RoutesRegisterer::class);
 $registerer->register();
 
 try {

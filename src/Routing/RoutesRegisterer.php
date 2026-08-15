@@ -15,9 +15,9 @@ final class RoutesRegisterer
     private const CONTROLLER_NAMESPACE = '\\Ludens\\Controller\\';
 
     public function __construct(
+        private MethodAttributesResolver $methodAttributesResolver,
         private readonly string $controllerFolder = self::CONTROLLER_FOLDER,
-        private readonly string $controllerNamespace = self::CONTROLLER_NAMESPACE,
-        private MethodAttributesResolver $methodAttributesResolver = new MethodAttributesResolver()
+        private readonly string $controllerNamespace = self::CONTROLLER_NAMESPACE
     )
     {}
 
