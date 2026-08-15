@@ -6,6 +6,8 @@ $request = $_SERVER['REQUEST_URI'];
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 
 $container = new Ludens\DependencyInjection\Container();
+$container->bind('controllerFolder', 'src/Controller/');
+$container->bind('controllerNamespace', '\\Ludens\\Controller\\');
 
 // Retrieve all the attributes from the controller to automatically construct the routes
 $registerer = $container->get(Ludens\Routing\RoutesRegisterer::class);

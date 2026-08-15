@@ -8,6 +8,8 @@ use ReflectionParameter;
 
 final class Container
 {
+    private array $bindings = [];
+
     public function get(string $identifier): mixed
     {
         $arguments = [];
@@ -22,13 +24,23 @@ final class Container
             $dependencyType = $dependency->getType();
             $dependencyTypeName = $dependencyType->getName();
             if (false === class_exists($dependencyTypeName)) {
-                $arguments[] = $dependency->getDefaultValue();
+                if ($dependency->isDefaultValueAvailable()) {
+                    $arguments[] = $dependency->getDefaultValue();
+                    continue;
+                }
+                // TODO: Verify if the binding exists and add the class name in the identifier
+                $arguments[] = $this->bindings[$dependency->getName()];
                 continue;
             }
             $arguments[] = $this->get($dependencyTypeName);
         }
         $reflectionClass = new ReflectionClass($identifier);
         return $reflectionClass->newInstance(...$arguments);
+    }
+
+    public function bind(string $identifier, mixed $value): void
+    {
+        $this->bindings[$identifier] = $value;
     }
 
     private function resolveDependencies(string $identifier): array

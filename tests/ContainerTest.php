@@ -17,6 +17,7 @@ final class ContainerTest extends TestCase
     public function setUp(): void
     {
         $this->container = new Container();
+        $this->container->bind('filename', 'test');
     }
 
     public function testResolvesAClassWithoutConstructorDependencies(): void

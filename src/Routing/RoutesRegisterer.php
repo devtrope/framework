@@ -8,16 +8,10 @@ use Ludens\Routing\Support\MethodAttribute;
 
 final class RoutesRegisterer
 {
-    // TODO: add the folder into a configuration file instead
-    private const CONTROLLER_FOLDER = 'src/Controller/';
-
-    // TODO: add the controller namespace into a configuration file instead
-    private const CONTROLLER_NAMESPACE = '\\Ludens\\Controller\\';
-
     public function __construct(
         private MethodAttributesResolver $methodAttributesResolver,
-        private readonly string $controllerFolder = self::CONTROLLER_FOLDER,
-        private readonly string $controllerNamespace = self::CONTROLLER_NAMESPACE
+        private readonly string $controllerFolder,
+        private readonly string $controllerNamespace
     )
     {}
 
