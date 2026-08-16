@@ -6,5 +6,5 @@ namespace Tests\Fixtures\Services;
 
 final class Logger
 {
-    public function __construct(private Mailer $mailer, private string $filename) {}
+    public function __construct(private Mailer $mailer) {}
 }

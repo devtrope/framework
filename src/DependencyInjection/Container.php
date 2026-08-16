@@ -2,7 +2,7 @@
 
 namespace Ludens\DependencyInjection;
 
-use Exception;
+use Ludens\Exceptions\InvalidConfigurationFileProvided;
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionParameter;
@@ -42,7 +42,7 @@ final class Container
     public function load(string $filename): void
     {
         if (false === file_exists($filename)) {
-            throw new Exception(
+            throw new InvalidConfigurationFileProvided(
                 "The configuration file {$filename} does not exist"
             );
         }
@@ -55,11 +55,6 @@ final class Container
                 }
             }
         }
-    }
-
-    public function bind(string $identifier, mixed $value): void
-    {
-        $this->bindings[$identifier] = $value;
     }
 
     private function resolveDependencies(string $identifier): array
