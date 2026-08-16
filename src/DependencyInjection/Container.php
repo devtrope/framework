@@ -3,6 +3,7 @@
 namespace Ludens\DependencyInjection;
 
 use Ludens\Exceptions\InvalidConfigurationFileProvided;
+use Ludens\Exceptions\MissingBoundValueException;
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionParameter;
@@ -29,7 +30,12 @@ final class Container
                     $arguments[] = $dependency->getDefaultValue();
                     continue;
                 }
-                // TODO: Verify if the binding exists and add the class name in the identifier
+                
+                if (false === isset($this->bindings[$dependency->getName()])) {
+                    throw new MissingBoundValueException(
+                        "No value provided for {$dependency->getName()}"
+                    );
+                }
                 $arguments[] = $this->bindings[$dependency->getName()];
                 continue;
             }

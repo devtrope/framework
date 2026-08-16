@@ -6,6 +6,7 @@ namespace Tests;
 
 use Ludens\DependencyInjection\Container;
 use Ludens\Exceptions\InvalidConfigurationFileProvided;
+use Ludens\Exceptions\MissingBoundValueException;
 use PHPUnit\Framework\TestCase;
 use Tests\Fixtures\Services\Application;
 use Tests\Fixtures\Services\Logger;
@@ -53,9 +54,16 @@ final class ContainerTest extends TestCase
         $this->assertSame('config-secret-key', $service->getApiKey());
     }
 
-    public function testThrowWhenConfigurationFileDoesNotExist(): void
+    public function testThrowsWhenConfigurationFileDoesNotExist(): void
     {
         $this->expectException(InvalidConfigurationFileProvided::class);
         $this->container->load(__DIR__ . '/Fixtures/Config/does-not-exist.php');
+    }
+
+    public function testThrowsWhenValueHasNoBound(): void
+    {
+        $this->expectException(MissingBoundValueException::class);
+        $this->container->load(__DIR__ . '/Fixtures/Config/invalid-services.php');
+        $this->container->get(ServiceWithBoundValue::class);
     }
 }
