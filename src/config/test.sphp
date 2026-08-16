@@ -2,6 +2,6 @@ title: 'Ludens'
 author: 'Quentin SCHIFFERLE'
 version: 1.4
 man: true
-#default: [
-#  controllerFolder: 'src/Controller'
-#]
+default: [
+  controllerFolder: 'src/Controller'
+]

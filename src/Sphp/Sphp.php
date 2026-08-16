@@ -10,6 +10,7 @@ final class Sphp
     private const INT_REGEX = '/^-?\d+$/';
     private const FLOAT_REGEX = '/^-?\d+\.\d+$/';
     private array $result = [];
+    private ?string $current = null;
 
     public function parse(string $filepath): array
     {
@@ -29,7 +30,19 @@ final class Sphp
             return;
         }
 
-        // Key: Value
+        if (str_ends_with($line, '[')) {
+            $key = str_replace('[', '', $line);
+            $key = str_replace(' ', '', $key);
+            $key = str_replace(':', '', $key);
+            $this->current = $key;
+            return;
+        }
+
+        if (']' === $line) {
+            $this->current = null;
+            return;
+        }
+
         if (preg_match(self::KEY_VALUE_REGEX, $trimmed, $matches)) {
             [$result, $key, $value] = $matches;
             $this->setValue($key, $this->castValue($value));
@@ -70,6 +83,10 @@ final class Sphp
 
     private function setValue(string $key, mixed $value)
     {
-        $this->result[$key] = $value;
+        if (null === $this->current) {
+            $this->result[$key] = $value;
+        } else {
+            $this->result[$this->current][$key] = $value;
+        }
     }
 }
