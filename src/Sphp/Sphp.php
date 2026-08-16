@@ -14,6 +14,10 @@ final class Sphp
 
     public function parse(string $filepath): array
     {
+        $lexer = new Lexer();
+        $content = $lexer->tokenize(file_get_contents($filepath));
+        var_dump($content);
+        die;
         $lines = file($filepath, FILE_IGNORE_NEW_LINES);
         foreach ($lines as $lineNumber => $line) {
             $this->parseLine($line, $lineNumber + 1);
