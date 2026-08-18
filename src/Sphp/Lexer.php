@@ -2,46 +2,77 @@
 
 namespace Ludens\Sphp;
 
+use Ludens\Sphp\LexerType;
+
 final class Lexer
 {
+    private const COLON = ':';
+    private const QUOTE = '\'';
+    private array $content = [];
+    private array $tokens = [];
+    private int $i = 0;
+    
     public function tokenize(string $content): array
     {
-        $tokens = [];
-        $content = str_split($content);
-        for ($i = 0; $i < \count($content); $i++) {
-            if (ctype_alpha($content[$i])) {
-                $value = null;
-                while (ctype_alpha($content[$i])) {
-                    $value .= $content[$i];
-                    $i++;
-                }
-                $tokens[] = ['IDENTIFIER' => $value];
+        $this->content = str_split($content);
+        while ($this->i < \count($this->content)) {
+            if (ctype_alpha($this->content[$this->i])) {
+                $this->handleIdentifier();
+            }
+            
+            if (self::QUOTE === $this->content[$this->i]) {
+                $this->handleString();
             }
 
-            if (':' === $content[$i]) {
-                $tokens[] = ['COLON' => ':'];
+            if (ctype_digit($this->content[$this->i])) {
+                $this->handleNumber();
             }
 
-            if ('\'' === $content[$i]) {
-                $i++;
-                $value = null;
-                while ('\'' !== $content[$i]) {
-                    $value .= $content[$i];
-                    $i++;
-                }
-                $tokens[] = ['STRING' => $value];
+            if (self::COLON === $this->content[$this->i]) {
+                $this->append(LexerType::COLON, self::COLON);
             }
 
-            if (ctype_digit($content[$i])) {
-                $value = null;
-                while(ctype_digit($content[$i]) || '.' === $content[$i]) {
-                    $value .= $content[$i];
-                    $i++;
-                }
-                $tokens[] = ['NUMBER' => $value];
-            }
+            $this->i++;
         }
 
-        return $tokens;
+        return $this->tokens;
+    }
+
+    private function handleIdentifier(): void
+    {
+        $value = null;
+        while (ctype_alpha($this->content[$this->i])) {
+            $value .= $this->content[$this->i];
+            $this->i++;
+        }
+        $this->append(LexerType::IDENTIFIER, $value);
+    }
+
+    private function handleString(): void
+    {
+        // A string type starts with a quote, so we want to move forward
+        // to store the real string value
+        $this->i++;
+        $value = null;
+        while (self::QUOTE !== $this->content[$this->i]) {
+            $value .= $this->content[$this->i];
+            $this->i++;
+        }
+        $this->append(LexerType::STRING, $value);
+    }
+
+    private function handleNumber(): void
+    {
+        $value = null;
+        while (ctype_digit($this->content[$this->i]) || '.' === $this->content[$this->i]) {
+            $value .= $this->content[$this->i];
+            $this->i++;
+        }
+        $this->append(LexerType::NUMBER, $value);
+    }
+
+    private function append(LexerType $type, string $value)
+    {
+        $this->tokens[] = [$type->value => $value];
     }
 }
