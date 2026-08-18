@@ -2,10 +2,10 @@
 
 namespace Ludens\Sphp;
 
-enum LexerType: string
+enum LexerType
 {
-    case IDENTIFIER = 'IDENTIFIER';
-    case STRING = 'STRING';
-    case NUMBER = 'NUMBER';
-    case COLON = 'COLON';
+    case IDENTIFIER;
+    case STRING;
+    case NUMBER;
+    case COLON;
 }

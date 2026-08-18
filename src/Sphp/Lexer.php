@@ -86,6 +86,6 @@ final class Lexer
 
     private function append(LexerType $type, string $value): array
     {
-        return ['type' => $type->value, 'value' => $value, 'line' => $this->line];
+        return ['type' => $type->name, 'value' => $value, 'line' => $this->line];
     }
 }
