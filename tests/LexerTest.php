@@ -14,9 +14,9 @@ final class LexerTest extends TestCase
         $lexer = new Lexer();
         $tokenized = $lexer->tokenize("title: 'Ludens'");
         $this->assertSame([
-            ['IDENTIFIER' => 'title'],
-            ['COLON' => ':'],
-            ['STRING' => 'Ludens']
+            ['type' => 'IDENTIFIER', 'value' => 'title', 'line' => 1],
+            ['type' => 'COLON', 'value' => ':', 'line' => 1],
+            ['type' => 'STRING', 'value' => 'Ludens', 'line' => 1]
         ], $tokenized);
     }
 }
