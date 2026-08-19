@@ -9,34 +9,47 @@ final class Lexer
     private const COLON = ":";
     private const QUOTE = "'";
     private const NEW_LINE = "\n";
-    private array $content = [];
     private int $position = 0;
     private int $line = 1;
 
-    public function tokenize(string $content): array
+    public function __construct(
+        private string $input
+    ) {}
+
+    public function tokenize(): array
     {
         $tokens = [];
-        $this->content = str_split($content);
-        
-        while ($this->position < \count($this->content)) {
-            if (self::NEW_LINE === $this->content[$this->position]) {
+
+        while ($this->position < \strlen($this->input)) {
+            $character = $this->input[$this->position];
+
+            if (self::NEW_LINE === $character) {
                 $this->line++;
+                $this->position++;
+                continue;
             }
 
-            if (ctype_alpha($this->content[$this->position])) {
-                $tokens[] = $this->handleIdentifier();
+            if (ctype_alpha($character)) {
+                $tokens[] = $this->readIdentifier();
+                continue;
             }
             
-            if (self::QUOTE === $this->content[$this->position]) {
-                $tokens[] = $this->handleString();
+            if (ctype_digit($character)) {
+                $tokens[] = $this->readNumber();
+                continue;
             }
 
-            if (ctype_digit($this->content[$this->position])) {
-                $tokens[] = $this->handleNumber();
+            if (self::QUOTE === $character) {
+                $tokens[] = $this->readString();
+                //Skip the last quote closing the string value
+                $this->position++;
+                continue;
             }
 
-            if (self::COLON === $this->content[$this->position]) {
+            if (self::COLON === $character) {
                 $tokens[] = $this->append(LexerType::COLON, self::COLON);
+                $this->position++;
+                continue;
             }
 
             $this->position++;
@@ -45,43 +58,50 @@ final class Lexer
         return $tokens;
     }
 
-    private function handleIdentifier(): array
+    private function readIdentifier(): array
     {
         $value = null;
-        while (ctype_alpha($this->content[$this->position])) {
-            $value .= $this->content[$this->position];
+        while (
+            $this->position < \strlen($this->input) &&
+            ctype_alpha($this->input[$this->position])
+        ) {
+            $value .= $this->input[$this->position];
             $this->position++;
         }
         return $this->append(LexerType::IDENTIFIER, $value);
     }
 
-    private function handleString(): array
+    private function readNumber(): array
+    {
+        $value = null;
+        while (
+            $this->position < \strlen($this->input) &&
+            null !== $this->input[$this->position] && 
+            (
+                ctype_digit($this->input[$this->position]) ||
+                '.' === $this->input[$this->position]
+            )
+        ) {
+            $value .= $this->input[$this->position];
+            $this->position++;
+        }
+        return $this->append(LexerType::NUMBER, $value);
+    }
+
+    private function readString(): array
     {
         // A string type starts with a quote, so we want to move forward
         // to store the real string value
         $this->position++;
         $value = null;
-        while (self::QUOTE !== $this->content[$this->position]) {
-            $value .= $this->content[$this->position];
+        while (
+            $this->position < \strlen($this->input) &&
+            self::QUOTE !== $this->input[$this->position]
+        ) {
+            $value .= $this->input[$this->position];
             $this->position++;
         }
         return $this->append(LexerType::STRING, $value);
-    }
-
-    private function handleNumber(): array
-    {
-        $value = null;
-        while (
-            null !== $this->content[$this->position] && 
-            (
-                ctype_digit($this->content[$this->position]) ||
-                '.' === $this->content[$this->position]
-            )
-        ) {
-            $value .= $this->content[$this->position];
-            $this->position++;
-        }
-        return $this->append(LexerType::NUMBER, $value);
     }
 
     private function append(LexerType $type, string $value): array

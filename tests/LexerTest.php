@@ -11,8 +11,8 @@ final class LexerTest extends TestCase
 {
     public function testReturnsTheRightArray(): void
     {
-        $lexer = new Lexer();
-        $tokenized = $lexer->tokenize("title: 'Ludens'");
+        $lexer = new Lexer("title: 'Ludens'");
+        $tokenized = $lexer->tokenize();
         $this->assertSame([
             ['type' => 'IDENTIFIER', 'value' => 'title', 'line' => 1],
             ['type' => 'COLON', 'value' => ':', 'line' => 1],
