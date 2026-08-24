@@ -47,7 +47,7 @@ final class Lexer
             }
 
             if (self::COLON === $character) {
-                $tokens[] = $this->append(LexerType::COLON, self::COLON);
+                $tokens[] = new ColonToken(LexerType::COLON, self::COLON, $this->line);
                 $this->position++;
                 continue;
             }
@@ -58,7 +58,7 @@ final class Lexer
         return $tokens;
     }
 
-    private function readIdentifier(): array
+    private function readIdentifier(): LexerToken
     {
         $value = null;
         while (
@@ -68,10 +68,10 @@ final class Lexer
             $value .= $this->input[$this->position];
             $this->position++;
         }
-        return $this->append(LexerType::IDENTIFIER, $value);
+        return new IdentifierToken(LexerType::IDENTIFIER, $value, $this->line);
     }
 
-    private function readNumber(): array
+    private function readNumber(): LexerToken
     {
         $value = null;
         while (
@@ -85,10 +85,10 @@ final class Lexer
             $value .= $this->input[$this->position];
             $this->position++;
         }
-        return $this->append(LexerType::NUMBER, $value);
+        return new NumberToken(LexerType::NUMBER, $value, $this->line);
     }
 
-    private function readString(): array
+    private function readString(): LexerToken
     {
         // A string type starts with a quote, so we want to move forward
         // to store the real string value
@@ -101,11 +101,6 @@ final class Lexer
             $value .= $this->input[$this->position];
             $this->position++;
         }
-        return $this->append(LexerType::STRING, $value);
-    }
-
-    private function append(LexerType $type, string $value): array
-    {
-        return ['type' => $type->name, 'value' => $value, 'line' => $this->line];
+        return new StringToken(LexerType::STRING, $value, $this->line);
     }
 }
