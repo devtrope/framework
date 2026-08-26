@@ -5,9 +5,9 @@ namespace Ludens\Sphp;
 class LexerToken
 {
     public function __construct(
-        private LexerType $type,
-        private string $value,
-        private int $line
+        protected LexerType $type,
+        protected mixed $value,
+        protected int $line
     ) {}
 
     public function getType(): LexerType
@@ -15,7 +15,7 @@ class LexerToken
         return $this->type;
     }
 
-    public function getValue(): string
+    public function getValue(): mixed
     {
         return $this->value;
     }
