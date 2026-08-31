@@ -16,7 +16,7 @@ final class Sphp
         $result = [];
         $lexer = new Lexer(file_get_contents($filepath));
         $this->tokens = $lexer->tokenize();
-        while ($this->position < \count($this->tokens)) {
+        while ($this->position < \count($this->tokens) && LexerType::EOF !== $this->tokens[$this->position]->getType()) {
             [$key, $value] = $this->parseEntry();
             $result[$key] = $value;
         }
@@ -33,27 +33,45 @@ final class Sphp
         $identifier = $token->getValue();
         $this->consume();
         $this->expect(LexerType::COLON);
-        $this->consume();
         
         return [$identifier, $this->parseValue()];
     }
 
     private function parseValue(): mixed
     {
+        $this->consume();
         /**
          * @var LexerToken
          */
         $token =  $this->tokens[$this->position];
         if (LexerType::STRING === $token->getType()) {
             $this->expect(LexerType::STRING);
-        } else {
+        } elseif (LexerType::NUMBER === $token->getType()) {
             $this->expect(LexerType::NUMBER);
+        } else {
+            $this->expect(LexerType::INDENTATION);
+            return $this->parseArray();
         }
 
         $value = $token->getValue();
         $this->consume();
 
         return $value;
+    }
+
+    private function parseArray(array $current = []): array
+    {
+        $this->consume();
+        [$key, $value] = $this->parseEntry();
+        $current[$key] = $value;
+        /**
+         * @var LexerToken
+         */
+        $token = $this->tokens[$this->position];
+        if (LexerType::INDENTATION !== $token->getType()) {
+            return $current;
+        }
+        return $this->parseArray($current);
     }
 
     private function expect(LexerType $expected): void

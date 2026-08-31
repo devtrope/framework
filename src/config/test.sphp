@@ -1,3 +1,6 @@
 title: 'Ludens'
 author: 'Quentin SCHIFFERLE'
-version: 1.4
+
+services:
+  version: 1.4
+  name: 'rc-1'

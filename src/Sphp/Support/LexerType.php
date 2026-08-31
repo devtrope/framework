@@ -8,4 +8,6 @@ enum LexerType
     case STRING;
     case NUMBER;
     case COLON;
+    case INDENTATION;
+    case EOF;
 }

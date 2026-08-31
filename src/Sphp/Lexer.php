@@ -4,7 +4,9 @@ namespace Ludens\Sphp;
 
 use Ludens\Sphp\Support\LexerType;
 use Ludens\Sphp\Token\ColonToken;
+use Ludens\Sphp\Token\EndOfFileToken;
 use Ludens\Sphp\Token\IdentifierToken;
+use Ludens\Sphp\Token\IndentationToken;
 use Ludens\Sphp\Token\LexerToken;
 use Ludens\Sphp\Token\NumberToken;
 use Ludens\Sphp\Token\StringToken;
@@ -30,6 +32,20 @@ final class Lexer
 
             if (self::NEW_LINE === $character) {
                 $this->line++;
+                $this->position++;
+                continue;
+            }
+
+            if (ctype_space($character)) {
+                /**
+                 * We need to check if it's a simple space or an indentation, to do so, we look the next
+                 * character, a simple space is not important so we can continue, but an indentation means
+                 * we will need to create an array
+                 */
+                $peek = $this->position + 1;
+                if (ctype_space($this->input[$peek])) {
+                    $tokens[] = new IndentationToken(LexerType::INDENTATION, null, $this->line);
+                }
                 $this->position++;
                 continue;
             }
@@ -60,6 +76,7 @@ final class Lexer
             $this->position++;
         }
 
+        $tokens[] = new EndOfFileToken(LexerType::EOF, null, $this->line);
         return $tokens;
     }
 
