@@ -1,6 +1,6 @@
 <?php
 
-namespace Ludens\Sphp;
+namespace Ludens\Sphp\Support;
 
 enum LexerType
 {

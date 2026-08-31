@@ -1,6 +1,8 @@
 <?php
 
-namespace Ludens\Sphp;
+namespace Ludens\Sphp\Token;
+
+use Ludens\Sphp\Support\LexerType;
 
 class LexerToken
 {

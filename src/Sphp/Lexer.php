@@ -2,7 +2,12 @@
 
 namespace Ludens\Sphp;
 
-use Ludens\Sphp\LexerType;
+use Ludens\Sphp\Support\LexerType;
+use Ludens\Sphp\Token\ColonToken;
+use Ludens\Sphp\Token\IdentifierToken;
+use Ludens\Sphp\Token\LexerToken;
+use Ludens\Sphp\Token\NumberToken;
+use Ludens\Sphp\Token\StringToken;
 
 final class Lexer
 {

@@ -3,6 +3,8 @@
 namespace Ludens\Sphp;
 
 use Ludens\Exceptions\ConfigurationFormatException;
+use Ludens\Sphp\Support\LexerType;
+use Ludens\Sphp\Token\LexerToken;
 
 final class Sphp
 {
