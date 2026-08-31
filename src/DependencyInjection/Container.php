@@ -4,6 +4,7 @@ namespace Ludens\DependencyInjection;
 
 use Ludens\Exceptions\InvalidConfigurationFileProvided;
 use Ludens\Exceptions\MissingBoundValueException;
+use Ludens\Sphp\Sphp;
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionParameter;
@@ -53,8 +54,9 @@ final class Container
             );
         }
 
-        $configuration = require $filename;
-        foreach ($configuration as $service) {
+        $sphp = new Sphp();
+        $configuration = $sphp->parse($filename);
+        foreach ($configuration['services'] as $service) {
             if (isset($service['bind'])) {
                 foreach ($service['bind'] as $key => $value) {
                     $this->bindings[$key] = $value;

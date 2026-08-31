@@ -28,28 +28,29 @@ final class Sphp
         /**
          * @var LexerToken
          */
-        $token =  $this->tokens[$this->position];
+        $token = $this->tokens[$this->position];
         $this->expect(LexerType::IDENTIFIER);
         $identifier = $token->getValue();
         $this->consume();
         $this->expect(LexerType::COLON);
+        $this->consume();
         
         return [$identifier, $this->parseValue()];
     }
 
     private function parseValue(): mixed
     {
-        $this->consume();
         /**
          * @var LexerToken
          */
-        $token =  $this->tokens[$this->position];
+        $token = $this->tokens[$this->position];
         if (LexerType::STRING === $token->getType()) {
             $this->expect(LexerType::STRING);
         } elseif (LexerType::NUMBER === $token->getType()) {
             $this->expect(LexerType::NUMBER);
         } else {
             $this->expect(LexerType::INDENTATION);
+            $this->consume();
             return $this->parseArray();
         }
 
@@ -61,7 +62,6 @@ final class Sphp
 
     private function parseArray(array $current = []): array
     {
-        $this->consume();
         [$key, $value] = $this->parseEntry();
         $current[$key] = $value;
         /**
@@ -71,6 +71,7 @@ final class Sphp
         if (LexerType::INDENTATION !== $token->getType()) {
             return $current;
         }
+        $this->consume();
         return $this->parseArray($current);
     }
 
@@ -79,7 +80,7 @@ final class Sphp
         /**
          * @var LexerToken
          */
-        $token =  $this->tokens[$this->position];
+        $token = $this->tokens[$this->position];
         if ($expected !== $token->getType()) {
             throw new ConfigurationFormatException(
                 "Invalid token on line {$token->getLine()}"

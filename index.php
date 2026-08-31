@@ -2,17 +2,11 @@
 
 require 'vendor/autoload.php';
 
-use Ludens\Sphp\Sphp;
-
-$sphp = new Sphp();
-var_dump($sphp->parse(__DIR__ . '/src/config/test.sphp'));
-die;
-
 $request = $_SERVER['REQUEST_URI'];
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 
 $container = new Ludens\DependencyInjection\Container();
-$container->load(__DIR__ . '/src/config/services.php');
+$container->load(__DIR__ . '/src/config/services.sphp');
 
 // Retrieve all the attributes from the controller to automatically construct the routes
 $registerer = $container->get(Ludens\Routing\RoutesRegisterer::class);

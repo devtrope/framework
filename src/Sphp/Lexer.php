@@ -37,20 +37,20 @@ final class Lexer
             }
 
             if (ctype_space($character)) {
-                /**
-                 * We need to check if it's a simple space or an indentation, to do so, we look the next
-                 * character, a simple space is not important so we can continue, but an indentation means
-                 * we will need to create an array
-                 */
-                $peek = $this->position + 1;
-                if (ctype_space($this->input[$peek])) {
-                    $tokens[] = new IndentationToken(LexerType::INDENTATION, null, $this->line);
+                $spaces = 0;
+                while (ctype_space($this->input[$this->position])) {
+                    $spaces++;
+                    $this->position++;
                 }
-                $this->position++;
+
+                if ($spaces > 1) {
+                    $tokens[] = new IndentationToken(LexerType::INDENTATION, $spaces, $this->line);
+                }
+                
                 continue;
             }
 
-            if (ctype_alpha($character)) {
+            if (ctype_alpha($character) || '\\' === $character) {
                 $tokens[] = $this->readIdentifier();
                 continue;
             }
@@ -85,7 +85,10 @@ final class Lexer
         $value = null;
         while (
             $this->position < \strlen($this->input) &&
-            ctype_alpha($this->input[$this->position])
+            (
+                ctype_alpha($this->input[$this->position]) ||
+                '\\' === $this->input[$this->position]
+            )
         ) {
             $value .= $this->input[$this->position];
             $this->position++;
