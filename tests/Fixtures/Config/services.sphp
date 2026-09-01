@@ -1,0 +1,4 @@
+services:
+    Tests\Fixtures\Services\ServiceWithBoundValue:
+        bind:
+            apiKey: 'config-secret-key'

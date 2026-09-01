@@ -1,0 +1,4 @@
+services:
+  Tests\Fixtures\Services\ServiceWithoutBoundValue:
+    bind:
+      unrelatedKey: 'wrong-value'

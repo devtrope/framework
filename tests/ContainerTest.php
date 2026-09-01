@@ -49,7 +49,7 @@ final class ContainerTest extends TestCase
 
     public function testUsesABoundValueWhenNoDefaultIsAvailable(): void
     {
-        $this->container->load(__DIR__ . '/Fixtures/Config/services.php');
+        $this->container->load(__DIR__ . '/Fixtures/Config/services.sphp');
         $service = $this->container->get(ServiceWithBoundValue::class);
         $this->assertSame('config-secret-key', $service->getApiKey());
     }
@@ -57,13 +57,13 @@ final class ContainerTest extends TestCase
     public function testThrowsWhenConfigurationFileDoesNotExist(): void
     {
         $this->expectException(InvalidConfigurationFileProvided::class);
-        $this->container->load(__DIR__ . '/Fixtures/Config/does-not-exist.php');
+        $this->container->load(__DIR__ . '/Fixtures/Config/does-not-exist.sphp');
     }
 
     public function testThrowsWhenValueHasNoBound(): void
     {
         $this->expectException(MissingBoundValueException::class);
-        $this->container->load(__DIR__ . '/Fixtures/Config/invalid-services.php');
+        $this->container->load(__DIR__ . '/Fixtures/Config/invalid-services.sphp');
         $this->container->get(ServiceWithBoundValue::class);
     }
 }
