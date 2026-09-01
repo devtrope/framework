@@ -36,21 +36,7 @@ final class Sphp
     private function parseValue(): mixed
     {
         if (LexerType::INDENTATION === $this->peek()->getType()) {
-            $this->expect(LexerType::INDENTATION);
-            $indentation = $this->consume()->getValue();
-            $result = [];
-            [$identifier, $value] = $this->parseEntry();
-            $result[$identifier] = $value;
-            while (
-                LexerType::INDENTATION === $this->peek()->getType() &&
-                $indentation === $this->peek()->getValue()
-            ) {
-                $this->consume();
-                [$identifier, $value] = $this->parseEntry();
-                $result[$identifier] = $value;
-            }
-
-            return $result;
+            return $this->parseArray();
         }
 
         if (LexerType::STRING === $this->peek()->getType()) {
@@ -60,6 +46,25 @@ final class Sphp
 
         $this->expect(LexerType::NUMBER);
         return $this->consume()->getValue();
+    }
+
+    private function parseArray(): array
+    {
+        $this->expect(LexerType::INDENTATION);
+        $indentation = $this->consume()->getValue();
+        $result = [];
+        [$identifier, $value] = $this->parseEntry();
+        $result[$identifier] = $value;
+        while (
+            LexerType::INDENTATION === $this->peek()->getType() &&
+            $indentation === $this->peek()->getValue()
+        ) {
+            $this->consume();
+            [$identifier, $value] = $this->parseEntry();
+            $result[$identifier] = $value;
+        }
+
+        return $result;
     }
 
     private function expect(LexerType $expected): void
