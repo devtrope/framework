@@ -16,7 +16,7 @@ final class SphpTest extends TestCase
         $this->assertSame([
             'services' => [
                 'version' => 1.4,
-                'debug' => 'true'
+                'debug' => true
             ],
         ], $result);
     }

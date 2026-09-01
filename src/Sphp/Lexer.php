@@ -3,6 +3,7 @@
 namespace Ludens\Sphp;
 
 use Ludens\Sphp\Support\LexerType;
+use Ludens\Sphp\Token\BooleanToken;
 use Ludens\Sphp\Token\ColonToken;
 use Ludens\Sphp\Token\EndOfFileToken;
 use Ludens\Sphp\Token\IdentifierToken;
@@ -92,6 +93,15 @@ final class Lexer
         ) {
             $value .= $this->input[$this->position];
             $this->position++;
+        }
+
+        /**
+         * There's no way to make a difference at this point between an identifier and a boolean value,
+         * so, even if it's crappy, I will check it there based on the value of the identifier. It may cause a bug
+         * if someone decides to call an identifier 'true' but who does this ???
+         */
+        if ('true' === $value || 'false' === $value) {
+            return new BooleanToken(LexerType::BOOLEAN, $value, $this->line);
         }
         return new IdentifierToken(LexerType::IDENTIFIER, $value, $this->line);
     }

@@ -48,6 +48,11 @@ final class Sphp
             return $this->consume()->getValue();
         }
 
+        if (LexerType::BOOLEAN === $this->peek()->getType()) {
+            $this->expect(LexerType::BOOLEAN);
+            return (bool)$this->consume()->getValue();
+        }
+
         $this->expect(LexerType::NUMBER);
         return $this->consume()->getValue();
     }
