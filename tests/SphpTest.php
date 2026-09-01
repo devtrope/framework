@@ -50,4 +50,38 @@ final class SphpTest extends TestCase
             ],
         ], $result);
     }
+
+    public function testUnwindsMultipleIndentationLevelsAtOnce(): void
+    {
+        $sphp = new Sphp();
+        $result = $sphp->parse(__DIR__ . '/Fixtures/Config/deep-unwind.sphp');
+        $this->assertSame([
+            'root' => [
+                'A' => [
+                    'B' => [
+                        'x' => 1,
+                    ],
+                ],
+                'C' => 2,
+            ],
+        ], $result);
+    }
+
+    public function testParsesTwoSiblingNestedArraysWithoutContextLeaking(): void
+    {
+        $sphp = new Sphp();
+        $result = $sphp->parse(__DIR__ . '/Fixtures/Config/sibling-nested-arrays.sphp');
+        $this->assertSame([
+            'root' => [
+                'A' => [
+                    'x' => 1,
+                    'y' => 2,
+                ],
+                'B' => [
+                    'z' => 3,
+                    'w' => 4,
+                ],
+            ],
+        ], $result);
+    }
 }

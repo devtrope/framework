@@ -17,21 +17,16 @@ final class Sphp
         $lexer = new Lexer(file_get_contents($filepath));
         $this->tokens = $lexer->tokenize();
         while ($this->position < \count($this->tokens) && LexerType::EOF !== $this->tokens[$this->position]->getType()) {
-            [$key, $value] = $this->parseEntry();
-            $result[$key] = $value;
+            [$identifier, $value] = $this->parseEntry();
+            $result[$identifier] = $value;
         }
         return $result;
     }
 
     private function parseEntry(): array
     {
-        /**
-         * @var LexerToken
-         */
-        $token = $this->tokens[$this->position];
         $this->expect(LexerType::IDENTIFIER);
-        $identifier = $token->getValue();
-        $this->consume();
+        $identifier = $this->consume()->getValue();
         $this->expect(LexerType::COLON);
         $this->consume();
         
@@ -40,39 +35,31 @@ final class Sphp
 
     private function parseValue(): mixed
     {
-        /**
-         * @var LexerToken
-         */
-        $token = $this->tokens[$this->position];
-        if (LexerType::STRING === $token->getType()) {
-            $this->expect(LexerType::STRING);
-        } elseif (LexerType::NUMBER === $token->getType()) {
-            $this->expect(LexerType::NUMBER);
-        } else {
+        if (LexerType::INDENTATION === $this->peek()->getType()) {
             $this->expect(LexerType::INDENTATION);
-            $this->consume();
-            return $this->parseArray();
+            $indentation = $this->consume()->getValue();
+            $result = [];
+            [$identifier, $value] = $this->parseEntry();
+            $result[$identifier] = $value;
+            while (
+                LexerType::INDENTATION === $this->peek()->getType() &&
+                $indentation === $this->peek()->getValue()
+            ) {
+                $this->consume();
+                [$identifier, $value] = $this->parseEntry();
+                $result[$identifier] = $value;
+            }
+
+            return $result;
         }
 
-        $value = $token->getValue();
-        $this->consume();
-
-        return $value;
-    }
-
-    private function parseArray(array $current = []): array
-    {
-        [$key, $value] = $this->parseEntry();
-        $current[$key] = $value;
-        /**
-         * @var LexerToken
-         */
-        $token = $this->tokens[$this->position];
-        if (LexerType::INDENTATION !== $token->getType()) {
-            return $current;
+        if (LexerType::STRING === $this->peek()->getType()) {
+            $this->expect(LexerType::STRING);
+            return $this->consume()->getValue();
         }
-        $this->consume();
-        return $this->parseArray($current);
+
+        $this->expect(LexerType::NUMBER);
+        return $this->consume()->getValue();
     }
 
     private function expect(LexerType $expected): void
@@ -88,8 +75,15 @@ final class Sphp
         }
     }
 
-    private function consume(): void
+    private function consume(): LexerToken
     {
+        $token = $this->tokens[$this->position];
         $this->position++;
+        return $token;
+    }
+
+    private function peek(): LexerToken
+    {
+        return $this->tokens[$this->position];
     }
 }
