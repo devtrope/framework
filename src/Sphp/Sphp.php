@@ -16,7 +16,11 @@ final class Sphp
         $result = [];
         $lexer = new Lexer(file_get_contents($filepath));
         $this->tokens = $lexer->tokenize();
-        while ($this->position < \count($this->tokens) && LexerType::EOF !== $this->tokens[$this->position]->getType()) {
+
+        while (
+            $this->position < \count($this->tokens) &&
+            LexerType::EOF !== $this->peek()->getType()
+        ) {
             [$identifier, $value] = $this->parseEntry();
             $result[$identifier] = $value;
         }
@@ -53,8 +57,14 @@ final class Sphp
         $this->expect(LexerType::INDENTATION);
         $indentation = $this->consume()->getValue();
         $result = [];
+
         [$identifier, $value] = $this->parseEntry();
         $result[$identifier] = $value;
+
+        /**
+         * Only continue this array while the following entries are at
+         * the same depth. Anything deeper or shallower is not ours.
+         */
         while (
             LexerType::INDENTATION === $this->peek()->getType() &&
             $indentation === $this->peek()->getValue()
@@ -69,13 +79,9 @@ final class Sphp
 
     private function expect(LexerType $expected): void
     {
-        /**
-         * @var LexerToken
-         */
-        $token = $this->tokens[$this->position];
-        if ($expected !== $token->getType()) {
+        if ($expected !== $this->peek()->getType()) {
             throw new ConfigurationFormatException(
-                "Invalid token on line {$token->getLine()}"
+                "Invalid token on line {$this->peek()->getLine()}"
             );
         }
     }
