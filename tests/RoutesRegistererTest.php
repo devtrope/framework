@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests;
 
 use Ludens\Exceptions\InvalidControllerFolderException;
+use Ludens\Http\Support\HttpMethod;
 use Ludens\Routing\MethodAttributesResolver;
 use Ludens\Routing\Route;
 use Ludens\Routing\RoutesRegisterer;
@@ -24,16 +25,16 @@ final class RoutesRegistererTest extends TestCase
     {
         $this->createRegisterer()->register();
 
-        $this->assertArrayHasKey('/fixture', Route::getAllByRequestMethod('GET'));
-        $this->assertArrayHasKey('/fixture/create', Route::getAllByRequestMethod('POST'));
+        $this->assertArrayHasKey('/fixture', Route::getAllByRequestMethod(HttpMethod::GET));
+        $this->assertArrayHasKey('/fixture/create', Route::getAllByRequestMethod(HttpMethod::POST));
     }
 
     public function testIgnoresMethodsWithoutHttpMethodAttribute(): void
     {
         $this->createRegisterer()->register();
 
-        $this->assertCount(1, Route::getAllByRequestMethod('GET'));
-        $this->assertCount(1, Route::getAllByRequestMethod('POST'));
+        $this->assertCount(1, Route::getAllByRequestMethod(HttpMethod::GET));
+        $this->assertCount(1, Route::getAllByRequestMethod(HttpMethod::POST));
     }
 
     public function testThrowsWhenControllerFolderDoesNotExist(): void
