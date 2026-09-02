@@ -3,20 +3,16 @@
 namespace Ludens\Sphp;
 
 use Ludens\Sphp\Support\LexerType;
-use Ludens\Sphp\Token\BooleanToken;
-use Ludens\Sphp\Token\ColonToken;
-use Ludens\Sphp\Token\EndOfFileToken;
-use Ludens\Sphp\Token\IdentifierToken;
-use Ludens\Sphp\Token\IndentationToken;
-use Ludens\Sphp\Token\LexerToken;
-use Ludens\Sphp\Token\NumberToken;
-use Ludens\Sphp\Token\StringToken;
+use Ludens\Sphp\Token;
 
 final class Lexer
 {
-    private const COLON = ":";
-    private const QUOTE = "'";
-    private const NEW_LINE = "\n";
+    private const string COLON = ":";
+    private const string QUOTE = "'";
+    private const string NEW_LINE = "\n";
+    private const string BACKSLASH = "\\";
+    private const array BOOLEANS = ['true', 'false'];
+    private const int MINIMUM_INDENTATION_WIDTH = 2;
     private int $position = 0;
     private int $line = 1;
 
@@ -44,14 +40,14 @@ final class Lexer
                     $this->position++;
                 }
 
-                if ($spaces > 1) {
-                    $tokens[] = new IndentationToken(LexerType::INDENTATION, $spaces, $this->line);
+                if ($spaces >= self::MINIMUM_INDENTATION_WIDTH) {
+                    $tokens[] = new Token\IndentationToken(LexerType::INDENTATION, $spaces, $this->line);
                 }
                 
                 continue;
             }
 
-            if (ctype_alpha($character) || '\\' === $character) {
+            if (ctype_alpha($character) || self::BACKSLASH === $character) {
                 $tokens[] = $this->readIdentifier();
                 continue;
             }
@@ -69,7 +65,7 @@ final class Lexer
             }
 
             if (self::COLON === $character) {
-                $tokens[] = new ColonToken(LexerType::COLON, self::COLON, $this->line);
+                $tokens[] = new Token\ColonToken(LexerType::COLON, self::COLON, $this->line);
                 $this->position++;
                 continue;
             }
@@ -77,18 +73,18 @@ final class Lexer
             $this->position++;
         }
 
-        $tokens[] = new EndOfFileToken(LexerType::EOF, null, $this->line);
+        $tokens[] = new Token\EndOfFileToken(LexerType::EOF, null, $this->line);
         return $tokens;
     }
 
-    private function readIdentifier(): LexerToken
+    private function readIdentifier(): Token\LexerToken
     {
         $value = null;
         while (
             $this->position < \strlen($this->input) &&
             (
                 ctype_alpha($this->input[$this->position]) ||
-                '\\' === $this->input[$this->position]
+                self::BACKSLASH === $this->input[$this->position]
             )
         ) {
             $value .= $this->input[$this->position];
@@ -100,13 +96,13 @@ final class Lexer
          * so, even if it's crappy, I will check it there based on the value of the identifier. It may cause a bug
          * if someone decides to call an identifier 'true' but who does this ???
          */
-        if ('true' === $value || 'false' === $value) {
-            return new BooleanToken(LexerType::BOOLEAN, $value, $this->line);
+        if (\in_array($value, self::BOOLEANS)) {
+            return new Token\BooleanToken(LexerType::BOOLEAN, $value, $this->line);
         }
-        return new IdentifierToken(LexerType::IDENTIFIER, $value, $this->line);
+        return new Token\IdentifierToken(LexerType::IDENTIFIER, $value, $this->line);
     }
 
-    private function readNumber(): LexerToken
+    private function readNumber(): Token\LexerToken
     {
         $value = null;
         while (
@@ -120,10 +116,10 @@ final class Lexer
             $value .= $this->input[$this->position];
             $this->position++;
         }
-        return new NumberToken(LexerType::NUMBER, $value, $this->line);
+        return new Token\NumberToken(LexerType::NUMBER, $value, $this->line);
     }
 
-    private function readString(): LexerToken
+    private function readString(): Token\LexerToken
     {
         // A string type starts with a quote, so we want to move forward
         // to store the real string value
@@ -136,6 +132,6 @@ final class Lexer
             $value .= $this->input[$this->position];
             $this->position++;
         }
-        return new StringToken(LexerType::STRING, $value, $this->line);
+        return new Token\StringToken(LexerType::STRING, $value, $this->line);
     }
 }
