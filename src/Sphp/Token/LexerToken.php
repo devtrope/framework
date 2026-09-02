@@ -6,11 +6,9 @@ use Ludens\Sphp\Support\LexerType;
 
 class LexerToken
 {
-    public function __construct(
-        protected LexerType $type,
-        protected mixed $value,
-        protected int $line
-    ) {}
+    public function __construct(protected LexerType $type, protected mixed $value, protected int $line)
+    {
+    }
 
     public function getType(): LexerType
     {

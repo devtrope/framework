@@ -53,6 +53,11 @@ final class Sphp
             return (bool)$this->consume()->getValue();
         }
 
+        if (LexerType::NULL === $this->peek()->getType()) {
+            $this->expect(LexerType::NULL);
+            return $this->consume()->getValue();
+        }
+
         $this->expect(LexerType::NUMBER);
         return $this->consume()->getValue();
     }

@@ -12,9 +12,9 @@ final class Lexer
     private int $position = 0;
     private int $line = 1;
 
-    public function __construct(
-        private string $input
-    ) {}
+    public function __construct(private string $input)
+    {
+    }
 
     public function tokenize(): array
     {
@@ -94,6 +94,9 @@ final class Lexer
          */
         if (\in_array($value, self::BOOLEANS)) {
             return new Token\BooleanToken($value, $this->line);
+        }
+        if ('null' === $value) {
+            return new Token\NullToken($this->line);
         }
         return new Token\IdentifierToken($value, $this->line);
     }
