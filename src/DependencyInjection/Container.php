@@ -2,6 +2,7 @@
 
 namespace Ludens\DependencyInjection;
 
+use Ludens\Exceptions\ConfigurationException;
 use Ludens\Exceptions\InvalidConfigurationFileProvided;
 use Ludens\Exceptions\MissingBoundValueException;
 use Ludens\Sphp\Sphp;
@@ -12,6 +13,10 @@ use ReflectionParameter;
 final class Container
 {
     private array $bindings = [];
+
+    public function __construct(private Sphp $sphp = new Sphp())
+    {
+    }
 
     public function get(string $identifier): mixed
     {
@@ -54,8 +59,13 @@ final class Container
             );
         }
 
-        $sphp = new Sphp();
-        $configuration = $sphp->parse($filename);
+        $configuration = $this->sphp->parse($filename);
+        if (false === isset($configuration['services'])) {
+            throw new ConfigurationException(
+                "No services defined in {$filename}"
+            );
+        }
+
         foreach ($configuration['services'] as $service) {
             if (isset($service['bind'])) {
                 foreach ($service['bind'] as $key => $value) {

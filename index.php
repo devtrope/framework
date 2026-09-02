@@ -6,7 +6,7 @@ $request = $_SERVER['REQUEST_URI'];
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 
 $container = new Ludens\DependencyInjection\Container();
-$container->load(__DIR__ . '/src/config/services.sphp');
+$container->load(__DIR__ . '/src/Routing/Configuration/services.sphp');
 
 // Retrieve all the attributes from the controller to automatically construct the routes
 $registerer = $container->get(Ludens\Routing\RoutesRegisterer::class);
