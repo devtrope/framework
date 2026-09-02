@@ -42,24 +42,7 @@ final class Sphp
         if (LexerType::INDENTATION === $this->peek()->getType()) {
             return $this->parseArray();
         }
-
-        if (LexerType::STRING === $this->peek()->getType()) {
-            $this->expect(LexerType::STRING);
-            return $this->consume()->getValue();
-        }
-
-        if (LexerType::BOOLEAN === $this->peek()->getType()) {
-            $this->expect(LexerType::BOOLEAN);
-            return (bool)$this->consume()->getValue();
-        }
-
-        if (LexerType::NULL === $this->peek()->getType()) {
-            $this->expect(LexerType::NULL);
-            return $this->consume()->getValue();
-        }
-
-        $this->expect(LexerType::NUMBER);
-        return $this->consume()->getValue();
+        return $this->handleValues();
     }
 
     private function parseArray(): array
@@ -85,6 +68,20 @@ final class Sphp
         }
 
         return $result;
+    }
+
+    private function handleValues(): mixed
+    {
+        $expectedTypes = [LexerType::BOOLEAN, LexerType::STRING, LexerType::NULL, LexerType::NUMBER];
+        if (false === \in_array($this->peek()->getType(), $expectedTypes)) {
+            /**
+             * We just throw a "random" (not so random) configuration exception, because at this point we know
+             * that the token type is invalid, so any expect called with one of the expected types will trigger
+             * an exception.
+             */
+            $this->expect(LexerType::STRING);
+        }
+        return $this->consume()->getValue();
     }
 
     private function expect(LexerType $expected): void

@@ -7,7 +7,6 @@ use Ludens\Sphp\Token;
 
 final class Lexer
 {
-    private const array BOOLEANS = ['true', 'false'];
     private const int MINIMUM_INDENTATION_WIDTH = 2;
     private int $position = 0;
     private int $line = 1;
@@ -87,16 +86,8 @@ final class Lexer
             $this->position++;
         }
 
-        /**
-         * There's no way to make a difference at this point between an identifier and a boolean value,
-         * so, even if it's crappy, I will check it there based on the value of the identifier. It may cause a bug
-         * if someone decides to call an identifier 'true' but who does this ???
-         */
-        if (\in_array($value, self::BOOLEANS)) {
-            return new Token\BooleanToken($value, $this->line);
-        }
-        if ('null' === $value) {
-            return new Token\NullToken($this->line);
+        if (\in_array($value, Grammar::RESERVED_KEYWORDS)) {
+            return $this->readKeyword($value);
         }
         return new Token\IdentifierToken($value, $this->line);
     }
@@ -132,5 +123,13 @@ final class Lexer
             $this->position++;
         }
         return new Token\StringToken($value, $this->line);
+    }
+
+    private function readKeyword(string $value): Token\LexerToken
+    {
+        if ('null' === $value) {
+            return new Token\NullToken($this->line);
+        }
+        return new Token\BooleanToken($value, $this->line);
     }
 }
