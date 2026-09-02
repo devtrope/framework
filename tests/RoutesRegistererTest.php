@@ -16,6 +16,7 @@ final class RoutesRegistererTest extends TestCase
 
     public function setUp(): void
     {
+        Route::reset();
         $this->methodAttributesResolver = new MethodAttributesResolver();
     }
 

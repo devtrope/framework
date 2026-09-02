@@ -25,7 +25,6 @@ final class RouteResolver
             if (false === $this->hasAMatchingRoute($route, $path)) {
                 continue;
             }
-
             return $handler;
         }
 
@@ -58,7 +57,6 @@ final class RouteResolver
                 return false;
             }
         }
-
         return true;
     }
 }

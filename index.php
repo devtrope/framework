@@ -2,9 +2,6 @@
 
 require 'vendor/autoload.php';
 
-$request = $_SERVER['REQUEST_URI'];
-$requestMethod = $_SERVER['REQUEST_METHOD'];
-
 $container = new Ludens\DependencyInjection\Container();
 $container->load(__DIR__ . '/src/Routing/Configuration/services.sphp');
 
@@ -13,10 +10,7 @@ $registerer = $container->get(Ludens\Routing\RoutesRegisterer::class);
 $registerer->register();
 
 try {
-    Ludens\Routing\Router::run(
-        Ludens\Routing\Route::getAllByRequestMethod($requestMethod),
-        $request
-    );
+    Ludens\Routing\Router::run(Ludens\Http\Request::fromGlobals());
 } catch (Ludens\Exceptions\RouteNotFoundException $e) {
     echo $e->getMessage() . "\n";
 }

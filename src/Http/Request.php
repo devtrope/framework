@@ -1,0 +1,25 @@
+<?php
+
+namespace Ludens\Http;
+
+final class Request
+{
+    public function __construct(private string $httpMethod, private string $path)
+    {
+    }
+
+    public static function fromGlobals(): self
+    {
+        return new self($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
+    }
+
+    public function getHttpMethod(): string
+    {
+        return $this->httpMethod;
+    }
+
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+}

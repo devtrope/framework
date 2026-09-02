@@ -23,4 +23,9 @@ final class Route
         }
         return self::$routes[$method];
     }
+
+    public static function reset(): void
+    {
+        self::$routes = [];
+    }
 }
