@@ -1,5 +1,7 @@
 <?php
 
+use Ludens\Http\Support\HttpResponseCode;
+
 require 'vendor/autoload.php';
 
 $container = new Ludens\DependencyInjection\Container();
@@ -14,5 +16,5 @@ try {
     $response->send();
 } catch (Ludens\Exceptions\RouteNotFoundException $e) {
     $response = new Ludens\Http\Response();
-    $response->setBody($e->getMessage())->setCode(404)->send();
+    $response->setBody($e->getMessage())->setCode(HttpResponseCode::NOT_FOUND)->send();
 }

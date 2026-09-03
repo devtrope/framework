@@ -2,6 +2,8 @@
 
 namespace Ludens\Http;
 
+use Ludens\Http\Support\HttpResponseCode;
+
 final class Response
 {
     private string $body;
@@ -12,9 +14,9 @@ final class Response
         return $this;
     }
 
-    public function setCode(int $code = 200): self
+    public function setCode(HttpResponseCode $code = HttpResponseCode::OK): self
     {
-        http_response_code($code);
+        http_response_code($code->value);
         return $this;
     }
 
