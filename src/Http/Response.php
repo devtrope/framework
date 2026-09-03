@@ -12,6 +12,12 @@ final class Response
         return $this;
     }
 
+    public function setCode(int $code = 200): self
+    {
+        http_response_code($code);
+        return $this;
+    }
+
     public function send(): self
     {
         echo $this->body;

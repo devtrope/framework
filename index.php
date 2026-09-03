@@ -14,5 +14,5 @@ try {
     $response->send();
 } catch (Ludens\Exceptions\RouteNotFoundException $e) {
     $response = new Ludens\Http\Response();
-    $response->setBody($e->getMessage())->send();
+    $response->setBody($e->getMessage())->setCode(404)->send();
 }
