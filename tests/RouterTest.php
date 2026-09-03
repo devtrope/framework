@@ -26,7 +26,8 @@ final class RouterTest extends TestCase
         Route::add(HttpMethod::GET, '/', $handler);
         $this->expectOutputString('index called');
         $request = new Request(HttpMethod::GET, '/');
-        Router::run($request);
+        $response = Router::run($request);
+        $response->send();
     }
 
     public function testValidStringWithArgumentReturned(): void
@@ -35,7 +36,8 @@ final class RouterTest extends TestCase
         Route::add(HttpMethod::GET, '/user/{username}', $handler);
         $this->expectOutputString('hello quentin');
         $request = new Request(HttpMethod::GET, '/user/quentin');
-        Router::run($request);
+        $response = Router::run($request);
+        $response->send();
     }
 
     public function testValidStringWithMultipleArgumentsReturned(): void
@@ -44,6 +46,7 @@ final class RouterTest extends TestCase
         Route::add(HttpMethod::GET, '/posts/{category}/{id}', $handler);
         $this->expectOutputString('php:8');
         $request = new Request(HttpMethod::GET, '/posts/php/8');
-        Router::run($request);
+        $response = Router::run($request);
+        $response->send();
     }
 }

@@ -4,20 +4,25 @@ declare(strict_types=1);
 
 namespace Tests\Fixtures\Controller;
 
+use Ludens\Http\Response;
+
 final class FakeController
 {
-    public function index(): string
+    public function index(): Response
     {
-        return "index called";
+        $response = new Response();
+        return $response->setBody("index called");
     }
 
-    public function withArgument(string $username): string
+    public function withArgument(string $username): Response
     {
-        return "hello {$username}";
+        $response = new Response();
+        return $response->setBody("hello {$username}");
     }
 
-    public function withMultipleArguments(string $category, string $id): string
+    public function withMultipleArguments(string $category, string $id): Response
     {
-        return "{$category}:{$id}";
+        $response = new Response();
+        return $response->setBody("{$category}:{$id}");
     }
 }

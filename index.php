@@ -10,7 +10,8 @@ $registerer = $container->get(Ludens\Routing\RoutesRegisterer::class);
 $registerer->register();
 
 try {
-    Ludens\Routing\Router::run(Ludens\Http\Request::fromGlobals());
+    $response = Ludens\Routing\Router::run(Ludens\Http\Request::fromGlobals());
+    $response->send();
 } catch (Ludens\Exceptions\RouteNotFoundException $e) {
     echo $e->getMessage() . "\n";
 }

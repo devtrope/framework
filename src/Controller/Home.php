@@ -2,19 +2,22 @@
 
 namespace Ludens\Controller;
 
+use Ludens\Http\Response;
 use Ludens\Routing\Routes;
 
 final class Home
 {
     #[Routes\Post('/')]
-    public function index(): string
+    public function index(): Response
     {
-        return "Home Page\n";
+        $response = new Response();
+        return $response->setBody("Home Page\n");
     }
 
     #[Routes\Get('/user/{username}')]
-    public function user(string $username): string
+    public function user(string $username): Response
     {
-        return "Welcome {$username}\n";
+        $response = new Response();
+        return $response->setBody("Welcome {$username}\n");
     }
 }
