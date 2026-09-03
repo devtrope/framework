@@ -13,5 +13,6 @@ try {
     $response = Ludens\Routing\Router::run(Ludens\Http\Request::fromGlobals());
     $response->send();
 } catch (Ludens\Exceptions\RouteNotFoundException $e) {
-    echo $e->getMessage() . "\n";
+    $response = new Ludens\Http\Response();
+    $response->setBody($e->getMessage())->send();
 }
