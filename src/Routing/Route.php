@@ -7,8 +7,17 @@ use Ludens\Routing\Support\Handler;
 
 final class Route
 {
+    /**
+     * @var array<string, Handler[]>
+     */
     private static array $routes = [];
 
+    /**
+     * @param HttpMethod $method
+     * @param string $uri
+     * @param Handler $handler
+     * @return void
+     */
     public static function add(HttpMethod $method, string $uri, Handler $handler): void
     {
         if (false === isset(self::$routes[$method->value])) {
@@ -17,7 +26,11 @@ final class Route
         self::$routes[$method->value][$uri] = $handler;
     }
 
-    public static function getAllByRequestMethod(HttpMethod $method)
+    /**
+     * @param HttpMethod $method
+     * @return Handler[]
+     */
+    public static function getAllByRequestMethod(HttpMethod $method): array
     {
         if (false === isset(self::$routes[$method->value])) {
             return [];
@@ -25,6 +38,9 @@ final class Route
         return self::$routes[$method->value];
     }
 
+    /**
+     * @return void
+     */
     public static function reset(): void
     {
         self::$routes = [];

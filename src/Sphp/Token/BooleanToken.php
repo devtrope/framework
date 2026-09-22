@@ -7,13 +7,17 @@ use Override;
 
 final class BooleanToken extends LexerToken
 {
-    public function __construct(mixed $value, int $line)
+    /**
+     * @param string $value
+     * @param int $line
+     */
+    public function __construct(string $value, int $line)
     {
-        return parent::__construct(LexerType::BOOLEAN, $value, $line);
+        parent::__construct(LexerType::BOOLEAN, $value, $line);
     }
 
     #[Override]
-    public function getValue(): mixed
+    public function getValue(): bool
     {
         return (bool)$this->value;
     }

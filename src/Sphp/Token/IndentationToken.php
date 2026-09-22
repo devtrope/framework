@@ -6,8 +6,12 @@ use Ludens\Sphp\Support\LexerType;
 
 final class IndentationToken extends LexerToken
 {
-    public function __construct(mixed $value, int $line)
+    /**
+     * @param int $value
+     * @param int $line
+     */
+    public function __construct(int $value, int $line)
     {
-        return parent::__construct(LexerType::INDENTATION, $value, $line);
+        parent::__construct(LexerType::INDENTATION, $value, $line);
     }
 }

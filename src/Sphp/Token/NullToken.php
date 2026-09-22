@@ -6,8 +6,11 @@ use Ludens\Sphp\Support\LexerType;
 
 final class NullToken extends LexerToken
 {
+    /**
+     * @param int $line
+     */
     public function __construct(int $line)
     {
-        return parent::__construct(LexerType::NULL, null, $line);
+        parent::__construct(LexerType::NULL, null, $line);
     }
 }

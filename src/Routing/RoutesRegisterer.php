@@ -8,6 +8,11 @@ use Ludens\Routing\Support\MethodAttribute;
 
 final class RoutesRegisterer
 {
+    /**
+     * @param MethodAttributesResolver $methodAttributesResolver
+     * @param string $controllerFolder
+     * @param string $controllerNamespace
+     */
     public function __construct(
         private MethodAttributesResolver $methodAttributesResolver,
         private readonly string $controllerFolder,
@@ -15,6 +20,9 @@ final class RoutesRegisterer
     )
     {}
 
+    /**
+     * @return void
+     */
     public function register(): void
     {
         foreach ($this->retrieveControllersFiles() as $file) {
@@ -29,16 +37,32 @@ final class RoutesRegisterer
         }
     }
 
+    /**
+     * @throws InvalidControllerFolderException
+     * @return string[]
+     */
     private function retrieveControllersFiles(): array
     {
         if (false === is_dir($this->controllerFolder)) {
-            throw new InvalidControllerFolderException(
-                "The controller folder {$this->controllerFolder} does not exist"
-            );
+            throw new InvalidControllerFolderException(\sprintf(
+                'The controller folder %s does not exist',
+                $this->controllerFolder
+            ));
         }
-        return glob("{$this->controllerFolder}*.php");
+
+        if (false === $files = glob("{$this->controllerFolder}*.php")) {
+            throw new InvalidControllerFolderException(\sprintf(
+                'Cannot access %s directory',
+                $this->controllerFolder
+            ));
+        }
+        return $files;
     }
 
+    /**
+     * @param string $file
+     * @return string
+     */
     private function formatClassName(string $file): string
     {
         $classname = str_replace($this->controllerFolder, '', $file);

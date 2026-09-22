@@ -6,8 +6,12 @@ use Ludens\Sphp\Support\LexerType;
 
 final class StringToken extends LexerToken
 {
-    public function __construct(mixed $value, int $line)
+    /**
+     * @param string|null $value
+     * @param int $line
+     */
+    public function __construct(string|null $value, int $line)
     {
-        return parent::__construct(LexerType::STRING, $value, $line);
+        parent::__construct(LexerType::STRING, $value, $line);
     }
 }

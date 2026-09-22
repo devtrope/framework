@@ -7,14 +7,28 @@ use Ludens\Routing\Support\Handler;
 
 final class RouteResolver
 {
+    /**
+     * @var array<string, mixed>
+     */
     private array $parameters = [];
 
+    /**
+     * @param array<string, Handler> $routes
+     * @param string $path
+     * @return ResolvedRoute
+     */
     public function resolve(array $routes, string $path): ResolvedRoute
     {
         $handler = $this->match($routes, $path);
         return new ResolvedRoute($handler, $this->parameters);
     }
 
+    /**
+     * @param array<string, Handler> $routes
+     * @param string $path
+     * @throws RouteNotFoundException
+     * @return Handler
+     */
     private function match(array $routes, string $path): Handler
     {
         if (isset($routes[$path])) {
@@ -28,9 +42,14 @@ final class RouteResolver
             return $handler;
         }
 
-        throw new RouteNotFoundException("No route found for path {$path}");
+        throw new RouteNotFoundException(\sprintf('No route found for path %s', $path));
     }
 
+    /**
+     * @param string $route
+     * @param string $path
+     * @return bool
+     */
     private function hasAMatchingRoute(string $route, string $path): bool
     {
         // If the route doesn't contain arguments, there's no need to go further

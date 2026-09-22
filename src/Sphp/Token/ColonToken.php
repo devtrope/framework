@@ -7,8 +7,11 @@ use Ludens\Sphp\Support\LexerType;
 
 final class ColonToken extends LexerToken
 {
+    /**
+     * @param int $line
+     */
     public function __construct(int $line)
     {
-        return parent::__construct(LexerType::COLON, Grammar::COLON, $line);
+        parent::__construct(LexerType::COLON, Grammar::COLON, $line);
     }
 }

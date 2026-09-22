@@ -4,17 +4,34 @@ namespace Ludens\Sphp;
 
 use Ludens\Sphp\Support\Grammar;
 use Ludens\Sphp\Token;
+use Ludens\Sphp\Token\LexerToken;
 
 final class Lexer
 {
+    /**
+     * @var int
+     */
     private const int MINIMUM_INDENTATION_WIDTH = 2;
+
+    /**
+     * @var int
+     */
     private int $position = 0;
+
+    /**
+     * @var int
+     */
     private int $line = 1;
 
+    /**
+     * @param string $input
+     */
     public function __construct(private string $input)
-    {
-    }
+    {}
 
+    /**
+     * @return LexerToken[]
+     */
     public function tokenize(): array
     {
         $tokens = [];
@@ -72,9 +89,12 @@ final class Lexer
         return $tokens;
     }
 
+    /**
+     * @return Token\IdentifierToken|Token\LexerToken
+     */
     private function readIdentifier(): Token\LexerToken
     {
-        $value = null;
+        $value = '';
         while (
             $this->position < \strlen($this->input) &&
             (
@@ -92,12 +112,14 @@ final class Lexer
         return new Token\IdentifierToken($value, $this->line);
     }
 
+    /**
+     * @return Token\NumberToken
+     */
     private function readNumber(): Token\LexerToken
     {
         $value = null;
         while (
             $this->position < \strlen($this->input) &&
-            null !== $this->input[$this->position] && 
             (
                 ctype_digit($this->input[$this->position]) ||
                 '.' === $this->input[$this->position]
@@ -109,6 +131,9 @@ final class Lexer
         return new Token\NumberToken($value, $this->line);
     }
 
+    /**
+     * @return Token\StringToken
+     */
     private function readString(): Token\LexerToken
     {
         // A string type starts with a quote, so we want to move forward
@@ -125,6 +150,10 @@ final class Lexer
         return new Token\StringToken($value, $this->line);
     }
 
+    /**
+     * @param string $value
+     * @return Token\BooleanToken|Token\NullToken
+     */
     private function readKeyword(string $value): Token\LexerToken
     {
         if ('null' === $value) {

@@ -7,8 +7,11 @@ use Throwable;
 
 final class MissingBoundValueException extends Exception
 {
+    /**
+     * @inheritDoc
+     */
     public function __construct(string $message = "", int $code = 0, Throwable|null $previous = null)
     {
-        return parent::__construct($message, $code, $previous);
+        parent::__construct($message, $code, $previous);
     }
 }

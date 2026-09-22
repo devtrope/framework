@@ -9,15 +9,26 @@ use Ludens\Sphp\Sphp;
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionParameter;
+use RuntimeException;
 
 final class Container
 {
+    /**
+     * @var array<string, string>
+     */
     private array $bindings = [];
 
+    /**
+     * @param Sphp $sphp
+     */
     public function __construct(private Sphp $sphp = new Sphp())
-    {
-    }
+    {}
 
+    /**
+     * @param string $identifier
+     * @throws MissingBoundValueException
+     * @return object
+     */
     public function get(string $identifier): mixed
     {
         $arguments = [];
@@ -38,43 +49,86 @@ final class Container
                 }
                 
                 if (false === isset($this->bindings[$dependency->getName()])) {
-                    throw new MissingBoundValueException(
-                        "No value provided for {$dependency->getName()}"
-                    );
+                    throw new MissingBoundValueException(\sprintf(
+                        'No value provided for %s',
+                        $dependency->getName()
+                    ));
                 }
                 $arguments[] = $this->bindings[$dependency->getName()];
                 continue;
             }
             $arguments[] = $this->get($dependencyTypeName);
         }
+
+        if (false === class_exists($identifier)) {
+            throw new RuntimeException(\sprintf(
+                'Class %s does not exist',
+                $identifier
+            ));
+        }
+
         $reflectionClass = new ReflectionClass($identifier);
         return $reflectionClass->newInstance(...$arguments);
     }
 
+    /**
+     * @param string $filename
+     * @throws InvalidConfigurationFileProvided
+     * @throws ConfigurationException
+     * @return void
+     */
     public function load(string $filename): void
     {
         if (false === file_exists($filename)) {
-            throw new InvalidConfigurationFileProvided(
-                "The configuration file {$filename} does not exist"
-            );
+            throw new InvalidConfigurationFileProvided(\sprintf(
+                "The configuration file %s does not exist",
+                $filename
+            ));
         }
 
         $configuration = $this->sphp->parse($filename);
         if (false === isset($configuration['services'])) {
-            throw new ConfigurationException(
-                "No services defined in {$filename}"
-            );
+            throw new ConfigurationException(\sprintf(
+                'No services defined in %s',
+                $filename
+            ));
         }
 
-        foreach ($configuration['services'] as $service) {
-            if (isset($service['bind'])) {
-                foreach ($service['bind'] as $key => $value) {
-                    $this->bindings[$key] = $value;
+        $services = $configuration['services'];
+        if (false === \is_array($services)) {
+            throw new ConfigurationException(\sprintf(
+                'The \'services\' key is supposed to be an array in %s',
+                $filename
+            ));
+        }
+
+        
+        foreach ($services as $service) {
+            if (false === \is_array($service)) {
+                continue;
+            }
+
+            $bind = $service['bind'];
+            if (false === \is_array($bind)) {
+                throw new ConfigurationException(\sprintf(
+                    'The \'bind\' key must be an array in %s',
+                    $filename
+                ));
+            }
+
+            foreach ($bind as $key => $value) {
+                if (false === \is_string($key) || false === \is_string($value)) {
+                    continue;
                 }
+                $this->bindings[$key] = $value;
             }
         }
     }
 
+    /**
+     * @param string $identifier
+     * @return ReflectionParameter[]
+     */
     private function resolveDependencies(string $identifier): array
     {
         if (false === class_exists($identifier)) {

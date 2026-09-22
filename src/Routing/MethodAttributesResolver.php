@@ -6,11 +6,23 @@ use Ludens\Contracts\HttpMethodAttributeInterface;
 use Ludens\Routing\Support\MethodAttribute;
 use ReflectionClass;
 use ReflectionMethod;
+use RuntimeException;
 
 final class MethodAttributesResolver
 {
+    /**
+     * @param string $classname
+     * @return MethodAttribute[]
+     */
     public function getAllByClassName(string $classname): array
     {
+        if (false === class_exists($classname)) {
+            throw new RuntimeException(sprintf(
+                'Class %s does not exist',
+                $classname
+            ));
+        }
+
         $methodAttributes = [];
         $reflectionClass = new ReflectionClass($classname);
         $methods = $reflectionClass->getMethods();

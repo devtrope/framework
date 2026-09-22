@@ -25,10 +25,8 @@ final class RouteResolverTest extends TestCase
         $routes = ['/' => $handler];
         $resolvedRoute = $this->resolver->resolve($routes, '/');
 
-        [$controller, $method] = $resolvedRoute->getHandler();
-
-        $this->assertInstanceOf(FakeController::class, $controller);
-        $this->assertSame('index', $method);
+        $this->assertInstanceOf(FakeController::class, $resolvedRoute->getHandler()->getController());
+        $this->assertSame('index', $resolvedRoute->getHandler()->getMethod());
         $this->assertSame([], $resolvedRoute->getParameters());
     }
 
@@ -38,10 +36,8 @@ final class RouteResolverTest extends TestCase
         $routes = ['/user/{username}' => $handler];
         $resolvedRoute = $this->resolver->resolve($routes, '/user/quentin');
 
-        [$controller, $method] = $resolvedRoute->getHandler();
-
-        $this->assertInstanceOf(FakeController::class, $controller);
-        $this->assertSame('withArgument', $method);
+        $this->assertInstanceOf(FakeController::class, $resolvedRoute->getHandler()->getController());
+        $this->assertSame('withArgument', $resolvedRoute->getHandler()->getMethod());
         $this->assertSame(['username' => 'quentin'], $resolvedRoute->getParameters());
     }
 
@@ -51,10 +47,8 @@ final class RouteResolverTest extends TestCase
         $routes = ['/posts/{category}/{id}' => $handler];
         $resolvedRoute = $this->resolver->resolve($routes, '/posts/php/8');
 
-        [$controller, $method] = $resolvedRoute->getHandler();
-
-        $this->assertInstanceOf(FakeController::class, $controller);
-        $this->assertSame('withMultipleArguments', $method);
+        $this->assertInstanceOf(FakeController::class, $resolvedRoute->getHandler()->getController());
+        $this->assertSame('withMultipleArguments', $resolvedRoute->getHandler()->getMethod());
         $this->assertSame(['category' => 'php', 'id' => '8'], $resolvedRoute->getParameters());
     }
 
