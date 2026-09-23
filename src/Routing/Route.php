@@ -27,6 +27,8 @@ final class Route
     }
 
     /**
+     * Return all the routes registered with the specified HTTP method.
+     *
      * @param HttpMethod $method
      * @return Handler[]
      */
@@ -39,6 +41,8 @@ final class Route
     }
 
     /**
+     * Reset the routes to an empty array.
+     *
      * @return void
      */
     public static function reset(): void

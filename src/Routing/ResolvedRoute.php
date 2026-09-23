@@ -2,7 +2,6 @@
 
 namespace Ludens\Routing;
 
-use Closure;
 use Ludens\Routing\Support\Handler;
 use Ludens\Routing\Support\InstantiatedHandler;
 use ReflectionClass;
@@ -47,13 +46,15 @@ final class ResolvedRoute
     }
 
     /**
+     * Instantiate the provided controller stored as the first element of the handler object.
+     *
      * @param Handler $handler
      * @return InstantiatedHandler
      */
     private function instantiate(Handler $handler): InstantiatedHandler
     {
         if (false === class_exists($handler->getController())) {
-            throw new RuntimeException(sprintf(
+            throw new RuntimeException(\sprintf(
                 'Controller class %s does not exist',
                 $handler->getController()
             ));

@@ -21,6 +21,8 @@ final class Sphp
     private int $position = 0;
 
     /**
+     * Return a PHP array from the content of the provided SPHP file.
+     *
      * @param string $filepath
      * @throws InvalidConfigurationFileProvided
      * @return array<string, mixed>
@@ -48,6 +50,8 @@ final class Sphp
     }
 
     /**
+     * Return an identifier and the value linked to it.
+     *
      * @return array{0: string, 1: mixed}
      */
     private function parseEntry(): array
@@ -67,6 +71,9 @@ final class Sphp
     }
 
     /**
+     * Return a value, it can be multiple types and it has to be handled
+     * differently based on the type retrieved at this point.
+     *
      * @return mixed
      */
     private function parseValue(): mixed
@@ -78,6 +85,8 @@ final class Sphp
     }
 
     /**
+     * Return the content of an array.
+     *
      * @return array<string, mixed>
      */
     private function parseArray(): array
@@ -106,6 +115,9 @@ final class Sphp
     }
 
     /**
+     * Ensure the value is valid because it can have multiple types and return the value
+     * if it is.
+     *
      * @return mixed
      */
     private function handleValues(): mixed
@@ -123,6 +135,9 @@ final class Sphp
     }
 
     /**
+     * Ensure the token type is matching what is expected and throw an exception
+     * if that's not the case.
+     *
      * @param LexerType $expected
      * @throws ConfigurationFormatException
      * @return void
@@ -138,6 +153,9 @@ final class Sphp
     }
 
     /**
+     * Move the cursor one position away because the previous token has been validated and
+     * return the new token.
+     *
      * @return LexerToken
      */
     private function consume(): LexerToken
@@ -148,6 +166,8 @@ final class Sphp
     }
 
     /**
+     * Move the cursor one position away without validating the current token.
+     *
      * @return LexerToken
      */
     private function peek(): LexerToken

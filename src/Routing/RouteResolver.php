@@ -13,6 +13,9 @@ final class RouteResolver
     private array $parameters = [];
 
     /**
+     * Return the resolved route from the match method with the parameters retrieved from the
+     * controller attribute.
+     *
      * @param array<string, Handler> $routes
      * @param string $path
      * @return ResolvedRoute
@@ -24,6 +27,8 @@ final class RouteResolver
     }
 
     /**
+     * Return the route matching the path provided in the controller attribute.
+     *
      * @param array<string, Handler> $routes
      * @param string $path
      * @throws RouteNotFoundException
@@ -46,6 +51,8 @@ final class RouteResolver
     }
 
     /**
+     * Verify if a provided path is matching one of the registered routes or not.
+     *
      * @param string $route
      * @param string $path
      * @return bool

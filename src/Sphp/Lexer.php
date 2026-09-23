@@ -30,6 +30,8 @@ final class Lexer
     {}
 
     /**
+     * Return an array of tokens with their informations.
+     *
      * @return LexerToken[]
      */
     public function tokenize(): array

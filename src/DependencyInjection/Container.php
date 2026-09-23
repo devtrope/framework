@@ -126,6 +126,9 @@ final class Container
     }
 
     /**
+     * Check if the provided class has dependencies in its constructor and return them
+     * if that's the case.
+     *
      * @param string $identifier
      * @return ReflectionParameter[]
      */

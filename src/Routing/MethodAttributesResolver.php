@@ -11,6 +11,9 @@ use RuntimeException;
 final class MethodAttributesResolver
 {
     /**
+     * Retrieve all the attributes from the provided controller class name and
+     * returns only those matching a valid Http Method.
+     *
      * @param string $classname
      * @return MethodAttribute[]
      */
