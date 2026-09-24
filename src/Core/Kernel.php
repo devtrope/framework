@@ -14,15 +14,29 @@ use Ludens\Sphp\Sphp;
 
 final class Kernel
 {
+    /**
+     * @var array<string, array<string, mixed>>
+     */
     private array $configuration = [];
+
+    /**
+     * @var Kernel|null
+     */
     private static ?Kernel $instance = null;
     
-    public function __construct(
+    /**
+     * @param Container $container
+     * @param Sphp $sphp
+     */
+    private function __construct(
         private Container $container = new Container(),
         private Sphp $sphp = new Sphp()
     )
     {}
 
+    /**
+     * @return Kernel|null
+     */
     public static function getInstance(): self
     {
         if (null === self::$instance) {
@@ -31,12 +45,21 @@ final class Kernel
         return self::$instance;
     }
 
+    /**
+     * @param string $projectDirectory
+     * @return Kernel
+     */
     public function loadProjectDirectory(string $projectDirectory): self
     {
         $this->configuration['kernel']['projectDirectory'] = $projectDirectory . '/';
         return $this;
     }
 
+    /**
+     * @param string $configurationDirectory
+     * @throws ConfigurationException
+     * @return Kernel
+     */
     public function loadConfiguration(string $configurationDirectory): self
     {
         if (false === is_dir($configurationDirectory)) {
@@ -64,14 +87,22 @@ final class Kernel
         return $this;
     }
 
-    public function get(string $key): string
+    /**
+     * @param string $key
+     * @return mixed
+     */
+    public function get(string $key): mixed
     {
         [$key, $value] = explode('.', $key);
         $value = ucwords($value, '_');
         $value = str_replace('_', '', lcfirst($value));
-        return self::$instance->configuration[$key][$value];
+        return $this->configuration[$key][$value];
     }
 
+    /**
+     * @param Request $request
+     * @return void
+     */
     public function run(Request $request): void
     {
         $this->container->load(dirname(__DIR__) . '/Routing/Configuration/services.sphp');
