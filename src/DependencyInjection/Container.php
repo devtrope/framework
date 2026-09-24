@@ -2,6 +2,7 @@
 
 namespace Ludens\DependencyInjection;
 
+use Ludens\Configuration\ParametersResolver;
 use Ludens\Exceptions\ConfigurationException;
 use Ludens\Exceptions\InvalidConfigurationFileProvided;
 use Ludens\Exceptions\MissingBoundValueException;
@@ -20,8 +21,12 @@ final class Container
 
     /**
      * @param Sphp $sphp
+     * @param ParametersResolver $parametersResolver
      */
-    public function __construct(private Sphp $sphp = new Sphp())
+    public function __construct(
+        private Sphp $sphp = new Sphp(),
+        private ParametersResolver $parametersResolver = new ParametersResolver()
+    )
     {}
 
     /**
@@ -120,7 +125,7 @@ final class Container
                 if (false === \is_string($key) || false === \is_string($value)) {
                     continue;
                 }
-                $this->bindings[$key] = $value;
+                $this->bindings[$key] = $this->parametersResolver->resolve($value);
             }
         }
     }

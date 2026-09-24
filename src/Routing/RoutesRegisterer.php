@@ -2,6 +2,7 @@
 
 namespace Ludens\Routing;
 
+use Ludens\Core\Kernel;
 use Ludens\Exceptions\InvalidControllerFolderException;
 use Ludens\Routing\Support\Handler;
 use Ludens\Routing\Support\MethodAttribute;
@@ -48,17 +49,18 @@ final class RoutesRegisterer
      */
     private function retrieveControllersFiles(): array
     {
-        if (false === is_dir($this->controllerDirectory)) {
+        $controllerDirectory = Kernel::getInstance()->get('kernel.project_directory') . $this->controllerDirectory;
+        if (false === is_dir($controllerDirectory)) {
             throw new InvalidControllerFolderException(\sprintf(
                 'The controller directory %s does not exist',
-                $this->controllerDirectory
+                $controllerDirectory
             ));
         }
 
-        if (false === $files = glob("{$this->controllerDirectory}*.php")) {
+        if (false === $files = glob("{$controllerDirectory}*.php")) {
             throw new InvalidControllerFolderException(\sprintf(
                 'Cannot access %s directory',
-                $this->controllerDirectory
+                $controllerDirectory
             ));
         }
         return $files;
@@ -73,7 +75,8 @@ final class RoutesRegisterer
      */
     private function formatClassName(string $file): string
     {
-        $classname = str_replace($this->controllerDirectory, '', $file);
+        $controllerDirectory = Kernel::getInstance()->get('kernel.project_directory') . $this->controllerDirectory;
+        $classname = str_replace($controllerDirectory, '', $file);
         $classname = str_replace('.php', '', $classname);
         return "{$this->controllerNamespace}{$classname}";
     }

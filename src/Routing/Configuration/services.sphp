@@ -1,5 +1,5 @@
 services:
   Ludens\Routing\RoutesRegisterer:
     bind:
-      controllerDirectory: 'src/Controller/'
-      controllerNamespace: '\Ludens\Controller\'
+      controllerDirectory: '%app.controller_directory%'
+      controllerNamespace: '%app.controller_namespace%'
